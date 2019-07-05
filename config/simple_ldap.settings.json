@@ -1,0 +1,4 @@
+{
+    "_config_name": "simple_ldap.settings",
+    "simple_ldap_opt_referrals": true
+}
