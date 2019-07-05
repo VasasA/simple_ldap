@@ -39,3 +39,15 @@ function simple_ldap_configured() {
 
   return $configured;
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function simple_ldap_autoload_info() {
+  return array(
+    'SimpleLdap' => 'SimpleLdap.class.php',
+    'SimpleLdapException' => 'SimpleLdapException.class.php',
+    'SimpleLdapSchema' => 'SimpleLdapSchema.class.php',
+    'SimpleLdapServer' => 'SimpleLdapServer.class.php',
+  );
+}
