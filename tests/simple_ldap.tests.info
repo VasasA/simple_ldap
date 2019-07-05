@@ -1,0 +1,5 @@
+[SimpleLdapServerConnectionTestCase]
+name = LDAP server connectivity
+description = Tests the Simple LDAP server configuration and connectivity.
+group = Simple LDAP
+file = simple_ldap.test
