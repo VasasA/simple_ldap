@@ -21,14 +21,3 @@ function simple_ldap_role_uninstall() {
   $config->clear('simple_ldap_role_sync');
   $config->save();
 }
-
-/**
- * Update configuration variables.
- */
-function simple_ldap_role_update_7100(&$sandbox) {
-  // simple_ldap_role_objectclass should be an array.
-  $objectclass = variable_get('simple_ldap_role_objectclass');
-  if (!is_array($objectclass)) {
-    variable_set('simple_ldap_role_objectclass', array($objectclass));
-  }
-}
