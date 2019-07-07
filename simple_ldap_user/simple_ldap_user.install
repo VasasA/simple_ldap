@@ -15,10 +15,9 @@ function simple_ldap_user_enable() {
  * Implements hook_disable().
  */
 function simple_ldap_user_disable() {
-  global $settings;
   $password_inc = drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
   if (settings_get('password_inc', 'core/includes/password.inc') == $password_inc) {
-    $settings['password_inc'] = 'core/includes/password.inc';
+    $GLOBALS['settings']['password_inc'] = 'core/includes/password.inc';
   }
 }
 
