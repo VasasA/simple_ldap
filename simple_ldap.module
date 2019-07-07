@@ -32,10 +32,11 @@ function simple_ldap_menu() {
  */
 function simple_ldap_configured() {
   $configured = TRUE;
+  $config = config('simple_ldap.settings');
 
   // Check each of the required configuration items.
-  $configured = $configured && variable_get('simple_ldap_host') !== NULL;
-  $configured = $configured && variable_get('simple_ldap_port') !== NULL;
+  $configured = $configured && $config->get('simple_ldap_host') !== NULL;
+  $configured = $configured && $config->get('simple_ldap_port') !== NULL;
 
   return $configured;
 }

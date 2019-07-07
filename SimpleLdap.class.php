@@ -281,7 +281,8 @@ class SimpleLdap {
    */
   public static function ldap_add($link_identifier, $dn, $entry) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -293,7 +294,7 @@ class SimpleLdap {
     $return = @ldap_add($link_identifier, $dn, $entry);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $entry = @entry) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -327,7 +328,8 @@ class SimpleLdap {
    */
   public static function ldap_bind($link_identifier, $bind_rdn = NULL, $bind_password = NULL) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$bind_rdn' => $bind_rdn,
@@ -339,7 +341,7 @@ class SimpleLdap {
     $return = @ldap_bind($link_identifier, $bind_rdn, $bind_password);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $bind_rdn = @bind_rdn, $bind_password = @bind_password) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -366,7 +368,8 @@ class SimpleLdap {
    */
   public static function ldap_unbind($link_identifier) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
     }
 
@@ -374,7 +377,7 @@ class SimpleLdap {
     $return = @ldap_unbind($link_identifier);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -410,7 +413,8 @@ class SimpleLdap {
    */
   public static function ldap_compare($link_identifier, $dn, $attribute, $value) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -423,7 +427,7 @@ class SimpleLdap {
     $return = @ldap_compare($link_identifier, $dn, $attribute, $value);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $attribute = @attribute, $value = @value) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -460,7 +464,8 @@ class SimpleLdap {
    */
   public static function ldap_connect($hostname = NULL, $port = 389) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$hostname' => $hostname,
@@ -472,7 +477,7 @@ class SimpleLdap {
     $return = @ldap_connect($hostname, $port);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($hostname = @hostname, $port = @port) returns @return';
       $variables = array(
         '@hostname' => print_r($hostname, TRUE),
@@ -512,7 +517,8 @@ class SimpleLdap {
    */
   public static function ldap_control_paged_result($link, $pagesize, $iscritical, $cookie) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$pagesize' => $pagesize,
@@ -525,7 +531,7 @@ class SimpleLdap {
     $return = @ldap_control_paged_result($link, $pagesize, $iscritical, $cookie);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link = @link, $pagesize = @pagesize, $iscritical = @iscritical, $cookie = @cookie) returns @return';
       $variables = array(
         '@link' => print_r($link, TRUE),
@@ -564,7 +570,8 @@ class SimpleLdap {
    */
   public static function ldap_control_paged_result_response($link, $result, &$cookie = NULL, &$estimated = NULL) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$result' => $result,
@@ -577,7 +584,7 @@ class SimpleLdap {
     $return = @ldap_control_paged_result_response($link, $result, $cookie, $estimated);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link = @link, $result = @result, $cookie = @cookie, $estimated = @estimated) returns @return';
       $variables = array(
         '@link' => print_r($link, TRUE),
@@ -607,7 +614,8 @@ class SimpleLdap {
    */
   public static function ldap_delete($link_identifier, $dn) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -618,7 +626,7 @@ class SimpleLdap {
     $return = @ldap_delete($link_identifier, $dn);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -649,7 +657,8 @@ class SimpleLdap {
    */
   public static function ldap_free_result($result_identifier) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
     }
 
@@ -657,7 +666,7 @@ class SimpleLdap {
     $return = @ldap_free_result($result_identifier);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($result_identifier = @result_identifier) returns @return';
       $variables = array(
         '@result_identifier' => print_r($result_identifier, TRUE),
@@ -689,7 +698,8 @@ class SimpleLdap {
    */
   public static function ldap_get_entries($link_identifier, $result_identifier) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
     }
 
@@ -697,7 +707,7 @@ class SimpleLdap {
     $return = @ldap_get_entries($link_identifier, $result_identifier);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $result_identifier = @result_identifier) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -733,7 +743,8 @@ class SimpleLdap {
    */
   public static function ldap_get_option($link_identifier, $option, &$retval) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$option' => $option,
@@ -745,7 +756,7 @@ class SimpleLdap {
     $return = @ldap_get_option($link_identifier, $option, $retval);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $option = @option, $retval = @retval) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -797,7 +808,8 @@ class SimpleLdap {
    */
   public static function ldap_list($link_identifier, $base_dn, $filter, $attributes = array(), $attrsonly = 0, $sizelimit = 0, $timelimit = 0, $deref = LDAP_DEREF_NEVER) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$base_dn' => $base_dn,
@@ -814,7 +826,7 @@ class SimpleLdap {
     $return = @ldap_list($link_identifier, $base_dn, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $base_dn = @base_dn, $filter = @filter, $attributes = @attributes, $attrsonly = @attrsonly, $sizelimit = @sizelimit, $timelimit = @timelimit, $deref = @deref) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -857,7 +869,8 @@ class SimpleLdap {
    */
   public static function ldap_mod_add($link_identifier, $dn, $entry) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -869,7 +882,7 @@ class SimpleLdap {
     $return = @ldap_mod_add($link_identifier, $dn, $entry);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $entry = @entry) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -907,7 +920,8 @@ class SimpleLdap {
    */
   public static function ldap_mod_del($link_identifier, $dn, $entry) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -919,7 +933,7 @@ class SimpleLdap {
     $return = @ldap_mod_del($link_identifier, $dn, $entry);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $entry = @entry) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -957,7 +971,8 @@ class SimpleLdap {
    */
   public static function ldap_mod_replace($link_identifier, $dn, $entry) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -969,7 +984,7 @@ class SimpleLdap {
     $return = @ldap_mod_replace($link_identifier, $dn, $entry);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $entry = @entry) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1007,7 +1022,8 @@ class SimpleLdap {
    */
   public static function ldap_modify($link_identifier, $dn, $entry) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -1019,7 +1035,7 @@ class SimpleLdap {
     $return = @ldap_modify($link_identifier, $dn, $entry);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $entry = @entry) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1071,7 +1087,8 @@ class SimpleLdap {
    */
   public static function ldap_read($link_identifier, $base_dn, $filter, $attributes = array(), $attrsonly = 0, $sizelimit = 0, $timelimit = 0, $deref = LDAP_DEREF_NEVER) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$base_dn' => $base_dn,
@@ -1088,7 +1105,7 @@ class SimpleLdap {
     $return = @ldap_read($link_identifier, $base_dn, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $base_dn = @base_dn, $filter = @filter, $attributes = @attributes, $attrsonly = @attrsonly, $sizelimit = @sizelimit, $timelimit = @timelimit, $deref = @deref) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1145,7 +1162,8 @@ class SimpleLdap {
    */
   public static function ldap_search($link_identifier, $base_dn, $filter, $attributes = array(), $attrsonly = 0, $sizelimit = 0, $timelimit = 0, $deref = LDAP_DEREF_NEVER) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$base_dn' => $base_dn,
@@ -1162,7 +1180,7 @@ class SimpleLdap {
     $return = @ldap_search($link_identifier, $base_dn, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $base_dn = @base_dn, $filter = @filter, $attributes = @attributes, $attrsonly = @attrsonly, $sizelimit = @sizelimit, $timelimit = @timelimit, $deref = @deref) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1204,7 +1222,8 @@ class SimpleLdap {
    */
   public static function ldap_set_option($link_identifier, $option, $newval) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$option' => $option,
@@ -1216,7 +1235,7 @@ class SimpleLdap {
     $return = @ldap_set_option($link_identifier, $option, $newval);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $option = @option, $newval = @newval) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1248,7 +1267,8 @@ class SimpleLdap {
    */
   public static function ldap_start_tls($link) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
     }
 
@@ -1256,7 +1276,7 @@ class SimpleLdap {
     $return = @ldap_start_tls($link);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link = @link) returns @return';
       $variables = array(
         '@link' => print_r($link, TRUE),
@@ -1295,7 +1315,8 @@ class SimpleLdap {
    */
   public static function ldap_rename($link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -1309,7 +1330,7 @@ class SimpleLdap {
     $return = @ldap_rename($link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($link_identifier = @link_identifier, $dn = @dn, $newrdn = @newrdn, $newparent = @newparent, $deleteoldrdn = @deleteoldrdn) returns @return';
       $variables = array(
         '@link_identifier' => print_r($link_identifier, TRUE),
@@ -1350,7 +1371,8 @@ class SimpleLdap {
    */
   public static function ldap_explode_dn($dn, $with_attrib = 0) {
     // Devel debugging.
-    if (variable_get('simple_ldap_devel', FALSE)) {
+    $config = config('simple_ldap.settings');
+    if ($config->get('simple_ldap_devel')) {
       dpm(__FUNCTION__);
       dpm(array(
         '$dn' => $dn,
@@ -1362,7 +1384,7 @@ class SimpleLdap {
     $return = @ldap_explode_dn($dn, $with_attrib);
 
     // Debugging.
-    if (variable_get('simple_ldap_debug', FALSE)) {
+    if ($config->get('simple_ldap_debug')) {
       $message = __FUNCTION__ . '($dn = @dn, $with_attrib = @with_attrib) returns @return';
       $variables = array(
         '@dn' => print_r($dn, TRUE),

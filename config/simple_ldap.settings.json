@@ -1,4 +1,15 @@
 {
     "_config_name": "simple_ldap.settings",
-    "simple_ldap_opt_referrals": true
+    "simple_ldap_host": "",
+    "simple_ldap_port": "389",
+    "simple_ldap_starttls": false,
+    "simple_ldap_readonly": false,
+    "simple_ldap_binddn": "",
+    "simple_ldap_bindpw": "",
+    "simple_ldap_basedn": "",
+    "simple_ldap_pagesize": "",
+    "simple_ldap_opt_referrals": true,
+    "simple_ldap_debug": false,
+    "simple_ldap_devel": false,
+    "simple_ldap_server_class": "SimpleLdapServer"
 }

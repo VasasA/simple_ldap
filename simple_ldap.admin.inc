@@ -8,6 +8,7 @@
  * LDAP server configuration form.
  */
 function simple_ldap_admin() {
+  $config = config('simple_ldap.settings');
   $form = array();
 
   $form['server'] = array(
@@ -20,27 +21,27 @@ function simple_ldap_admin() {
     '#type' => 'textfield',
     '#title' => t('Host'),
     '#required' => TRUE,
-    '#default_value' => variable_get('simple_ldap_host', ''),
+    '#default_value' => $config->get('simple_ldap_host'),
     '#description' => t('To use SSL, prepend the host with "ldaps://".'),
   );
 
   $form['server']['simple_ldap_port'] = array(
     '#type' => 'textfield',
     '#title' => t('Port'),
-    '#default_value' => variable_get('simple_ldap_port', '389'),
+    '#default_value' => $config->get('simple_ldap_port'),
     '#required' => TRUE,
   );
 
   $form['server']['simple_ldap_starttls'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use startTLS'),
-    '#default_value' => variable_get('simple_ldap_starttls', FALSE),
+    '#default_value' => $config->get('simple_ldap_starttls'),
   );
 
   $form['server']['simple_ldap_readonly'] = array(
     '#type' => 'checkbox',
     '#title' => t('Read-only'),
-    '#default_value' => variable_get('simple_ldap_readonly', FALSE),
+    '#default_value' => $config->get('simple_ldap_readonly'),
   );
 
   $form['directory'] = array(
@@ -52,7 +53,7 @@ function simple_ldap_admin() {
   $form['directory']['simple_ldap_binddn'] = array(
     '#type' => 'textfield',
     '#title' => t('Bind DN'),
-    '#default_value' => variable_get('simple_ldap_binddn', ''),
+    '#default_value' => $config->get('simple_ldap_binddn'),
     '#description' => t('Leave this blank to bind anonymously'),
   );
 
@@ -60,20 +61,20 @@ function simple_ldap_admin() {
     '#type' => 'password',
     '#title' => t('Bind password'),
     '#description' => t('Leave this blank to bind anonymously'),
-    '#attributes' => array('value' => array(variable_get('simple_ldap_bindpw', ''))),
+    '#attributes' => array('value' => array($config->get('simple_ldap_bindpw'))),
   );
 
   $form['directory']['simple_ldap_basedn'] = array(
     '#type' => 'textfield',
     '#title' => t('Base DN'),
-    '#default_value' => variable_get('simple_ldap_basedn', ''),
+    '#default_value' => $config->get('simple_ldap_basedn'),
     '#description' => t('Leave this blank to attempt to detect the base DN.'),
   );
 
   $form['directory']['simple_ldap_pagesize'] = array(
     '#type' => 'textfield',
     '#title' => t('Search result page size'),
-    '#default_value' => variable_get('simple_ldap_pagesize', ''),
+    '#default_value' => $config->get('simple_ldap_pagesize'),
     '#description' => t('Leave this blank to disable paged queries.'),
   );
 
@@ -95,13 +96,13 @@ function simple_ldap_admin() {
   $form['advanced']['simple_ldap_opt_referrals'] = array(
     '#type' => 'checkbox',
     '#title' => t('Follow LDAP referrals'),
-    '#default_value' => variable_get('simple_ldap_opt_referrals', TRUE),
+    '#default_value' => $config->get('simple_ldap_opt_referrals'),
   );
 
   $form['advanced']['simple_ldap_debug'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable watchdog debug logging.'),
-    '#default_value' => variable_get('simple_ldap_debug', FALSE),
+    '#default_value' => $config->get('simple_ldap_debug'),
   );
 
   return system_settings_form($form);

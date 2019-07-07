@@ -58,7 +58,7 @@ class SimpleLdapServer {
    */
   public static function singleton($reset = FALSE) {
     if ($reset || !isset(self::$instance)) {
-      $server_class = variable_get('simple_ldap_server_class', 'SimpleLdapServer');
+      $server_class = config_get('simple_ldap.settings', 'simple_ldap_server_class');
       self::$instance = new $server_class();
     }
 
@@ -83,14 +83,15 @@ class SimpleLdapServer {
    */
   public function __construct(array $parameters = array()) {
     // Load up the default parameters.
+    $config = config('simple_ldap.settings');
     $default_parameters = array(
-      'host' => variable_get('simple_ldap_host'),
-      'port' => variable_get('simple_ldap_port', 389),
-      'starttls' => variable_get('simple_ldap_starttls', FALSE),
-      'binddn' => variable_get('simple_ldap_binddn'),
-      'bindpw' => variable_get('simple_ldap_bindpw'),
-      'readonly' => variable_get('simple_ldap_readonly', FALSE),
-      'pagesize' => variable_get('simple_ldap_pagesize'),
+      'host' => $config->get('simple_ldap_host'),
+      'port' => $config->get('simple_ldap_port'),
+      'starttls' => $config->get('simple_ldap_starttls'),
+      'binddn' => $config->get('simple_ldap_binddn'),
+      'bindpw' => $config->get('simple_ldap_bindpw'),
+      'readonly' => $config->get('simple_ldap_readonly'),
+      'pagesize' => $config->get('simple_ldap_pagesize'),
     );
 
     // Populate the parameters array with the defaults.
@@ -665,7 +666,7 @@ class SimpleLdapServer {
       SimpleLdap::ldap_set_option($this->resource, LDAP_OPT_PROTOCOL_VERSION, $this->version);
 
       // Set the advanced LDAP options.
-      $opt_referrals = variable_get('simple_ldap_opt_referrals', TRUE);
+      $opt_referrals = config_get('simple_ldap.settings', 'simple_ldap_opt_referrals');
       SimpleLdap::ldap_set_option($this->resource, LDAP_OPT_REFERRALS, (int) $opt_referrals);
 
       // StartTLS.
@@ -741,7 +742,7 @@ class SimpleLdapServer {
     }
 
     // Check if the basedn is specified in the module configuration.
-    $basedn = variable_get('simple_ldap_basedn');
+    $basedn = config_get('simple_ldap.settings', 'simple_ldap_basedn');
     if (!empty($basedn)) {
       $this->basedn = $basedn;
       return $this->basedn;
