@@ -38,6 +38,7 @@ function simple_ldap_sso_init() {
   // Check for the presence of an SSO cookie, and check it's contents against
   // LDAP. If it doesn't validate, destroy the session by logging the user out.
   global $user;
+  $config = config('simple_ldap_sso.settings');
   // Do nothing for anonymous users.
   if (!user_is_logged_in()
     // If this is user 1, do nothing.
@@ -57,8 +58,8 @@ function simple_ldap_sso_init() {
 
   // Do not allow any user from the current user's IP if the flood limit has
   // been reached. Default is 3 failed attempts allowed in one hour.
-  $limit = variable_get('simple_ldap_sso_flood_limit', 3);
-  $window = variable_get('simple_ldap_sso_flood_window', 3600);
+  $limit = $config->get('simple_ldap_sso_flood_limit');
+  $window = $config->get('simple_ldap_sso_flood_window');
   // Now check the flood table.
   if ($limit != 0 && !flood_is_allowed(SIMPLE_LDAP_SSO_FLOOD, $limit, $window)) {
     // If the flood limit has been reached, log the user out and return.

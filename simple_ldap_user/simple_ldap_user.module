@@ -564,6 +564,7 @@ function simple_ldap_user_export_user($uid, $context) {
 function simple_ldap_user_variable_get($name, $default = NULL, $force_default = FALSE) {
   // Allow variable name shorthand by prepending 'simple_ldap_user_' to $name if
   // it is not already there.
+  $config = config('simple_ldap_user.settings');
   if (strpos($name, 'simple_ldap_user_') !== 0) {
     $name = 'simple_ldap_user_' . $name;
   }
@@ -582,7 +583,7 @@ function simple_ldap_user_variable_get($name, $default = NULL, $force_default = 
 
     case 'simple_ldap_user_attribute_map':
       // Load the attribute map from settings.php.
-      $attribute_map = variable_get($name, array());
+      $attribute_map = $config->get('simple_ldap_user_attribute_map');
 
       return $attribute_map;
   }
@@ -624,5 +625,11 @@ function simple_ldap_user_variable_get($name, $default = NULL, $force_default = 
     return $default;
   }
 
-  return variable_get($name, $default);
+  $variable = $config->get($name);
+  if (empty($variable)) {
+    $config->set($name, $default);
+    $config->save();
+  }
+
+  return $config->get($name, $default);
 }

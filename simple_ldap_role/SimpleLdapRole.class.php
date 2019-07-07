@@ -216,7 +216,7 @@ class SimpleLdapRole {
     else {
       // Create a new entry.
       try {
-        $this->attributes['objectclass'] = array_values(variable_get('simple_ldap_role_objectclass'));
+        $this->attributes['objectclass'] = array_values(simple_ldap_role_variable_get('simple_ldap_role_objectclass'));
         $this->server->add($this->dn, $this->attributes);
       } catch (SimpleLdapException $e) {
         switch ($e->getCode()) {

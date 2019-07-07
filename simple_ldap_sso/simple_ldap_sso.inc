@@ -28,7 +28,7 @@ function simple_ldap_sso_configured() {
  */
 function simple_ldap_configuration_errors() {
   $errors = array();
-
+  $config = config('simple_ldap_sso.settings');
   // We need the module files here in order to call these functions.
   drupal_load('module', 'simple_ldap');
   drupal_load('module', 'simple_ldap_user');
@@ -39,20 +39,20 @@ function simple_ldap_configuration_errors() {
    */
 
   // Ensure the encryption key is set.
-  if (!variable_get('simple_ldap_sso_encryption_key')) {
+  if (!$config->get('simple_ldap_sso_encryption_key')) {
     $errors[] = t('You must specify an encryption key.');
   }
 
   // Check the readonly variable.
-  if (variable_get('simple_ldap_readonly')
-    && (!variable_get('simple_ldap_sso_binddn') ||
-        !variable_get('simple_ldap_sso_bindpw'))
+  if (config_get('simple_ldap.settings', 'simple_ldap_readonly')
+    && (!$config->get('simple_ldap_sso_binddn') ||
+        !$config->get('simple_ldap_sso_bindpw'))
   ) {
     $errors[] = t('This site is in read only mode, so you must specify separate LDAP credentials with read/write access.');
   }
 
   // Ensure the attribute sid is set.
-  if (!variable_get('simple_ldap_sso_attribute_sid')) {
+  if (!$config->get('simple_ldap_sso_attribute_sid')) {
     $errors[] = t('You must specify the LDAP attribute used to store the hashed session id.');
   }
 
@@ -62,7 +62,7 @@ function simple_ldap_configuration_errors() {
   // include unless this particular bit was configured properly, but we leave
   // this in so that it works for hook_requirements().
   $session_inc_path = __DIR__ . '/simple_ldap_sso.session.inc';
-  if (DRUPAL_ROOT . '/' . variable_get('session_inc') != $session_inc_path) {
+  if (DRUPAL_ROOT . '/' . settings_get('session_inc', 'core/includes/session.inc') != $session_inc_path) {
     $errors[] = t('You must set the session_inc variable to Simple LDAP SSO’s session include file.');
   }
 
@@ -271,7 +271,7 @@ function simple_ldap_sso_decrypt($string) {
  */
 function _simple_ldap_encrypt_decrypt($text, $encrypt = TRUE) {
   // Hash the key to get a more secure key.
-  $key = hash('sha256', variable_get('simple_ldap_sso_encryption_key'), TRUE);
+  $key = hash('sha256', config_get('simple_ldap_sso.settings', 'simple_ldap_sso_encryption_key'), TRUE);
   $cipher = 'rijndael-256';
   $mode = MCRYPT_MODE_CBC;
   $iv_size = mcrypt_get_iv_size($cipher, $mode);
@@ -326,7 +326,7 @@ function simple_ldap_sso_set_cookie(array $data) {
     $expire,
     $params['path'],
     $params['domain'],
-    (bool) variable_get('https'),
+    (bool) settings_get('https', FALSE),
     $params['httponly']
   );
 }
@@ -342,7 +342,7 @@ function simple_ldap_sso_delete_cookie() {
     REQUEST_TIME - 3600,
     $params['path'],
     $params['domain'],
-    (bool) variable_get('https'),
+    (bool) settings_get('https', FALSE),
     $params['httponly']
   );
 }

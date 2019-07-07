@@ -1,0 +1,7 @@
+{
+    "_config_name": "simple_ldap_sso.settings",
+    "simple_ldap_sso_flood_limit": "3",
+    "simple_ldap_sso_flood_window": "3600",
+    "simple_ldap_sso_attribute_sid": false,
+    "simple_ldap_sso_hashing_algorithm": "sha"
+}

@@ -41,7 +41,7 @@
  * simple_ldap_user_login_name_validate($form, &$form_state)
  * simple_ldap_user_sync_user_to_ldap($drupal_user)
  * simple_ldap_user_sync_user_to_drupal($drupal_user)
- * simple_ldap_user_variable_get($varuable)
+ * simple_ldap_user_variable_get($variable)
  */
 
 /**

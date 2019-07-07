@@ -55,7 +55,7 @@ class SimpleLdapSSO {
    */
   public function getSidAttribute() {
     if (!isset($this->sidAttribute)) {
-      $this->sidAttribute = variable_get('simple_ldap_sso_attribute_sid', FALSE);
+      $this->sidAttribute = config_get('simple_ldap_sso.settings', 'simple_ldap_sso_attribute_sid');
     }
     return $this->sidAttribute;
   }
@@ -86,13 +86,13 @@ class SimpleLdapSSO {
    */
   public function __construct($name) {
     $parameters = array(
-      'binddn' => variable_get('simple_ldap_sso_binddn'),
-      'bindpw' => variable_get('simple_ldap_sso_bindpw'),
+      'binddn' => config_get('simple_ldap_sso.settings', 'simple_ldap_sso_binddn'),
+      'bindpw' => config_get('simple_ldap_sso.settings', 'simple_ldap_sso_bindpw'),
       'readonly' => FALSE,
     );
     // If this site is in RO mode, use a separate server connection with the
     // above RW credentials.
-    $this->server = variable_get('simple_ldap_readonly') ?
+    $this->server = config_get('simple_ldap.settings', 'simple_ldap_readonly') ?
       new SimpleLdapServer($parameters) : SimpleLdapServer::singleton();
 
     // Get the LDAP configuration.
@@ -135,7 +135,7 @@ class SimpleLdapSSO {
    * This method is intentionally private.
    */
   private function hashSid($sid) {
-    $algorithm = variable_get('simple_ldap_sso_hashing_algorithm', 'sha');
+    $algorithm = config_get('simple_ldap_sso.settings', 'simple_ldap_sso_hashing_algorithm');
     return SimpleLdap::hash($sid, $algorithm);
   }
 }

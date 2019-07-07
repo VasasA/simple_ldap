@@ -1,0 +1,7 @@
+{
+    "_config_name": "simple_ldap_user.settings",
+    "simple_ldap_user_objectclass": [
+        "inetorgperson"
+    ],
+    "simple_ldap_user_attribute_map": []
+}

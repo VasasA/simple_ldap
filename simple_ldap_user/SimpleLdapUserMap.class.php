@@ -39,7 +39,7 @@ class SimpleLdapUserMap {
    * schema to be sure the mappings are correct.
    */
   protected function processSettings() {
-    $this->settings = variable_get('simple_ldap_user_attribute_map', array());
+    $this->settings = simple_ldap_user_variable_get('simple_ldap_user_attribute_map', array());
     $this->map = array();
     foreach ($this->settings as $key => $value) {
       // Look up the ldap attribute in the schema, to be sure we have the

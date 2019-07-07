@@ -245,7 +245,7 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
 
     // Load password hashing API.
     if (!function_exists('user_hash_password')) {
-      require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+      require_once DRUPAL_ROOT . '/' . settings_get('password_inc', 'core/includes/password.inc');
     }
 
     // Set user1's password to something random in the database.
