@@ -11,6 +11,7 @@
 function simple_ldap_sso_admin() {
   $config = config('simple_ldap.settings');
   $config_sso = config('simple_ldap_sso.settings');
+  $form['#config'] = 'simple_ldap_sso.settings';
   $session_inc_path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
   $t_args = array('!path' => $session_inc_path);
   if (settings_get('session_inc', 'core/includes/session.inc') != $session_inc_path) {

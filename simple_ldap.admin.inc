@@ -10,6 +10,7 @@
 function simple_ldap_admin() {
   $config = config('simple_ldap.settings');
   $form = array();
+  $form['#config'] = 'simple_ldap.settings';
 
   $form['server'] = array(
     '#type' => 'fieldset',

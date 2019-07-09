@@ -76,6 +76,7 @@ function simple_ldap_user_admin($form, &$form_state) {
       asort($attributes);
   }
 
+  $form['#config'] = 'simple_ldap_user.settings';
   $form['user'] = array(
     '#type' => 'fieldset',
     '#title' => t('LDAP Users'),

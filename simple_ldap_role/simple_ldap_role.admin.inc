@@ -70,6 +70,7 @@ function simple_ldap_role_admin($form, &$form_state) {
       asort($attributes);
   }
 
+  $form['#config'] = 'simple_ldap_role.settings';
   $form['role'] = array(
     '#type' => 'fieldset',
     '#title' => t('LDAP Roles'),
