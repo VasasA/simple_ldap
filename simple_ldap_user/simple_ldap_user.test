@@ -15,6 +15,7 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
    */
   public function setUp() {
     // Get the live simple_ldap_user configuration.
+    $config = config('simple_ldap_user.settings');
     $basedn = simple_ldap_user_variable_get('simple_ldap_user_basedn');
     $scope = simple_ldap_user_variable_get('simple_ldap_user_scope');
     $objectclass = simple_ldap_user_variable_get('simple_ldap_user_objectclass');
@@ -32,7 +33,7 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     // Make sure the variables from settings.php are written to the database.
     // Otherwise subsequent tests will not be able to read them. These are
     // cleaned up in $this->tearDown().
-    variable_set('simple_ldap_user_attribute_map', $attribute_map);
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_attribute_map', $attribute_map);
 
     // Create the simpletest sandbox.
     $modules = func_get_args();
@@ -129,19 +130,20 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     $this->assertTrue($success, t('Enabled modules: %modules', array('%modules' => implode(', ', $modules))));
 
     // Configure the sandboxed simple_ldap_user.
-    variable_set('simple_ldap_user_basedn', $basedn);
-    variable_set('simple_ldap_user_scope', $scope);
-    variable_set('simple_ldap_user_objectclass', $objectclass);
-    variable_set('simple_ldap_user_attribute_name', $attribute_name);
-    variable_set('simple_ldap_user_attribute_mail', $attribute_mail);
-    variable_set('simple_ldap_user_attribute_pass', $attribute_pass);
-    variable_set('simple_ldap_user_attribute_rdn', $attribute_rdn);
-    variable_set('simple_ldap_user_attribute_map', $attribute_map);
-    variable_set('simple_ldap_user_password_hash', $password_hash);
-    variable_set('simple_ldap_user_filter', $filter);
-    variable_set('simple_ldap_user_source', $source);
-    variable_set('simple_ldap_user_sync', $sync);
-    variable_set('simple_ldap_user_delete_from_ldap', $delete_ldap_user);
+    $config->set('simple_ldap_user_basedn', $basedn);
+    $config->set('simple_ldap_user_scope', $scope);
+    $config->set('simple_ldap_user_objectclass', $objectclass);
+    $config->set('simple_ldap_user_attribute_name', $attribute_name);
+    $config->set('simple_ldap_user_attribute_mail', $attribute_mail);
+    $config->set('simple_ldap_user_attribute_pass', $attribute_pass);
+    $config->set('simple_ldap_user_attribute_rdn', $attribute_rdn);
+    $config->set('simple_ldap_user_attribute_map', $attribute_map);
+    $config->set('simple_ldap_user_password_hash', $password_hash);
+    $config->set('simple_ldap_user_filter', $filter);
+    $config->set('simple_ldap_user_source', $source);
+    $config->set('simple_ldap_user_sync', $sync);
+    $config->set('simple_ldap_user_delete_from_ldap', $delete_ldap_user);
+    $config->save();
 
     // Get the fully qualified attribute map.
     $mapObject = SimpleLdapUserMap::singleton();
@@ -669,15 +671,15 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
    */
   public function testRegistrationWithEmailVerification() {
     // Require e-mail verification.
-    variable_set('user_email_verification', TRUE);
+    config_set('system.core', 'user_email_verification', TRUE);
 
     // Set registration to administrator only.
-    variable_set('user_register', USER_REGISTER_ADMINISTRATORS_ONLY);
+    config_set('system.core', 'user_register', USER_REGISTER_ADMINISTRATORS_ONLY);
     $this->drupalGet('user/register');
     $this->assertResponse(403, t('Registration page is inaccessible when only administrators can create accounts.'));
 
     // Allow registration by site visitors without administrator approvial.
-    variable_set('user_register', USER_REGISTER_VISITORS);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
     $edit = $this->formData($name, $mail);
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('A welcome message with further instructions has been sent to your e-mail address.'), t('User registered successfully.'));
@@ -691,7 +693,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $ldap_user->delete();
 
     // Allow registration by site visitors, but require administrator approval.
-    variable_set('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
     $edit = $this->formData($name, $mail);
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
@@ -710,10 +712,10 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
    */
   public function testRegistrationWithoutEmailVerification() {
     // Don't require e-mail verification.
-    variable_set('user_email_verification', FALSE);
+    config_set('system.core', 'user_email_verification', FALSE);
 
     // Allow registration by site visitors without administrator approval.
-    variable_set('user_register', USER_REGISTER_VISITORS);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
     $edit = $this->formData($name, $mail);
 
     // Try entering a mismatching password.
@@ -737,7 +739,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $ldap_user->delete();
 
     // Allow registration by site visitors, but require administrator approval.
-    variable_set('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
     $edit = $this->formData($name, $mail);
     $edit['pass[pass1]'] = $pass = $this->randomName();
     $edit['pass[pass2]'] = $pass;
@@ -794,14 +796,14 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     }
 
     // Allow registration by site visitors without administrator approval.
-    variable_set('user_register', USER_REGISTER_VISITORS);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
 
     // Don't require e-mail verification.
-    variable_set('user_email_verification', FALSE);
+    config_set('system.core', 'user_email_verification', FALSE);
 
     // Set the default timezone to Brussels.
-    variable_set('configurable_timezones', 1);
-    variable_set('date_default_timezone', 'Europe/Brussels');
+    config_set('system.date', 'user_configurable_timezones', 1);
+    config_set('system.date', 'default_timezone', 'Europe/Brussels');
 
     // Verify that the required mapped fields show up on the registration form.
     $this->drupalGet('user/register');
@@ -923,7 +925,7 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
    */
   public function testSyncOnHookUserLogin() {
     // Set the sync trigger to hook_user_login
-    variable_set('simple_ldap_user_sync', 'hook_user_login');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_sync', 'hook_user_login');
 
     // Load configuration variables.
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
@@ -942,14 +944,14 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 
     // Drupal is the authoritative source, Change all of the mapped fields,
     // login, and verify synchronization.
-    variable_set('simple_ldap_user_source', 'drupal');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'drupal');
     $this->modifyLdap($suffix);
     $this->drupalLogin($account);
     $this->verifySync();
 
     // LDAP is the authoritative source. Change all of the mapped fields, login,
     // and verify synchronization.
-    variable_set('simple_ldap_user_source', 'ldap');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'ldap');
     $this->modifyLdap($suffix);
     $this->drupalLogin($account);
     $this->verifySync($suffix);
@@ -965,7 +967,7 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
    */
   public function testSyncOnHookUserLoad() {
     // Set the sync trigger to hook_user_load
-    variable_set('simple_ldap_user_sync', 'hook_user_load');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_sync', 'hook_user_load');
 
     // Load configuration variables.
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
@@ -984,14 +986,14 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 
     // Drupal is the authoritative source. Change all of the mapped fields, load
     // the user, and verify synchronization.
-    variable_set('simple_ldap_user_source', 'drupal');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'drupal');
     $this->modifyLdap();
     $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
     $this->verifySync();
 
     // LDAP is the authoritative source. Change all of the mapped fields, load
     // the user, and verify synchronization.
-    variable_set('simple_ldap_user_source', 'ldap');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'ldap');
     $this->modifyLdap($suffix);
     $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
     $this->verifySync($suffix);
@@ -1104,11 +1106,11 @@ class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
    */
   public function testDeleteUser() {
     // Disable email verification and admin approval.
-    variable_set('user_email_verification', FALSE);
-    variable_set('user_register', USER_REGISTER_VISITORS);
+    config_set('system.core', 'user_email_verification', FALSE);
+    config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
 
     // Make sure the system is set to delete from LDAP
-    variable_set('simple_ldap_user_delete_from_ldap', 1);
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_delete_from_ldap', 1);
 
     // Generate user registration formdata.
     $edit['name'] = $name = $this->randomName();

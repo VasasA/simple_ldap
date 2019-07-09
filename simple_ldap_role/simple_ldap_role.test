@@ -37,16 +37,18 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
     $this->assertTrue($success, t('Enabled modules: %modules', array('%modules' => implode(', ', $modules))));
 
     // Configure the sandbox simple_ldap_role instance.
-    variable_set('simple_ldap_role_basedn', $basedn);
-    variable_set('simple_ldap_role_scope', $scope);
-    variable_set('simple_ldap_role_objectclass', $objectclass);
-    variable_set('simple_ldap_role_attribute_name', $attribute_name);
-    variable_set('simple_ldap_role_attribute_member', $attribute_member);
-    variable_set('simple_ldap_role_attribute_member_format', $attribute_member_format);
-    variable_set('simple_ldap_role_attribute_member_default', $attribute_member_default);
-    variable_set('simple_ldap_role_filter', $filter);
-    variable_set('simple_ldap_role_source', $source);
-    variable_set('simple_ldap_role_sync', $sync);
+    $config = config('simple_ldap_role.settings');
+    $config->set('simple_ldap_role_basedn', $basedn);
+    $config->set('simple_ldap_role_scope', $scope);
+    $config->set('simple_ldap_role_objectclass', $objectclass);
+    $config->set('simple_ldap_role_attribute_name', $attribute_name);
+    $config->set('simple_ldap_role_attribute_member', $attribute_member);
+    $config->set('simple_ldap_role_attribute_member_format', $attribute_member_format);
+    $config->set('simple_ldap_role_attribute_member_default', $attribute_member_default);
+    $config->set('simple_ldap_role_filter', $filter);
+    $config->set('simple_ldap_role_source', $source);
+    $config->set('simple_ldap_role_sync', $sync);
+    $config->save();
 
     // Create an LDAP group entry to use during testing.
     $name = $this->randomName();

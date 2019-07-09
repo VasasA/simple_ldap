@@ -34,14 +34,15 @@ class SimpleLdapServerTestCase extends DrupalWebTestCase {
     $this->assertTrue($success, t('Enabled modules: %modules', array('%modules' => implode(', ', $modules))));
 
     // Configure the sandbox environment.
-    variable_set('simple_ldap_host', $host);
-    variable_set('simple_ldap_port', $port);
-    variable_set('simple_ldap_starttls', $starttls);
-    variable_set('simple_ldap_binddn', $binddn);
-    variable_set('simple_ldap_bindpw', $bindpw);
-    variable_set('simple_ldap_readonly', $readonly);
-    variable_set('simple_ldap_pagesize', $pagesize);
-    variable_set('simple_ldap_debug', $debug);
+    $config->set('simple_ldap_host', $host);
+    $config->set('simple_ldap_port', $port);
+    $config->set('simple_ldap_starttls', $starttls);
+    $config->set('simple_ldap_binddn', $binddn);
+    $config->set('simple_ldap_bindpw', $bindpw);
+    $config->set('simple_ldap_readonly', $readonly);
+    $config->set('simple_ldap_pagesize', $pagesize);
+    $config->set('simple_ldap_debug', $debug);
+    $config->save();
   }
 
 }

@@ -44,13 +44,14 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     parent::setUp(array('simple_ldap_sso') + $modules);
 
     // Configure the sandbox simple_ldap_sso instance.
-    variable_set('simple_ldap_sso_binddn', $binddn);
-    variable_set('simple_ldap_sso_bindpw', $bindpw);
-    variable_set('simple_ldap_sso_encryption_key', $encryption_key);
-    variable_set('simple_ldap_sso_attribute_sid', $attribute_sid);
-    variable_set('simple_ldap_sso_hashing_algorithm', $hashing_algorithm);
-    variable_set('simple_ldap_sso_flood_limit', $flood_limit);
-    variable_set('simple_ldap_sso_flood_window', $flood_window);
+    $config->set('simple_ldap_sso_binddn', $binddn);
+    $config->set('simple_ldap_sso_bindpw', $bindpw);
+    $config->set('simple_ldap_sso_encryption_key', $encryption_key);
+    $config->set('simple_ldap_sso_attribute_sid', $attribute_sid);
+    $config->set('simple_ldap_sso_hashing_algorithm', $hashing_algorithm);
+    $config->set('simple_ldap_sso_flood_limit', $flood_limit);
+    $config->set('simple_ldap_sso_flood_window', $flood_window);
+    $config->save();
 
     $test_user = config_get('simple_ldap.settings', 'simple_ldap_test_user');
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
@@ -155,7 +156,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     // Log the user in anew.
     $this->prepareSSO();
     // Assert that if the encryption key changes, SSO will fail.
-    variable_set('simple_ldap_sso_encryption_key', 'testkey1');
+    config_set('simple_ldap_sso.settings', 'simple_ldap_sso_encryption_key', 'testkey1');
     $this->drupalGet('user');
     $this->assertEqual(
       'deleted',
