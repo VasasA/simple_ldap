@@ -52,3 +52,14 @@ function simple_ldap_autoload_info() {
     'SimpleLdapServer' => 'SimpleLdapServer.class.php',
   );
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function simple_ldap_config_info() {
+  $prefixes['simple_ldap.settings'] = array(
+    'label' => t('Simple LDAP settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

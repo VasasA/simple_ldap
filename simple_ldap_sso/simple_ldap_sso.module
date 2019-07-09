@@ -172,3 +172,14 @@ function simple_ldap_sso_user_logout(stdClass $account) {
   simple_ldap_sso_delete_cookie();
   simple_ldap_sso_ldap_delete_sid($account->name);
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function simple_ldap_sso_config_info() {
+  $prefixes['simple_ldap_sso.settings'] = array(
+    'label' => t('Simple LDAP SSO settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

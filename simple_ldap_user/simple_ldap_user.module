@@ -633,3 +633,14 @@ function simple_ldap_user_variable_get($name, $default = NULL, $force_default = 
 
   return $config->get($name, $default);
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function simple_ldap_user_config_info() {
+  $prefixes['simple_ldap_user.settings'] = array(
+    'label' => t('Simple LDAP User settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

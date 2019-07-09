@@ -377,3 +377,14 @@ function simple_ldap_role_variable_get($name, $default = NULL, $force_default = 
 
   return $config->get($name);
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function simple_ldap_role_config_info() {
+  $prefixes['simple_ldap_role.settings'] = array(
+    'label' => t('Simple LDAP Role settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

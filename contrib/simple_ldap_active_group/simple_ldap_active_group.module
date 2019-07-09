@@ -175,3 +175,14 @@ function simple_ldap_active_group_filter() {
   $filter = '(&(objectclass=' . implode(')(objectclass=', $objectclass) . '))';
   return $filter;
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function simple_ldap_active_group_config_info() {
+  $prefixes['simple_ldap_active_group.settings'] = array(
+    'label' => t('Simple LDAP Active Group settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
