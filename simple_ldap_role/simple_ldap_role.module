@@ -141,6 +141,7 @@ function simple_ldap_role_cron() {
     if (!in_array($name, $drupal_roles)) {
       $role = new stdClass();
       $role->name = $name;
+      $role->label = '';
       user_role_save($role);
     }
   }
@@ -272,6 +273,7 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
     if ($drupal_role === FALSE) {
       $role = new stdClass();
       $role->name = $name;
+      $role->label = '';
       user_role_save($role);
       $drupal_role = user_role_load_by_name($name);
     }
