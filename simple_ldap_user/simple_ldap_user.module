@@ -164,19 +164,13 @@ function simple_ldap_user_user_login(&$edit, $account) {
  *
  * Fires before an account is created or changed.
  *
- * @param array $edit
+ * @param array $account
  *   The form values submitted by the user.
  */
-function simple_ldap_user_user_presave(&$edit, $account, $category) {
+function simple_ldap_user_user_presave($account) {
+  $edit = array();
   // Do not overwrite the user status in the database.
   if (isset($account->simple_ldap_user_drupal_status)) {
-    // If status is in the edit array, we need to be sure we're not
-    // unintentionally saving the LDAP value to the database. To check this, we
-    // see if $edit['status'] matches $account->status. If it does, set
-    // $edit['status'] to the simple_ldap_user_drupal_status value.
-    if (isset($edit['status']) && $edit['status'] == $account->status) {
-      $edit['status'] = $account->simple_ldap_user_drupal_status;
-    }
     // Now set the $account->status back to the value in the database, just to
     // be safe. This ensures that if $edit['status'] is empty, we don't mess up
     // what's in the database with what is on the user object.
@@ -188,8 +182,8 @@ function simple_ldap_user_user_presave(&$edit, $account, $category) {
     $account->original->status = $account->simple_ldap_user_drupal_status;
   }
 
-  if ($account->is_new && isset($edit['name'])) {
-    $ldap_user = SimpleLdapUser::singleton($edit['name']);
+  if ($account->is_new && isset($account->name)) {
+    $ldap_user = SimpleLdapUser::singleton($account->name);
 
     if ($ldap_user->exists) {
       // Force an initial sync from LDAP to drupal.
@@ -197,16 +191,13 @@ function simple_ldap_user_user_presave(&$edit, $account, $category) {
     }
   }
 
-  //If account updated and username changed, RDN default to drupal name and ldap
-  //entry already exists from elsewhere, reset new changed username to its previous value.
+  // If account updated and username changed, RDN default to drupal name and ldap
+  // entry already exists from elsewhere, reset new changed username to its previous value.
   if (isset($account->original)) {
 
-    //New name edited or programmatically set ?
+    // New name edited or programmatically set ?
     $new_username = '';
-    if (!empty($edit['name']) && $account->original->name !== $edit['name']) {
-      $new_username = $edit['name'];
-    }
-    elseif ($account->original->name !== $account->name) {
+    if ($account->original->name !== $account->name) {
       $new_username = $account->name;
     }
 
@@ -217,7 +208,6 @@ function simple_ldap_user_user_presave(&$edit, $account, $category) {
       if (empty($attribute_rdn) && $ldap_user->exists) {
 
         $account->name = $account->original->name;
-        $edit['name'] = $account->original->name;
         drupal_set_message(t('The new username %name could not be changed because an LDAP entry already exists. Previous name have been keep and no LDAP modification have been done.', array('%name' => $new_username)), 'error');
       }
     }

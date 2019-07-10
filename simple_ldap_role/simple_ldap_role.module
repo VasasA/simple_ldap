@@ -70,13 +70,13 @@ function simple_ldap_role_user_login(&$edit, $account) {
 /**
  * Implements hook_user_presave().
  */
-function simple_ldap_role_user_presave(&$edit, $account, $category) {
-  if (isset($edit['name']) && isset($edit['roles'])) {
-    foreach ($edit['roles'] as $rid => $value) {
+function simple_ldap_role_user_presave($account) {
+  if (isset($account->name) && isset($account->roles)) {
+    foreach ($account->roles as $rid => $value) {
       if ($value && $rid != DRUPAL_AUTHENTICATED_RID) {
         $role = user_role_load($rid);
         $ldap_role = SimpleLdapRole::singleton($role->name);
-        $ldap_role->addUser($edit['name']);
+        $ldap_role->addUser($account->name);
         $ldap_role->save();
       }
     }
