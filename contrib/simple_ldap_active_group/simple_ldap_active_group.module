@@ -46,7 +46,7 @@ function simple_ldap_active_group_form_alter(&$form, &$form_state, $form_id) {
  *
  * @throw SimpleLdapException
  */
-function simple_ldap_active_group_user_insert(&$edit, $account, $category) {
+function simple_ldap_active_group_user_insert($account) {
   if ($account->uid != 1) {
     if ($account->status) {
       simple_ldap_active_group_active($account);
@@ -62,7 +62,7 @@ function simple_ldap_active_group_user_insert(&$edit, $account, $category) {
  *
  * @throw SimpleLdapException
  */
-function simple_ldap_active_group_user_update(&$edit, $account, $category) {
+function simple_ldap_active_group_user_update($account) {
   if ($account->uid != 1) {
     if ($account->status) {
       simple_ldap_active_group_active($account);

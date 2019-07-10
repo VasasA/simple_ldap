@@ -229,10 +229,10 @@ function simple_ldap_user_user_presave(&$edit, $account, $category) {
  *
  * Fires after a new account is created.
  *
- * @param array $edit
+ * @param array $account
  *   The form values submitted by the user.
  */
-function simple_ldap_user_user_insert(&$edit, $account, $category) {
+function simple_ldap_user_user_insert($account) {
   $ldap_user = SimpleLdapUser::singleton($account->name);
   if (!$ldap_user->exists) {
     module_invoke_all('sync_user_to_ldap', $account);
@@ -244,10 +244,10 @@ function simple_ldap_user_user_insert(&$edit, $account, $category) {
  *
  * Fires when a user account is edited.
  *
- * @param array $edit
+ * @param array $account
  *   The form values submitted by the user.
  */
-function simple_ldap_user_user_update(&$edit, $account, $category) {
+function simple_ldap_user_user_update($account) {
   // Don't do anything for uid 1.
   if ($account->uid == 1) {
     return;
@@ -256,8 +256,8 @@ function simple_ldap_user_user_update(&$edit, $account, $category) {
   // Don't do anything if the hook was called via hook_sync_user_to_drupal().
   if (empty($account->hook_sync_user_to_drupal)) {
     $ldap_user = SimpleLdapUser::singleton($account->name);
-    $enabled = isset($edit['status']) ? $edit['status'] : NULL;
-    // In hook_user_presave, we may have messed with the $edit['status'] and
+    $enabled = isset($account->status) ? $account->status : NULL;
+    // In hook_user_presave, we may have messed with the $account->status and
     // $account->status values, setting them to the database values, not what
     // LDAP had set status to. Set those back to the LDAP values now.
     if (isset($account->simple_ldap_user_ldap_status)) {
