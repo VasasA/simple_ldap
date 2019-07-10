@@ -303,7 +303,17 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
       // This avoids an infinite load/save loop.
       $drupal_user->original = clone $drupal_user;
     }
-    $drupal_user = user_save($drupal_user, $edit);
+    foreach ($edit as $property => $value) {
+      $drupal_user->{$property} = $value;
+    }
+    $drupal_user->save();
+    $uid = $drupal_user->id();
+    if ($uid) {
+      $drupal_user = user_load($uid);
+    }
+    else {
+      $drupal_user = FALSE;
+    }
   }
 
   // Synchronized user.

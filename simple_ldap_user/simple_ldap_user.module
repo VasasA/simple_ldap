@@ -374,12 +374,18 @@ function simple_ldap_user_load_or_create_by_name($name) {
   if (!$drupal_user) {
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
     $attribute_mail = simple_ldap_user_variable_get('simple_ldap_user_attribute_mail');
-    $edit = array(
-      'name' => $ldap_user->{strtolower($attribute_name)}[0],
-      'mail' => $ldap_user->{strtolower($attribute_mail)}[0],
-      'status' => 1,
-    );
-    $drupal_user = user_save(NULL, $edit);
+    $account = entity_create('user', array());
+    $account->name = $ldap_user->{strtolower($attribute_name)}[0];
+    $account->mail = $ldap_user->{strtolower($attribute_mail)}[0];
+    $account->status = 1;
+    $account->save();
+    $uid = $account->id();
+    if ($uid) {
+      $drupal_user = user_load($uid);
+    }
+    else {
+      $drupal_user = FALSE;
+    }
   }
 
   return $drupal_user;
@@ -500,7 +506,17 @@ function simple_ldap_user_sync_user_to_drupal($drupal_user) {
       $drupal_user->original = clone $drupal_user;
     }
     $drupal_user->hook_sync_user_to_drupal = TRUE;
-    $drupal_user = user_save($drupal_user, $edit);
+    foreach ($edit as $property => $value) {
+      $drupal_user->{$property} = $value;
+    }
+    $drupal_user->save();
+    $uid = $drupal_user->id();
+    if ($uid) {
+      $drupal_user = user_load($uid);
+    }
+    else {
+      $drupal_user = FALSE;
+    }
   }
 
   // Synchronized user.

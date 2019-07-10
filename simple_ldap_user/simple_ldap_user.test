@@ -115,11 +115,13 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
         foreach ($this->drupalUser as $drupal_user) {
           if ($type == 'number_integer') {
             $edit[$drupal_attribute]['und'][0]['value'] = $drupal_user->uid + 1000;
+            $drupal_user->{$drupal_attribute} = $edit[$drupal_attribute];
           }
           else {
             $edit[$drupal_attribute]['und'][0]['value'] = $this->randomName();
+            $drupal_user->{$drupal_attribute} = $edit[$drupal_attribute];
           }
-          $drupal_user = user_save($drupal_user, $edit);
+          $drupal_user = user_save($drupal_user);
         }
       }
     }
