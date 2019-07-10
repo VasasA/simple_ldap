@@ -1,9 +1,9 @@
 name = Simple LDAP Role
 description = Simple LDAP role authorization
 package = LDAP
-core = 7.x
+backdrop = 1.x
+type = module
 configure = admin/config/people/simple_ldap/role
 dependencies[] = simple_ldap
 dependencies[] = simple_ldap_user
-files[] = simple_ldap_role.test
-files[] = SimpleLdapRole.class.php
+tags[] = Account Management
