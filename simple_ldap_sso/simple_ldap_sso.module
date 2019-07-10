@@ -8,30 +8,6 @@
 require_once 'simple_ldap_sso.inc';
 
 /**
- * Implements hook_help().
- */
-function simple_ldap_sso_help($path, $arg) {
-  switch ($path) {
-    case 'admin/config/people/simple_ldap/sso':
-      global $cookie_domain;
-      $t_args = array(
-        '%cookie_domain' => $cookie_domain,
-      );
-
-      $output = '<p>';
-      $output .= t('<strong>The current cookie domain is %cookie_domain.</strong>', $t_args) . ' ' .
-        t('The cookie domain must be the same for all sites for single-sign-on to work.') . ' ' .
-        t('To set the cookie domain, see your settings.php file inside of your Drupal directory.');
-      $output .= '</p>';
-      return $output;
-
-    case 'admin/help#simple_ldap_sso':
-      // TODO.
-      return '';
-  }
-}
-
-/**
  * Implements hook_init().
  */
 function simple_ldap_sso_init() {
