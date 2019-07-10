@@ -159,3 +159,12 @@ function simple_ldap_sso_config_info() {
   );
   return $prefixes;
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function simple_ldap_sso_autoload_info() {
+  return array(
+    'SimpleLdapSSO' => 'SimpleLdapSSO.class.php',
+  );
+}

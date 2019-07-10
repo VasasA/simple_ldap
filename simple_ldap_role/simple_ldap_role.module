@@ -400,3 +400,12 @@ function simple_ldap_role_config_info() {
   );
   return $prefixes;
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function simple_ldap_role_autoload_info() {
+  return array(
+    'SimpleLdapRole' => 'SimpleLdapRole.class.php',
+  );
+}

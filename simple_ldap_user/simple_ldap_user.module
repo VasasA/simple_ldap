@@ -650,3 +650,14 @@ function simple_ldap_user_config_info() {
   );
   return $prefixes;
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function simple_ldap_user_autoload_info() {
+  return array(
+    'SimpleLdapUser' => 'SimpleLdapUser.class.php',
+    'SimpleLdapUserController' => 'SimpleLdapUserController.class.php',
+    'SimpleLdapUserMap' => 'SimpleLdapUserMap.class.php',
+  );
+}
