@@ -24,19 +24,21 @@ function simple_ldap_active_group_form_alter(&$form, &$form_state, $form_id) {
     // Add an option to disregard the search filter when deleting an user on the
     // simple_ldap_user admin form.
     case 'simple_ldap_user_admin':
-      $advanced = array();
-      foreach ($form['advanced'] as $key => $value) {
-        $advanced[$key] = $value;
-        if ($key == 'simple_ldap_user_filter') {
-          $advanced['simple_ldap_active_group_delete_filtered'] = array(
-            '#type' => 'checkbox',
-            '#title' => t('Delete LDAP entries, even if they do not match the filter'),
-            '#default_value' => $config->get('simple_ldap_active_group_delete_filtered'),
-            '#description' => t("If this is enabled, a user will be deleted from LDAP when deleted from Drupal, even if the user's DN does not match the specified search filter."),
-          );
+      if (isset($form['advanced'])) {
+        $advanced = array();
+        foreach ($form['advanced'] as $key => $value) {
+          $advanced[$key] = $value;
+          if ($key == 'simple_ldap_user_filter') {
+            $advanced['simple_ldap_active_group_delete_filtered'] = array(
+              '#type' => 'checkbox',
+              '#title' => t('Delete LDAP entries, even if they do not match the filter'),
+              '#default_value' => $config->get('simple_ldap_active_group_delete_filtered'),
+              '#description' => t("If this is enabled, a user will be deleted from LDAP when deleted from Drupal, even if the user's DN does not match the specified search filter."),
+            );
+          }
         }
+        $form['advanced'] = $advanced;
       }
-      $form['advanced'] = $advanced;
       break;
   }
 }

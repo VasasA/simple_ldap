@@ -8,7 +8,7 @@
  * Implements hook_enable().
  */
 function simple_ldap_user_enable() {
-  $GLOBALS['settings']['password_inc'] = drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc');
+  $GLOBALS['settings']['password_inc'] = drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
 }
 
 /**
