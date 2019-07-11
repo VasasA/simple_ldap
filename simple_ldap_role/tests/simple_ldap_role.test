@@ -75,17 +75,6 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
 class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Create Drupal Role',
-      'description' => 'Tests that LDAP groups are created appropriately when a Drupal role is created.',
-      'group' => 'Simple LDAP Role',
-    );
-  }
-
-  /**
    * Creates a drupal role, and verifies LDAP.
    */
   public function testCreateRole() {
@@ -156,17 +145,6 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Update Drupal Role',
-      'description' => 'Tests that LDAP groups are modified when a Drupal role is updated.',
-      'group' => 'Simple LDAP Role',
-    );
-  }
-
-  /**
    * Updates a Drupal role, and verifies LDAP.
    */
   public function testUpdateRole() {
@@ -216,17 +194,6 @@ class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Delete Drupal Role',
-      'description' => 'Tests that LDAP groups are deleted when a Drupal role is deleted.',
-      'group' => 'Simple LDAP Role',
-    );
-  }
-
-  /**
    * Deletes a Drupal role, and checks LDAP.
    */
   public function testDeleteRole() {
@@ -258,17 +225,6 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 }
 
 class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Change Drupal roles',
-      'description' => 'Changes the roles on a Drupal user, and tests that the LDAP is updated appropriately.',
-      'group' => 'Simple LDAP Role',
-    );
-  }
 
   /**
    * Changes a user's drupal roles.
@@ -368,17 +324,6 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
 
   /**
-   * Inherited public::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Modify LDAP Groups',
-      'description' => 'Modifies LDAP groups, and verifies that drupal roles are updated on cron runs.',
-      'group' => 'Simple LDAP Role',
-    );
-  }
-
-  /**
    * Tests creating and modifying a group directly in LDAP.
    */
   public function testModifyLdapGroup() {
@@ -438,17 +383,6 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
 }
 
 class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Change LDAP Group Membership',
-      'description' => "Changes an LDAP user's group membership, and verifies that Drupal role membership is updated.",
-      'group' => 'Simple LDAP Role',
-    );
-  }
 
   /**
    * Test changing group membership directly in LDAP.

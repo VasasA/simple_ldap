@@ -1,0 +1,5 @@
+[SimpleLdapSSOTestCase]
+name = Single Sign-On
+description = Single-Sign-On Tests
+group = Simple LDAP SSO
+file = simple_ldap_sso.test

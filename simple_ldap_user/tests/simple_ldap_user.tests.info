@@ -1,0 +1,47 @@
+[SimpleLdapUserAuthenticationWebTestCase]
+name = Authentication
+description = Tests that an LDAP user can authenticate to Drupal with the correct LDAP credentials.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserUserOneLoginWebTestCase]
+name = User 1 login
+description = Tests whether User 1 can log in, skipping LDAP authentication.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserModifyProfileWebTestCase]
+name = User can modify profile
+description = Tests whether a user can modify their profile, and that the changes are synchronized to LDAP.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserRegistrationTestCase]
+name = User registration
+description = Test registration of user under different configurations.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserSyncTestCase]
+name = User data synchronization
+description = Test data synchronization between LDAP and Drupal.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserPasswordResetTestCase]
+name = User password change
+description = Ensure that a user can change their password and that it is updated in LDAP.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserDeleteUserTestCase]
+name = Delete user
+description = Tests that deleting a user in Drupal also deletes the user from LDAP.
+group = Simple LDAP User
+file = simple_ldap_user.test
+
+[SimpleLdapUserMassImportExportTestCase]
+name = Mass Import/Export
+description = Tests mass user import from LDAP, and export to LDAP.
+group = Simple LDAP User
+file = simple_ldap_user.test

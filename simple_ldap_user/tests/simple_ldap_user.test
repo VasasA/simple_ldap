@@ -356,17 +356,6 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
 class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Authentication',
-      'description' => 'Tests that an LDAP user can authenticate to Drupal with the correct LDAP credentials.',
-      'group' => 'Simple LDAP User',
-    );
-  }
-
-  /**
    * Test user authentication.
    */
   public function testGoodAuthentication() {
@@ -477,17 +466,6 @@ class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
 class SimpleLdapUserUserOneLoginWebTestCase extends SimpleLdapUserTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'User 1 login',
-      'description' => 'Tests whether User 1 can log in, skipping LDAP authentication.',
-      'group' => 'Simple LDAP User',
-    );
-  }
-
-  /**
    * Test User 1 authentication.
    */
   public function testUserOneLogin() {
@@ -509,17 +487,6 @@ class SimpleLdapUserUserOneLoginWebTestCase extends SimpleLdapUserTestCase {
 }
 
 class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'User can modify profile',
-      'description' => 'Tests whether a user can modify their profile, and that the changes are synchronized to LDAP.',
-      'group' => 'Simple LDAP User',
-    );
-  }
 
   /**
    * Submits the user profile edit form.
@@ -613,17 +580,6 @@ class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
 }
 
 class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'User registration',
-      'description' => 'Test registration of user under different configurations.',
-      'group' => 'Simple LDAP User',
-    );
-  }
 
   /**
    * Generate random data for user registration form.
@@ -868,17 +824,6 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
 class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'User data synchronization',
-      'description' => 'Test data synchronization between LDAP and Drupal.',
-      'group' => 'Simple LDAP User',
-    );
-  }
-
-  /**
    * Modifies the test user account in LDAP.
    */
   public function modifyLdap($suffix = '') {
@@ -1011,17 +956,6 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
 
   /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'User password change',
-      'description' => 'Ensure that a user can change their password and that it is updated in LDAP.',
-      'group' => 'Simple LDAP User',
-    );
-  }
-
-  /**
    * Tests that a user can change thier password.
    */
   public function testPasswordChange() {
@@ -1091,17 +1025,6 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
 }
 
 class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Delete user',
-      'description' => 'Tests that deleting a user in Drupal also deletes the user from LDAP.',
-      'group' => 'Simple LDAP User',
-    );
-  }
 
   /**
    * Tests user deletion.
@@ -1180,17 +1103,6 @@ class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
 }
 
 class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
-
-  /**
-   * Inherited parent::getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Mass Import/Export',
-      'description' => 'Tests mass user import from LDAP, and export to LDAP.',
-      'group' => 'Simple LDAP User',
-    );
-  }
 
   /**
    * Test mass export.

@@ -6,16 +6,6 @@
  */
 
 class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
-  /**
-   * Display information about this test case.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Single Sign-On',
-      'description' => 'Single-Sign-On Tests',
-      'group' => 'Simple LDAP SSO',
-    );
-  }
 
   /**
    * Set up the modules and any other.

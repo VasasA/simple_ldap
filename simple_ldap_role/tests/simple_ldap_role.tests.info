@@ -1,0 +1,35 @@
+[SimpleLdapRoleCreateDrupalRoleTestCase]
+name = Create Drupal Role
+description = Tests that LDAP groups are created appropriately when a Drupal role is created.
+group = Simple LDAP Role
+file = simple_ldap_role.test
+
+[SimpleLdapRoleUpdateDrupalRoleTestCase]
+name = Update Drupal Role
+description = Tests that LDAP groups are modified when a Drupal role is updated.
+group = Simple LDAP Role
+file = simple_ldap_role.test
+
+[SimpleLdapRoleDeleteDrupalRoleTestCase]
+name = Delete Drupal Role
+description = Tests that LDAP groups are deleted when a Drupal role is deleted.
+group = Simple LDAP Role
+file = simple_ldap_role.test
+
+[SimpleLdapRoleChangeDrupalUserRoleTestCase]
+name = Change Drupal Role
+description = Changes the roles on a Drupal user, and tests that the LDAP is updated appropriately.
+group = Simple LDAP Role
+file = simple_ldap_role.test
+
+[SimpleLdapRoleModifyLdapGroup]
+name = Modify Drupal Role
+description = Modifies LDAP groups, and verifies that drupal roles are updated on cron runs.
+group = Simple LDAP Role
+file = simple_ldap_role.test
+
+[SimpleLdapRoleChangeLdapGroupMembership]
+name = Change LDAP Group Membership
+description = Changes an LDAP user's group membership, and verifies that Drupal role membership is updated.
+group = Simple LDAP Role
+file = simple_ldap_role.test
