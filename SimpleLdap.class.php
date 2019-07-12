@@ -489,7 +489,7 @@ class SimpleLdap {
 
     // Error handling.
     if ($return == FALSE) {
-      throw new SimpleLdapException($link_identifier);
+      throw new SimpleLdapException('Unreachable hostname: ' . $hostname . ' port: ' . $port);
     }
 
     return $return;
