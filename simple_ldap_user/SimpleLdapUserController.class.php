@@ -7,7 +7,7 @@
 /**
  * Controller class for LDAP users.
  */
-class SimpleLdapUserController extends UserController {
+class SimpleLdapUserController extends UserStorageController {
 
   /**
    * Resets the entity cache.
