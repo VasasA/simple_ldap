@@ -35,6 +35,8 @@ define('DRUPAL_MAX_HASH_COUNT', 30);
  */
 define('DRUPAL_HASH_LENGTH', 55);
 
+include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
+
 /**
  * Returns a string for mapping an int to the corresponding base 64 character.
  */
