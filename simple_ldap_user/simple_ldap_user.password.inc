@@ -18,24 +18,24 @@
  * increase by 1 every Drupal version in order to counteract increases in the
  * speed and power of computers available to crack the hashes.
  */
-define('DRUPAL_HASH_COUNT', 15);
+define('BACKDROP_HASH_COUNT', 15);
 
 /**
  * The minimum allowed log2 number of iterations for password stretching.
  */
-define('DRUPAL_MIN_HASH_COUNT', 7);
+define('BACKDROP_MIN_HASH_COUNT', 7);
 
 /**
  * The maximum allowed log2 number of iterations for password stretching.
  */
-define('DRUPAL_MAX_HASH_COUNT', 30);
+define('BACKDROP_MAX_HASH_COUNT', 30);
 
 /**
  * The expected (and maximum) number of characters in a hashed password.
  */
-define('DRUPAL_HASH_LENGTH', 55);
+define('BACKDROP_HASH_LENGTH', 55);
 
-include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
+//include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
 
 /**
  * Returns a string for mapping an int to the corresponding base 64 character.
@@ -121,11 +121,11 @@ function _password_generate_salt($count_log2) {
  *   Integer within set bounds that is closest to $count_log2.
  */
 function _password_enforce_log2_boundaries($count_log2) {
-  if ($count_log2 < DRUPAL_MIN_HASH_COUNT) {
-    return DRUPAL_MIN_HASH_COUNT;
+  if ($count_log2 < BACKDROP_MIN_HASH_COUNT) {
+    return BACKDROP_MIN_HASH_COUNT;
   }
-  elseif ($count_log2 > DRUPAL_MAX_HASH_COUNT) {
-    return DRUPAL_MAX_HASH_COUNT;
+  elseif ($count_log2 > BACKDROP_MAX_HASH_COUNT) {
+    return BACKDROP_MAX_HASH_COUNT;
   }
 
   return (int) $count_log2;
@@ -149,7 +149,7 @@ function _password_enforce_log2_boundaries($count_log2) {
  *
  * @return string
  *   A string containing the hashed password (and salt) or FALSE on failure.
- *   The return string will be truncated at DRUPAL_HASH_LENGTH characters max.
+ *   The return string will be truncated at BACKDROP_HASH_LENGTH characters max.
  */
 function _password_crypt($algo, $password, $setting) {
   // The first 12 characters of an existing hash are its setting string.
@@ -159,8 +159,8 @@ function _password_crypt($algo, $password, $setting) {
     return FALSE;
   }
   $count_log2 = _password_get_count_log2($setting);
-  // Hashes may be imported from elsewhere, so we allow != DRUPAL_HASH_COUNT
-  if ($count_log2 < DRUPAL_MIN_HASH_COUNT || $count_log2 > DRUPAL_MAX_HASH_COUNT) {
+  // Hashes may be imported from elsewhere, so we allow != BACKDROP_HASH_COUNT
+  if ($count_log2 < BACKDROP_MIN_HASH_COUNT || $count_log2 > BACKDROP_MAX_HASH_COUNT) {
     return FALSE;
   }
   $salt = substr($setting, 4, 8);
@@ -183,7 +183,7 @@ function _password_crypt($algo, $password, $setting) {
   // _password_base64_encode() of a 16 byte MD5 will always be 22 characters.
   // _password_base64_encode() of a 64 byte sha512 will always be 86 characters.
   $expected = 12 + ceil((8 * $len) / 6);
-  return (strlen($output) == $expected) ? substr($output, 0, DRUPAL_HASH_LENGTH) : FALSE;
+  return (strlen($output) == $expected) ? substr($output, 0, BACKDROP_HASH_LENGTH) : FALSE;
 }
 
 /**
@@ -276,7 +276,7 @@ function user_check_password($password, $account) {
  * This is typically called during the login process when the plain text
  * password is available. A new hash is needed when the desired iteration count
  * has changed through a change in the variable password_count_log2 or
- * DRUPAL_HASH_COUNT or if the user's password hash was generated in an update
+ * BACKDROP_HASH_COUNT or if the user's password hash was generated in an update
  * like user_update_7000().
  *
  * Alternative implementations of this function might use other criteria based
@@ -290,7 +290,7 @@ function user_check_password($password, $account) {
  */
 function user_needs_new_hash($account) {
   // Check whether this was an updated password.
-  if ((substr($account->pass, 0, 3) != '$S$') || (strlen($account->pass) != DRUPAL_HASH_LENGTH)) {
+  if ((substr($account->pass, 0, 3) != '$S$') || (strlen($account->pass) != BACKDROP_HASH_LENGTH)) {
     return TRUE;
   }
   // Ensure that $count_log2 is within set bounds.
