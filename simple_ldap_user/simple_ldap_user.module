@@ -661,3 +661,12 @@ function simple_ldap_user_autoload_info() {
     'SimpleLdapUserMap' => 'SimpleLdapUserMap.class.php',
   );
 }
+
+/**
+ * Implements hook_init().
+ *
+ * @see https://api.backdropcms.org/api/backdrop/core%21includes%21password.inc/1
+ */
+function simple_ldap_user_init() {
+  $GLOBALS['settings']['password_inc'] = backdrop_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
+}
