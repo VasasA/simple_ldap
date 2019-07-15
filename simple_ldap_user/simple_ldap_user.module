@@ -182,7 +182,7 @@ function simple_ldap_user_user_presave($account) {
     $account->original->status = $account->simple_ldap_user_drupal_status;
   }
 
-  if ($account->is_new && isset($account->name)) {
+  if (isset($account->is_new) && $account->is_new && isset($account->name)) {
     $ldap_user = SimpleLdapUser::singleton($account->name);
 
     if ($ldap_user->exists) {
