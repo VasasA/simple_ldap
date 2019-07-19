@@ -18,24 +18,24 @@
  * increase by 1 every Drupal version in order to counteract increases in the
  * speed and power of computers available to crack the hashes.
  */
-define('BACKDROP_HASH_COUNT', 15);
+include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
+
+defined('BACKDROP_HASH_COUNT') or define('BACKDROP_HASH_COUNT', 15);
 
 /**
  * The minimum allowed log2 number of iterations for password stretching.
  */
-define('BACKDROP_MIN_HASH_COUNT', 7);
+defined('BACKDROP_MIN_HASH_COUNT') or define('BACKDROP_MIN_HASH_COUNT', 7);
 
 /**
  * The maximum allowed log2 number of iterations for password stretching.
  */
-define('BACKDROP_MAX_HASH_COUNT', 30);
+defined('BACKDROP_MAX_HASH_COUNT') or define('BACKDROP_MAX_HASH_COUNT', 30);
 
 /**
  * The expected (and maximum) number of characters in a hashed password.
  */
-define('BACKDROP_HASH_LENGTH', 55);
-
-//include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
+defined('BACKDROP_HASH_LENGTH') or define('BACKDROP_HASH_LENGTH', 55);
 
 /**
  * Returns a string for mapping an int to the corresponding base 64 character.
