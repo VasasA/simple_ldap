@@ -359,7 +359,7 @@ function simple_ldap_user_load_or_create_by_name($name) {
   if (!$drupal_user) {
     $drupal_user = user_load_by_mail($name);
   }
-dpm($ldap_user);
+
   // If the user doesn't already exist in Drupal, create them.
   if (!$drupal_user) {
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
