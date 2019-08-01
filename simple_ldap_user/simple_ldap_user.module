@@ -467,7 +467,8 @@ function simple_ldap_user_sync_user_to_ldap($drupal_user) {
   try {
     $ldap_user->save();
   } catch (SimpleLdapException $e) {
-    drupal_set_message(t('Failed to save the user to LDAP.') . ' ' . format_string('%error', array('%error' => $e->getMessage())), 'error');
+    $attribute_list = $attribute_name . ', ' . $attribute_mail . ', ' . $attribute_pass . ', objectclass)';
+    drupal_set_message(t('Failed to save the user to LDAP. ') . format_string('%error', array('%error' => $e->getMessage())) . t(' (Please check the "required" attributes in LDAP database. Backdrop CMS only provides these attributes: ') . $attribute_list, 'error');
   }
 }
 
