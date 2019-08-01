@@ -155,6 +155,7 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
       // Create a new LDAP User object, and set the attributes.
       $name = $this->randomName();
       $this->ldapUser[$i] = new SimpleLdapUser($name);
+      $this->ldapUser[$i]->sn = 'UserSurname';
       $this->ldapUser[$i]->$attribute_mail = $this->randomName() . '@example.com';
       foreach ($mapObject->map as $attribute) {
         $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
