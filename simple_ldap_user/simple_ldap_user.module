@@ -634,12 +634,12 @@ function simple_ldap_user_variable_get($name, $default = NULL, $force_default = 
   }
 
   $variable = $config->get($name);
-  if (empty($variable)) {
+  if ($variable === NULL) {
     $config->set($name, $default);
     $config->save();
   }
 
-  return $config->get($name, $default);
+  return $config->get($name);
 }
 
 /**
