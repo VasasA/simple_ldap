@@ -517,18 +517,18 @@ function simple_ldap_user_sync_user_to_drupal($drupal_user) {
 }
 
 /**
- * Implements hook_user_operations().
+ * Implements user_action_info_alter().
  */
-function simple_ldap_user_user_operations() {
-  $operations = array();
+function user_action_info_alter(&$actions) {
   $server = SimpleLdapServer::singleton();
   if (!$server->readonly) {
-    $operations['simple_ldap_user_export'] = array(
+    $actions['simple_ldap_user_export'] = array(
       'label' => t('Export selected users to LDAP'),
+      'type' => 'user',
       'callback' => 'simple_ldap_user_export',
+      'weight' => -3,
     );
   }
-  return $operations;
 }
 
 /**
