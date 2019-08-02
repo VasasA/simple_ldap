@@ -634,11 +634,27 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
 
     // Set registration to administrator only.
     config_set('system.core', 'user_register', USER_REGISTER_ADMINISTRATORS_ONLY);
+
+    // Log in as user 1.
+    $this->drupalUser1Login();
+
+    // Clear cache, otherwise the registration option is not present.
+    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->drupalLogout();
+
     $this->drupalGet('user/register');
     $this->assertResponse(403, t('Registration page is inaccessible when only administrators can create accounts.'));
 
     // Allow registration by site visitors without administrator approvial.
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
+
+    // Log in as user 1.
+    $this->drupalUser1Login();
+
+    // Clear cache, otherwise the registration option is not present.
+    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->drupalLogout();
+
     $edit = $this->formData($name, $mail);
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('A welcome message with further instructions has been sent to your e-mail address.'), t('User registered successfully.'));
@@ -653,6 +669,14 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
 
     // Allow registration by site visitors, but require administrator approval.
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+
+    // Log in as user 1.
+    $this->drupalUser1Login();
+
+    // Clear cache, otherwise the registration option is not present.
+    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->drupalLogout();
+
     $edit = $this->formData($name, $mail);
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
@@ -677,8 +701,12 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
     $edit = $this->formData($name, $mail);
 
+    // Log in as user 1.
+    $this->drupalUser1Login();
+
     // Clear cache, otherwise the registration option is not present.
     $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->drupalLogout();
 
     // Enter a correct password.
     $edit['pass'] = $new_pass = $this->randomName();
@@ -696,10 +724,14 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     // Allow registration by site visitors, but require administrator approval.
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
 
+    // Log in as user 1.
+    $this->drupalUser1Login();
     // Clear cache, otherwise the registration option is not present.
     $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->drupalLogout();
 
     $edit = $this->formData($name, $mail);
+    $edit['pass'] = $new_pass;
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.'), t('Users are notified of pending approval'));
     $ldap_user = new SimpleLdapUser($name);
@@ -708,10 +740,10 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     // Try to login before administrator approval.
     $auth = array(
       'name' => $name,
-      'pass' => $pass,
+      'pass' => $new_pass,
     );
     $this->drupalPost('user/login', $auth, t('Log in'));
-    $this->assertText(t('The username @name has not been activated or is blocked.', array('@name' => $name)), t('User cannot login yet.'));
+    $this->assertText(t('The account for @name has not been activated or is blocked.', array('@name' => $name)), t('User cannot login yet.'));
 
     // Activate the new account.
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
@@ -778,8 +810,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
 
     // Submit registration form.
     $edit = $this->formData($name, $mail);
-    $edit['pass[pass1]'] = $new_pass = $this->randomName();
-    $edit['pass[pass2]'] = $new_pass;
+    $edit['pass'] = $new_pass = $this->randomName();
     $this->drupalPost(NULL, $edit, t('Create new account'));
 
     // Load the Drupal user.
@@ -1012,7 +1043,7 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
 
     // Submit the password reset form.
     $edit = array('name' => $this->ldapUser[0]->{$attribute_name}[0]);
-    $this->drupalPost('user/password', $edit, t('E-mail new password'));
+    $this->drupalPost('user/password', $edit, t('Reset password'));
     $this->assertText(t('Further instructions have been sent to your e-mail address.'), t('A new password was successfully requested.'));
 
     // Verify that the Drupal user was created.
