@@ -677,15 +677,11 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
     $edit = $this->formData($name, $mail);
 
-    // Try entering a mismatching password.
-    $edit['pass[pass1]'] = '99999.0';
-    $edit['pass[pass2]'] = '99999';
-    $this->drupalPost('user/register', $edit, t('Create new account'));
-    $this->assertText(t('The specified passwords do not match.'), t('Typing mismatched passwords displays an error message.'));
+    // Clear cache, otherwise the registration option is not present.
+    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
 
     // Enter a correct password.
-    $edit['pass[pass1]'] = $new_pass = $this->randomName();
-    $edit['pass[pass2]'] = $new_pass;
+    $edit['pass'] = $new_pass = $this->randomName();
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
@@ -699,9 +695,11 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
 
     // Allow registration by site visitors, but require administrator approval.
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+
+    // Clear cache, otherwise the registration option is not present.
+    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+
     $edit = $this->formData($name, $mail);
-    $edit['pass[pass1]'] = $pass = $this->randomName();
-    $edit['pass[pass2]'] = $pass;
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.'), t('Users are notified of pending approval'));
     $ldap_user = new SimpleLdapUser($name);
@@ -977,8 +975,7 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
     // Create the form variable array.
     $edit = array();
     $edit['current_pass'] = $this->userPassword[0];
-    $edit['pass[pass1]'] = $this->randomName();
-    $edit['pass[pass2]'] = $edit['pass[pass1]'];
+    $edit['pass'] = $this->randomName();
 
     // Submit user edit form.
     $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, 'Save');
@@ -987,19 +984,18 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
     $this->drupalNoLogin($account);
 
     // Verify that the new password works.
-    $account->pass_raw = $edit['pass[pass1]'];
+    $account->pass_raw = $edit['pass'];
     $this->drupalLogin($account);
 
     // Reset the password.
-    $edit['current_pass'] = $edit['pass[pass1]'];
-    $edit['pass[pass1]'] = $this->userPassword[0];
-    $edit['pass[pass2]'] = $edit['pass[pass1]'];
+    $edit['current_pass'] = $edit['pass'];
+    $edit['pass'] = $this->userPassword[0];
 
     // Submit user edit form.
     $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, 'Save');
 
     // Verify that it was changed back.
-    $account->pass_raw = $edit['pass[pass1]'];
+    $account->pass_raw = $edit['pass'];
     $this->drupalLogin($account);
   }
 
@@ -1041,8 +1037,7 @@ class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
     // Generate user registration formdata.
     $edit['name'] = $name = $this->randomName();
     $edit['mail'] = $mail = $name . '@example.com';
-    $edit['pass[pass1]'] = $pass = $this->randomName();
-    $edit['pass[pass2]'] = $pass;
+    $edit['pass'] = $pass = $this->randomName();
 
     // Fill in required fields from the user attribute map.
     $server = SimpleLdapServer::singleton();
@@ -1080,12 +1075,12 @@ class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
     $this->drupalPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $drupal_user = reset($accounts);
-    $this->assertText(t('Registration successful. You are now logged in.'), t('Users are logged in after registering.'));
+    $this->assertText(t('Registration successful. You are now logged in.'), t('Users are logged in after registering: '.$name));
     $this->drupalLogout();
 
     // Verify that the user exists in LDAP.
     $ldap_user = new SimpleLdapUser($name);
-    $this->assertTrue($ldap_user->exists, t('The user was created in LDAP.'));
+    $this->assertTrue($ldap_user->exists, t('The user was created in LDAP: '.$name));
 
     // Log in as user1.
     $this->drupalUser1Login();
@@ -1122,11 +1117,12 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     }
 
     // Submit the export user form.
-    $edit = array('operation' => 'simple_ldap_user_export');
+    $edit = array('action' => 'simple_ldap_user_export');
     foreach ($this->drupalUser as $drupal_user) {
-      $edit['accounts[' . $drupal_user->uid . ']'] = TRUE;
+      $index = $drupal_user->uid - 1;
+      $edit['bulk_form[' . $index . ']'] = TRUE;
     }
-    $this->drupalPost('admin/people', $edit, t('Update'));
+    $this->drupalPost('admin/people', $edit, t('Execute'));
 
     // Verify that the users were exported to LDAP.
     foreach ($this->drupalUser as $drupal_user) {
