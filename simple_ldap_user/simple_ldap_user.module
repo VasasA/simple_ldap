@@ -517,9 +517,9 @@ function simple_ldap_user_sync_user_to_drupal($drupal_user) {
 }
 
 /**
- * Implements user_action_info_alter().
+ * Implements hook_action_info_alter().
  */
-function user_action_info_alter(&$actions) {
+function simple_ldap_user_action_info_alter(&$actions) {
   $server = SimpleLdapServer::singleton();
   if (!$server->readonly) {
     $actions['simple_ldap_user_export'] = array(
