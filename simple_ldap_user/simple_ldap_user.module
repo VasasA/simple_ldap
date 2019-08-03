@@ -662,6 +662,7 @@ function simple_ldap_user_autoload_info() {
     'SimpleLdapUser' => 'SimpleLdapUser.class.php',
     'SimpleLdapUserController' => 'SimpleLdapUserController.class.php',
     'SimpleLdapUserMap' => 'SimpleLdapUserMap.class.php',
+    'SimpleLdapUserTestCase' => 'tests/SimpleLdapUserTestCase.class.php',
   );
 }
 
