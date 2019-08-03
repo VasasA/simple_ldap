@@ -537,14 +537,14 @@ function simple_ldap_user_action_info_alter(&$actions) {
 function simple_ldap_user_export($users) {
   // Generate the batch operation array.
   $operations = array();
-  foreach ($users as $uid) {
-    // Don't sync user1.
-    if ($uid == 1) {
-      continue;
-    }
+  $uid = $users -> uid;
 
-    $operations[] = array('simple_ldap_user_export_user', array($uid));
+  // Don't sync user1.
+  if ($uid == 1) {
+    return;
   }
+
+  $operations[] = array('simple_ldap_user_export_user', array($uid));
 
   $batch = array(
     'operations' => $operations,
@@ -560,7 +560,7 @@ function simple_ldap_user_export_user($uid, $context) {
   // Sync user to LDAP.
   $user = user_load($uid);
   simple_ldap_user_sync_user_to_ldap($user);
-  $context['message'] = 'Exporting ' . $user->name;
+  $context['message'] = t('Exporting');
 }
 
 /**
