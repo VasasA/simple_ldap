@@ -63,10 +63,11 @@ function simple_ldap_configuration_errors() {
   // include unless this particular bit was configured properly, but we leave
   // this in so that it works for hook_requirements().
   $session_inc_path = str_replace('\\', '/', __DIR__ . '/simple_ldap_sso.session.inc');
+  $session_inc_relative_path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
   if (str_replace('\\', '/', DRUPAL_ROOT . '/' . settings_get('session_inc', 'core/includes/session.inc')) != $session_inc_path) {
     $message = t('You must set the session_inc variable to Simple LDAP SSO’s session include file.');
-    $message .= t(' Insert the following line into the ') . BACKDROP_ROOT . t('/settings.php file!') . '<br>';
-    $message .= '$settings["session_inc"] = "' . $session_inc_path . '";';
+    $message .= t(' Insert the following line into the @backdrop_root/settings.php file!', array('@backdrop_root' => BACKDROP_ROOT));
+    $message .= '<br>$settings["session_inc"] = "' . $session_inc_relative_path . '";';
     $errors[] = $message;
   }
 

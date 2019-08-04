@@ -14,8 +14,8 @@ function simple_ldap_sso_admin() {
   $form['#config'] = 'simple_ldap_sso.settings';
   $session_inc_path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
   $message = t('You must set the session_inc variable to Simple LDAP SSO’s session include file.');
-  $message .= t(' Insert the following line into the ') . BACKDROP_ROOT . t('/settings.php file!') . '<br>';
-  $message .= '$settings["session_inc"] = "' . $session_inc_path . '";';
+  $message .= t(' Insert the following line into the @backdrop_root/settings.php file!', array('@backdrop_root' => BACKDROP_ROOT));
+  $message .= '<br>$settings["session_inc"] = "' . $session_inc_path . '";';
   if (settings_get('session_inc', 'core/includes/session.inc') != $session_inc_path) {
     drupal_set_message($message, 'error');
   }
