@@ -5,6 +5,7 @@
  * Session include for loading session ids from LDAP.
  */
 
+include_once BACKDROP_ROOT . '/core/includes/common.inc';
 require_once DRUPAL_ROOT . '/core/includes/session.inc';
 require_once 'simple_ldap_sso.inc';
 
