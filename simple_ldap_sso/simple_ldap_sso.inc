@@ -5,6 +5,7 @@
  * Simple LDAP SSO API functions.
  */
 
+include_once BACKDROP_ROOT . '/core/includes/module.inc';
 define('SIMPLE_LDAP_SSO_COOKIE', 'SLDAPSSO');
 define('SIMPLE_LDAP_SSO_FLOOD', 'simple_ldap_sso_failed_login');
 
