@@ -51,7 +51,7 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
     $config->save();
 
     // Create an LDAP group entry to use during testing.
-    $name = $this->randomName();
+    $name = strtolower($this->randomName());
     $this->ldapGroup = new SimpleLdapRole($name);
     $this->ldapGroup->addUser($this->ldapUser[0]);
     $this->ldapGroup->save();
@@ -84,17 +84,18 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $attribute_member_default = simple_ldap_role_variable_get('simple_ldap_role_attribute_member_default');
 
     // Generate a randome group name.
-    $name = $this->randomName();
+    $name = strtolower($this->randomName());
 
     // Log in as User 1.
     $this->drupalUser1Login();
 
     // Submit the form to add a new Drupal role.
     $edit = array(
+      'label' => $name,
       'name' => $name,
     );
-    $this->drupalPost('admin/people/permissions/roles', $edit, t('Add role'));
-    $this->assertText(t('The role has been added'), t('The @role role was added to Drupal', array('@role' => $name)));
+    $this->drupalPost('admin/config/people/roles', $edit, t('Add role'));
+    $this->assertText(t('The @role role has been added', array('@role' => $name)), t('The @role role was added to Drupal', array('@role' => $name)));
 
     // Load the LDAP group.
     $ldap_group = new SimpleLdapRole($name);
@@ -168,7 +169,7 @@ class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     );
 
     // Submit the role edit form.
-    $this->drupalPost('admin/people/permissions/roles/edit/' . $drupal_role->rid, $edit, t('Save role'));
+    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, $edit, t('Save role'));
     $this->assertText('The role has been renamed.', t('The drupal role was updated'));
 
     // Load the group from LDAP and check that it was updated.
@@ -181,7 +182,7 @@ class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     );
 
     // Submit the role edit form to restore the group to its original value.
-    $this->drupalPost('admin/people/permissions/roles/edit/' . $drupal_role->rid, $edit, t('Save role'));
+    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, $edit, t('Save role'));
 
     // Verify that the group was restored.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
@@ -212,9 +213,9 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $this->drupalUser1Login();
 
     // Submit the role edit form.
-    $this->drupalPost('admin/people/permissions/roles/edit/' . $drupal_role->rid, array(), t('Delete role'));
+    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, array(), t('Delete role'));
     $this->assertText('Are you sure you want to delete the role ' . $drupal_role->name, t('Proceed to step 2 of deleting a role.'));
-    $this->drupalPost('admin/people/permissions/roles/delete/' . $drupal_role->rid, array(), t('Delete'));
+    $this->drupalPost('admin/config/people/roles/delete/' . $drupal_role->name, array(), t('Delete'));
     $this->assertText('The role has been deleted.', t('The Drupal role was deleted'));
 
     // Try to load the group from LDAP, and verify that it was deleted.
@@ -276,7 +277,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Submit the user edit form.
     $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
-    $this->assertText(t('The changes have been saved.'), t('The changes have been saved.'));
+    $this->assertText(t('The changes have been saved.'), t('The changes have been saved.').'roles[' . $drupal_role->rid . ']'.$drupal_role->name);
 
     // Reload the LDAP group.
     $ldap_group = new SimpleLdapRole($drupal_role->name);
@@ -336,7 +337,7 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     $role_attribute_member_default = simple_ldap_role_variable_get('simple_ldap_role_attribute_member_default');
 
     // Generate a new random role name.
-    $new_role = $this->randomName();
+    $new_role = strtolower($this->randomName());
 
     // Generate a new LDAP object.
     $ldap_group = new SimpleLdapRole($new_role);
@@ -353,8 +354,17 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     // Run cron.
     $this->cronRun();
 
+    // Collect roles of Drupal.
+    $names = config_get_names_with_prefix('user.role.');
+    foreach ($names as $config_name) {
+      $config = config($config_name);
+      $role_name = str_replace('user.role.', '', $config_name);
+      $role_data = $config->get();
+      $user_roles[$role_name] = $role_data;
+    }
+
     // Verify that the test LDAP group exists in Drupal.
-    $drupal_role = user_role_load_by_name($new_role);
+    $drupal_role = isset($user_roles[$new_role]);
     $this->assertTrue($drupal_role, t('The :group LDAP group exists as a Drupal role.', array(':group' => $new_role)));
 
     // Modify the LDAP object.
@@ -372,8 +382,17 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     // Run cron.
     $this->cronRun();
 
+    // Collect roles of Drupal.
+    $names = config_get_names_with_prefix('user.role.');
+    foreach ($names as $config_name) {
+      $config = config($config_name);
+      $role_name = str_replace('user.role.', '', $config_name);
+      $role_data = $config->get();
+      $user_roles[$role_name] = $role_data;
+    }
+
     // Verify that the test LDAP group exists in Drupal.
-    $drupal_role = user_role_load_by_name($new_role . $new_role);
+    $drupal_role = isset($user_roles[$new_role . $new_role]);
     $this->assertTrue($drupal_role, t('The :group LDAP group exists as a Drupal role.', array(':group' => $new_role . $new_role)));
 
     // Cleanup.
