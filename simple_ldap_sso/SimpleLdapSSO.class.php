@@ -115,6 +115,9 @@ class SimpleLdapSSO {
    * Delete the sid from LDAP.
    */
   public function deleteSid() {
+    // Empty it if cannot delete it.
+    $attributes[$this->getSidAttribute()] = '0';
+    $this->server->modify($this->dn, $attributes, 'replace');
     $attributes[$this->getSidAttribute()] = array();
     if (!$this->server->modify($this->dn, $attributes, 'delete')) {
       throw new Exception('Unable to delete session id from LDAP.');

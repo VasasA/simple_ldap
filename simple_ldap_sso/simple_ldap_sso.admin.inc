@@ -13,14 +13,11 @@ function simple_ldap_sso_admin() {
   $config_sso = config('simple_ldap_sso.settings');
   $form['#config'] = 'simple_ldap_sso.settings';
   $session_inc_path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
-  $t_args = array('!path' => $session_inc_path);
+  $message = t('You must set the session_inc variable to Simple LDAP SSO’s session include file.');
+  $message .= t(' Insert the following line into the ') . BACKDROP_ROOT . t('/settings.php file!') . '<br>';
+  $message .= '$settings["session_inc"] = "' . $session_inc_path . '";';
   if (settings_get('session_inc', 'core/includes/session.inc') != $session_inc_path) {
-    $form['session_inc'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Drupal Session Include File'),
-      '#description' => t('The file used to handle Drupal user sessions. This should be set to !path.', $t_args),
-      '#default_value' => settings_get('session_inc', 'core/includes/session.inc'),
-    );
+    drupal_set_message($message, 'error');
   }
 
   $form['credentials'] = array(
