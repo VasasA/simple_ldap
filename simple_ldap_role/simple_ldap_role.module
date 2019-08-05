@@ -85,8 +85,9 @@ function simple_ldap_role_user_presave($account) {
 
 /**
  * Implements hook_user_role_presave().
+ * Deprecated! Because the user cannot modify the 'name' of a role in Backdrop.
  */
-function simple_ldap_role_user_role_presave($role) {
+/*function simple_ldap_role_user_role_presave($role) {
   if (isset($role->op) && $role->op == 'Save role') {
     // Get the module configuration.
     $attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
@@ -99,7 +100,7 @@ function simple_ldap_role_user_role_presave($role) {
     $ldap_role->$attribute_name = $role->name;
     $ldap_role->save();
   }
-}
+}*/
 
 /**
  * Implements hook_user_role_insert().
