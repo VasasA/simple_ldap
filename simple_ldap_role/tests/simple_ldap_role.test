@@ -34,7 +34,7 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
     // Enable the simple_ldap_role module.
     $modules = array('simple_ldap_role');
     $success = module_enable($modules);
-    $this->assertTrue($success, t('Enabled modules: %modules', array('%modules' => implode(', ', $modules))));
+    $this->assertTrue($success, t('Enabled modules: @modules', array('@modules' => implode(', ', $modules))));
 
     // Configure the sandbox simple_ldap_role instance.
     $config = config('simple_ldap_role.settings');
@@ -59,7 +59,7 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
     // If now exception is thrown by save(), then the save was successful, but
     // reload the object and show the DN to make the tester feel better.
     $this->ldapGroup = new SimpleLdapRole($name);
-    $this->assertTrue($this->ldapGroup->exists, t(':dn was added to LDAP', array(':dn' => $this->ldapGroup->dn)));
+    $this->assertTrue($this->ldapGroup->exists, t('@dn was added to LDAP', array('@dn' => $this->ldapGroup->dn)));
   }
 
   /**
@@ -117,10 +117,10 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     // empty group).
     if (!in_array($attribute_member, $must)) {
       // Test that the LDAP entry was created.
-      $this->assertTrue($ldap_group->exists, t(':dn is present in the LDAP directory', array(':dn' => $ldap_group->dn)));
+      $this->assertTrue($ldap_group->exists, t('@dn is present in the LDAP directory', array('@dn' => $ldap_group->dn)));
       if (!empty($attribute_member_default)) {
         // Test that the default user was added to the LDAP group.
-        $this->assertTrue(in_array($attribute_member_default, $members, TRUE), t('The default user, :default, was added as a member of :dn', array(':default' => $attribute_member_default, ':dn' => $ldap_group->dn)));
+        $this->assertTrue(in_array($attribute_member_default, $members, TRUE), t('The default user, @default, was added as a member of @dn', array('@default' => $attribute_member_default, '@dn' => $ldap_group->dn)));
       }
     }
     else {
@@ -128,12 +128,12 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
       // on if there is a default group configured.
       if (!empty($attribute_member_default)) {
         // Test that the group was created, and the default user was added.
-        $this->assertTrue($ldap_group->exists, t(':dn is present in the LDAP directory', array(':dn' => $ldap_group->dn)));
-        $this->assertTrue(in_array($attribute_member_default, $members, TRUE), t('The default user, :default, was added as a member of :dn', array(':default' => $attribute_member_default, ':dn' => $ldap_group->dn)));
+        $this->assertTrue($ldap_group->exists, t('@dn is present in the LDAP directory', array('@dn' => $ldap_group->dn)));
+        $this->assertTrue(in_array($attribute_member_default, $members, TRUE), t('The default user, @default, was added as a member of @dn', array('@default' => $attribute_member_default, '@dn' => $ldap_group->dn)));
       }
       else {
         // Test that the group was not created.
-        $this->assertFalse($ldap_group->exists, t(':dn is not present in the LDAP directory', array(':dn' => $ldap_group->dn)));
+        $this->assertFalse($ldap_group->exists, t('@dn is not present in the LDAP directory', array('@dn' => $ldap_group->dn)));
       }
     }
 
@@ -143,11 +143,12 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
 }
 
-class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
+/**
+ * Updates a Drupal role, and verifies LDAP.
+ * Deprecated! Because the user cannot modify the 'name' of a role in Backdrop.
+ */
+/*class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
-  /**
-   * Updates a Drupal role, and verifies LDAP.
-   */
   public function testUpdateRole() {
     // Get module configurations.
     $attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
@@ -165,20 +166,21 @@ class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
     // Populate the role edit form variables.
     $edit = array(
-      'name' => $drupal_role->name . ' modified',
+      'label' => $drupal_role->name . ' modified',
     );
 
     // Submit the role edit form.
+    $insert_array = array('@role' => $drupal_role->name, '@role_modified' => $edit['label']);
     $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, $edit, t('Save role'));
-    $this->assertText('The role has been renamed.', t('The drupal role was updated'));
+    $this->assertText(t('The @role role has been renamed to @role_modified.', $insert_array), t('The drupal role was updated'));
 
     // Load the group from LDAP and check that it was updated.
     $ldap_group = new SimpleLdapRole($drupal_role->name . ' modified');
-    $this->assertTrue($ldap_group->exists, t('The :dn test group exists in LDAP.', array(':dn' => $ldap_group->dn)));
+    $this->assertTrue($ldap_group->exists, t('The @dn test group exists in LDAP.', array('@dn' => $ldap_group->dn)));
 
     // Repopulate the role edit form variables.
     $edit = array(
-      'name' => $this->ldapGroup->{$attribute_name}[0],
+      'label' => $this->ldapGroup->{$attribute_name}[0],
     );
 
     // Submit the role edit form to restore the group to its original value.
@@ -186,11 +188,11 @@ class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
     // Verify that the group was restored.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
-    $this->assertTrue($ldap_group->exists, t('The :dn test group was restored in LDAP.', array(':dn' => $ldap_group->dn)));
+    $this->assertTrue($ldap_group->exists, t('The @dn test group was restored in LDAP.', array('@dn' => $ldap_group->dn)));
 
   }
 
-}
+}*/
 
 class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
@@ -214,13 +216,13 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
     // Submit the role edit form.
     $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, array(), t('Delete role'));
-    $this->assertText('Are you sure you want to delete the role ' . $drupal_role->name, t('Proceed to step 2 of deleting a role.'));
+    $this->assertText(t('Are you sure you want to delete the role ') . $drupal_role->name, t('Proceed to step 2 of deleting a role.'));
     $this->drupalPost('admin/config/people/roles/delete/' . $drupal_role->name, array(), t('Delete'));
-    $this->assertText('The role has been deleted.', t('The Drupal role was deleted'));
+    $this->assertText(t('The role has been deleted.'), t('The Drupal role was deleted'));
 
     // Try to load the group from LDAP, and verify that it was deleted.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
-    $this->assertFalse($ldap_group->exists, t('The :dn test group was deleted from LDAP.', array(':dn' => $ldap_group->dn)));
+    $this->assertFalse($ldap_group->exists, t('The @dn test group was deleted from LDAP.', array('@dn' => $ldap_group->dn)));
   }
 
 }
@@ -261,11 +263,11 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Load the Drupal user.
     $drupal_user = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t(':name user exists in Drupal', array(':name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
+    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
 
     // Load the Drupal role.
     $drupal_role = user_role_load_by_name($this->ldapGroup->{$role_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_role, FALSE, t(':name role exists in Drupal', array(':name' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertNotIdentical($drupal_role, FALSE, t('@name role exists in Drupal', array('@name' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Log in as user 1.
     $this->drupalUser1Login();
@@ -284,7 +286,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is now a member of the LDAP group.
-    $this->assertTrue(in_array($member, $members, TRUE), t(':member is a member of the :group LDAP group', array(':member' => $member, ':group' => $ldap_group->dn)));
+    $this->assertTrue(in_array($member, $members, TRUE), t('@member is a member of the @group LDAP group', array('@member' => $member, '@group' => $ldap_group->dn)));
 
     // Repopulate the user edit form.
     $edit = array(
@@ -300,7 +302,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is no longer a member of the LDAP group.
-    $this->assertFalse(in_array($member, $members, TRUE), t(':member was removed from the :group LDAP group', array(':member' => $member, ':group' => $ldap_group->dn)));
+    $this->assertFalse(in_array($member, $members, TRUE), t('@member was removed from the @group LDAP group', array('@member' => $member, '@group' => $ldap_group->dn)));
 
     // Repopulate the user edit form again.
     $edit = array(
@@ -316,7 +318,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is a member of the LDAP group again.
-    $this->assertTrue(in_array($member, $members, TRUE), t(':member is a member of the :group LDAP group', array(':member' => $member, ':group' => $ldap_group->dn)));
+    $this->assertTrue(in_array($member, $members, TRUE), t('@member is a member of the @group LDAP group', array('@member' => $member, '@group' => $ldap_group->dn)));
 
   }
 
@@ -345,11 +347,11 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     $ldap_group->save();
 
     // Verify that the LDAP group exists.
-    $this->assertTrue($ldap_group->exists, t(':dn exists in LDAP', array(':dn' => $ldap_group->dn)));
+    $this->assertTrue($ldap_group->exists, t('@dn exists in LDAP', array('@dn' => $ldap_group->dn)));
 
     // Verify that the LDAP group does not exist in Drupal.
     $drupal_role = user_role_load_by_name($new_role);
-    $this->assertFalse($drupal_role, t('The :group LDAP group does not exist as a Drupal role.', array(':group' => $new_role)));
+    $this->assertFalse($drupal_role, t('The @group LDAP group does not exist as a Drupal role.', array('@group' => $new_role)));
 
     // Run cron.
     $this->cronRun();
@@ -365,7 +367,7 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
 
     // Verify that the test LDAP group exists in Drupal.
     $drupal_role = isset($user_roles[$new_role]);
-    $this->assertTrue($drupal_role, t('The :group LDAP group exists as a Drupal role.', array(':group' => $new_role)));
+    $this->assertTrue($drupal_role, t('The @group LDAP group exists as a Drupal role.', array('@group' => $new_role)));
 
     // Modify the LDAP object.
     $ldap_group->$role_attribute_name = $new_role . $new_role;
@@ -373,11 +375,11 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
 
     // Verify that the original LDAP group does not exist.
     $ldap_group = new SimpleLdapRole($new_role);
-    $this->assertFalse($ldap_group->exists, t(':dn does not exist in LDAP', array(':dn' => $ldap_group->dn)));
+    $this->assertFalse($ldap_group->exists, t('@dn does not exist in LDAP', array('@dn' => $ldap_group->dn)));
 
     // Verify that the updated LDAP group exists.
     $ldap_group = new SimpleLdapRole($new_role . $new_role);
-    $this->assertTrue($ldap_group->exists, t(':dn exists in LDAP', array(':dn' => $ldap_group->dn)));
+    $this->assertTrue($ldap_group->exists, t('@dn exists in LDAP', array('@dn' => $ldap_group->dn)));
 
     // Run cron.
     $this->cronRun();
@@ -393,7 +395,7 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
 
     // Verify that the test LDAP group exists in Drupal.
     $drupal_role = isset($user_roles[$new_role . $new_role]);
-    $this->assertTrue($drupal_role, t('The :group LDAP group exists as a Drupal role.', array(':group' => $new_role . $new_role)));
+    $this->assertTrue($drupal_role, t('The @group LDAP group exists as a Drupal role.', array('@group' => $new_role . $new_role)));
 
     // Cleanup.
     $ldap_group->delete();
@@ -425,10 +427,10 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
 
     // Load the Drupal user.
     $drupal_user = user_load_by_name($this->ldapUser[0]->{$user_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t(':name user exists in Drupal', array(':name' => $this->ldapUser[0]->{$user_attribute_name}[0])));
+    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[0]->{$user_attribute_name}[0])));
 
     // Verify that the user is assigned to the test role.
-    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t(':user is assigned to the :role Drupal role.', array(':user' => $drupal_user->name, ':role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Remove the user from the LDAP group.
     $this->ldapGroup->deleteUser($this->ldapUser[0]);
@@ -439,7 +441,7 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
     $drupal_user = reset($drupal_user);
 
     // Verify that the user is not assigned to the test role.
-    $this->assertFalse(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t(':user is no longer assigned to the :role Drupal role.', array(':user' => $drupal_user->name, ':role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertFalse(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is no longer assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Re-add the user to the LDAP group.
     $this->ldapGroup->addUser($this->ldapUser[0]);
@@ -450,7 +452,7 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
     $drupal_user = reset($drupal_user);
 
     // Verify that the user is assigned to the test role.
-    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t(':user is assigned to the :role Drupal role.', array(':user' => $drupal_user->name, ':role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
   }
 
