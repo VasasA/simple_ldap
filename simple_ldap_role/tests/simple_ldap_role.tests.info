@@ -4,12 +4,6 @@ description = Tests that LDAP groups are created appropriately when a Drupal rol
 group = Simple LDAP Role
 file = simple_ldap_role.test
 
-[SimpleLdapRoleUpdateDrupalRoleTestCase]
-name = Update Drupal Role
-description = Tests that LDAP groups are modified when a Drupal role is updated.
-group = Simple LDAP Role
-file = simple_ldap_role.test
-
 [SimpleLdapRoleDeleteDrupalRoleTestCase]
 name = Delete Drupal Role
 description = Tests that LDAP groups are deleted when a Drupal role is deleted.
