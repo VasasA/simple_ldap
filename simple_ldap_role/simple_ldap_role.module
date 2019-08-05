@@ -72,9 +72,9 @@ function simple_ldap_role_user_login(&$edit, $account) {
  */
 function simple_ldap_role_user_presave($account) {
   if (isset($account->name) && isset($account->roles)) {
-    foreach ($account->roles as $rid => $value) {
-      if ($value && $rid != DRUPAL_AUTHENTICATED_RID) {
-        $role = user_role_load($rid);
+    foreach ($account->roles as $value) {
+      if ($value != BACKDROP_AUTHENTICATED_ROLE) {
+        $role = user_role_load($value);
         $ldap_role = SimpleLdapRole::singleton($role->name);
         $ldap_role->addUser($account->name);
         $ldap_role->save();
@@ -85,7 +85,7 @@ function simple_ldap_role_user_presave($account) {
 
 /**
  * Implements hook_user_role_presave().
- * Deprecated! Because the user cannot modify the 'name' of a role in Backdrop.
+ * Deprecated! Because the user cannot modify the 'machine name' of a role in Backdrop.
  */
 /*function simple_ldap_role_user_role_presave($role) {
   if (isset($role->op) && $role->op == 'Save role') {
@@ -184,17 +184,16 @@ function simple_ldap_role_sync_user_to_ldap($drupal_user) {
 
   // Get a list of Drupal roles for this user.
   $drupal_roles = array();
-  foreach (array_keys($drupal_user->roles) as $rid) {
+  foreach ($drupal_user->roles as $name) {
     // Skip "special" roles.
-    if ($rid == DRUPAL_AUTHENTICATED_RID || $rid == DRUPAL_ANONYMOUS_RID) {
+    if ($name == BACKDROP_AUTHENTICATED_ROLE || $name == BACKDROP_ANONYMOUS_ROLE) {
       continue;
     }
 
-    $role = user_role_load($rid);
-    $drupal_roles[$rid] = $role->name;
+    $drupal_roles[] = $name;
   }
 
-  foreach ($drupal_roles as $rid => $name) {
+  foreach ($drupal_roles as $name) {
     // Check if the user is a member of the ldap group.
     $found = FALSE;
     for ($i = 0; $i < $ldap_groups['count']; $i++) {
@@ -274,7 +273,7 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
     if ($drupal_role === FALSE) {
       $role = new stdClass();
       $role->name = $name;
-      $role->label = '';
+      $role->label = $name;
       user_role_save($role);
       $drupal_role = user_role_load_by_name($name);
     }
@@ -284,15 +283,15 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
       $dirty = TRUE;
     }
 
-    $edit['roles'][$drupal_role->rid] = $drupal_role->name;
+    $edit['roles'][] = $drupal_role->name;
   }
 
   // Remove Drupal roles that are not set in LDAP.
   $diff = array_diff($drupal_user->roles, $edit['roles']);
-  foreach ($diff as $rid => $name) {
+  foreach ($diff as $name) {
     // Account for special groups.
-    if ($rid == DRUPAL_AUTHENTICATED_RID || $rid == DRUPAL_ANONYMOUS_RID) {
-      $edit['roles'][$rid] = $drupal_user->roles[$rid];
+    if ($name == BACKDROP_AUTHENTICATED_ROLE || $name == BACKDROP_ANONYMOUS_ROLE) {
+      $edit['roles'][] = $name;
       continue;
     }
     $dirty = TRUE;
