@@ -145,7 +145,7 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
 /**
  * Updates a Drupal role, and verifies LDAP.
- * Deprecated! Because the user cannot modify the 'name' of a role in Backdrop.
+ * Deprecated! Because the user cannot modify the 'machine name' of a role in Backdrop.
  */
 /*class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
