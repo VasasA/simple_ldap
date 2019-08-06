@@ -267,7 +267,7 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
     $name = $ldap_groups[$i][$attribute_name][0];
 
     // Try to load the role.
-    $drupal_role = user_role_load_by_name($name);
+    $drupal_role = user_role_load($name);
 
     // The role does not exist, create it.
     if ($drupal_role === FALSE) {
@@ -275,7 +275,7 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
       $role->name = $name;
       $role->label = $name;
       user_role_save($role);
-      $drupal_role = user_role_load_by_name($name);
+      $drupal_role = user_role_load($name);
     }
 
     // The role is not currently present in the user. Flag a user_save().

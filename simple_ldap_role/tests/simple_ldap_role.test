@@ -155,7 +155,7 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
 
     // Load/Create a Drupal role with the same name as the test LDAP group.
-    $drupal_role = user_role_load_by_name($this->ldapGroup->{$attribute_name}[0]);
+    $drupal_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
     if (!$drupal_role) {
       $rid = $this->drupalCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
       $drupal_role = user_role_load($rid);
@@ -205,7 +205,7 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
 
     // Load/Create a drupal role with the same name as the test LDAP group.
-    $drupal_role = user_role_load_by_name($this->ldapGroup->{$attribute_name}[0]);
+    $drupal_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
     if (!$drupal_role) {
       $rid = $this->drupalCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
       $drupal_role = user_role_load($rid);
@@ -266,7 +266,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
 
     // Load the Drupal role.
-    $drupal_role = user_role_load_by_name($this->ldapGroup->{$role_attribute_name}[0]);
+    $drupal_role = user_role_load($this->ldapGroup->{$role_attribute_name}[0]);
     $this->assertNotIdentical($drupal_role, FALSE, t('@name role exists in Drupal', array('@name' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Log in as user 1.
@@ -350,7 +350,7 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     $this->assertTrue($ldap_group->exists, t('@dn exists in LDAP', array('@dn' => $ldap_group->dn)));
 
     // Verify that the LDAP group does not exist in Drupal.
-    $drupal_role = user_role_load_by_name($new_role);
+    $drupal_role = user_role_load($new_role);
     $this->assertFalse($drupal_role, t('The @group LDAP group does not exist as a Drupal role.', array('@group' => $new_role)));
 
     // Run cron.
