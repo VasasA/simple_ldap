@@ -215,10 +215,8 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $this->drupalUser1Login();
 
     // Submit the role edit form.
-    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, array(), t('Delete role'));
-    $this->assertText(t('Are you sure you want to delete the role ') . $drupal_role->name, t('Proceed to step 2 of deleting a role.'));
     $this->drupalPost('admin/config/people/roles/delete/' . $drupal_role->name, array(), t('Delete'));
-    $this->assertText(t('The role has been deleted.'), t('The Drupal role was deleted'));
+    $this->assertText(t('The @role role has been deleted.', array('@role' => $drupal_role->name)), t('The Drupal role was deleted'));
 
     // Try to load the group from LDAP, and verify that it was deleted.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
@@ -264,6 +262,9 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     // Load the Drupal user.
     $drupal_user = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
     $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
+
+    // user_role_load() needs static reset.
+    backdrop_static_reset('user_roles');
 
     // Load the Drupal role.
     $drupal_role = user_role_load($this->ldapGroup->{$role_attribute_name}[0]);
