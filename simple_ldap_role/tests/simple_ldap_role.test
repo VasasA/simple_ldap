@@ -275,12 +275,12 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Populate the user edit form.
     $edit = array(
-      'roles[' . $drupal_role->rid . ']' => TRUE,
+      'roles[' . $drupal_role->name . ']' => TRUE,
     );
 
     // Submit the user edit form.
     $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
-    $this->assertText(t('The changes have been saved.'), t('The changes have been saved.').'roles[' . $drupal_role->rid . ']'.$drupal_role->name);
+    $this->assertText(t('The changes have been saved.'), t('The changes have been saved.'));
 
     // Reload the LDAP group.
     $ldap_group = new SimpleLdapRole($drupal_role->name);
@@ -291,7 +291,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Repopulate the user edit form.
     $edit = array(
-      'roles[' . $drupal_role->rid . ']' => FALSE,
+      'roles[' . $drupal_role->name . ']' => FALSE,
     );
 
     // Submit the user edit form.
@@ -307,7 +307,7 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Repopulate the user edit form again.
     $edit = array(
-      'roles[' . $drupal_role->rid . ']' => TRUE,
+      'roles[' . $drupal_role->name . ']' => TRUE,
     );
 
     // Submit the user edit form.
