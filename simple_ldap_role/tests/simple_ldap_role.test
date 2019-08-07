@@ -433,6 +433,27 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
     // Verify that the user is assigned to the test role.
     $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
+    // We need a second user, if the 'member' attribute is 'required'
+    // in the LDAP database and we want to remove a user from the LDAP group.
+    // Add the second user to the LDAP group.
+    $this->ldapGroup->addUser($this->ldapUser[1]);
+    $this->ldapGroup->save();
+
+    // Initialize the second user account object.
+    $account = new stdClass();
+    $account->name = $this->ldapUser[1]->{$user_attribute_name}[0];
+    $account->pass_raw = $this->userPassword[1];
+
+    // Log in with the second test user. This should create/sync an LDAP user.
+    $this->drupalLogin($account);
+
+    // Load the second Drupal user.
+    $drupal_user2 = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
+    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
+
+    // Verify that the second user is assigned to the test role.
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user2->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user2->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
+
     // Remove the user from the LDAP group.
     $this->ldapGroup->deleteUser($this->ldapUser[0]);
     $this->ldapGroup->save();
