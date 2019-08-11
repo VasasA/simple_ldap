@@ -13,7 +13,7 @@ function simple_ldap_active_group_form_alter(&$form, &$form_state, $form_id) {
     case 'simple_ldap_role_admin':
       $form['role']['simple_ldap_active_group_group'] = array(
         '#type' => 'textfield',
-        '#title' => t('Default LDAP group'),
+        '#title' => t('Default LDAP group DN'),
         '#default_value' => config_get('simple_ldap_role.settings', 'simple_ldap_active_group_group'),
         '#required' => TRUE,
         '#description' => t('This is the group that a user is added to or removed from when the account status is set to active or blocked, respectively.'),
