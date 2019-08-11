@@ -8,14 +8,13 @@
  * Implements hook_form_alter().
  */
 function simple_ldap_active_group_form_alter(&$form, &$form_state, $form_id) {
-  $config = config('simple_ldap_active_group.settings');
   switch ($form_id) {
     // Add a "Default LDAP group" option to the simple_ldap_role admin form.
     case 'simple_ldap_role_admin':
       $form['role']['simple_ldap_active_group_group'] = array(
         '#type' => 'textfield',
         '#title' => t('Default LDAP group'),
-        '#default_value' => $config->get('simple_ldap_active_group_group'),
+        '#default_value' => config_get('simple_ldap_role.settings', 'simple_ldap_active_group_group'),
         '#required' => TRUE,
         '#description' => t('This is the group that a user is added to or removed from when the account status is set to active or blocked, respectively.'),
       );
@@ -32,7 +31,7 @@ function simple_ldap_active_group_form_alter(&$form, &$form_state, $form_id) {
             $advanced['simple_ldap_active_group_delete_filtered'] = array(
               '#type' => 'checkbox',
               '#title' => t('Delete LDAP entries, even if they do not match the filter'),
-              '#default_value' => $config->get('simple_ldap_active_group_delete_filtered'),
+              '#default_value' => config_get('simple_ldap_user.settings', 'simple_ldap_active_group_delete_filtered'),
               '#description' => t("If this is enabled, a user will be deleted from LDAP when deleted from Drupal, even if the user's DN does not match the specified search filter."),
             );
           }
@@ -176,15 +175,4 @@ function simple_ldap_active_group_filter() {
   $objectclass = config_get('simple_ldap_user.settings', 'simple_ldap_user_objectclass');
   $filter = '(&(objectclass=' . implode(')(objectclass=', $objectclass) . '))';
   return $filter;
-}
-
-/**
- * Implements hook_config_info().
- */
-function simple_ldap_active_group_config_info() {
-  $prefixes['simple_ldap_active_group.settings'] = array(
-    'label' => t('Simple LDAP Active Group settings'),
-    'group' => t('Configuration'),
-  );
-  return $prefixes;
 }
