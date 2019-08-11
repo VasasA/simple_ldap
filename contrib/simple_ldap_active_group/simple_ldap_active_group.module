@@ -83,7 +83,7 @@ function simple_ldap_active_group_user_delete($account) {
   // Delete an LDAP entry, overriding the search filter imposed by
   // simple_ldap_user.
   $config = config('simple_ldap_user.settings');
-  if (config_get('simple_ldap_active_group.settings', 'simple_ldap_active_group_delete_filtered')) {
+  if (config_get('simple_ldap_user.settings', 'simple_ldap_active_group_delete_filtered')) {
     $user_basedn = $config->get('simple_ldap_user_basedn');
     $user_scope = $config->get('simple_ldap_user_scope');
     $user_attribute_name = $config->get('simple_ldap_user_attribute_name');
@@ -111,7 +111,7 @@ function simple_ldap_active_group_blocked($account) {
   $user_scope = $config->get('simple_ldap_user_scope');
   $user_attribute_name = $config->get('simple_ldap_user_attribute_name');
   $user_filter = '(&(' . $user_attribute_name . '=' . $account->name . ')' . simple_ldap_active_group_filter() . ')';
-  $group_dn = config_get('simple_ldap_active_group.settings', 'simple_ldap_active_group_group');
+  $group_dn = config_get('simple_ldap_role.settings', 'simple_ldap_active_group_group');
 
   // Search for the LDAP user and group.
   $server = SimpleLdapServer::singleton();
@@ -147,7 +147,7 @@ function simple_ldap_active_group_active($account) {
   $user_scope = $config->get('simple_ldap_user_scope');
   $user_attribute_name = $config->get('simple_ldap_user_attribute_name');
   $user_filter = '(&(' . $user_attribute_name . '=' . $account->name . ')' . simple_ldap_active_group_filter() . ')';
-  $group_dn = config_get('simple_ldap_active_group.settings', 'simple_ldap_active_group_group');
+  $group_dn = config_get('simple_ldap_role.settings', 'simple_ldap_active_group_group');
 
   // Search for the LDAP user and group.
   $server = SimpleLdapServer::singleton();
