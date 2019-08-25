@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * Tests for Simple LDAP Active Group module.
+ */
+
+class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCase {
+
+  /**
+   * Test default LDAP group
+   */
+  public function testDefaultLdapGroup() {
+    
+    // Enable the simple_ldap_role and the simple_ldap_active_group modules.
+    $modules = array('simple_ldap_role', 'simple_ldap_active_group');
+    $success = module_enable($modules);
+    $this->assertTrue($success, t('Enabled modules: @modules', array('@modules' => implode(', ', $modules))));
+    
+    // Get default LDAP group.
+    $default_group_dn = config_get('simple_ldap_role.settings', 'simple_ldap_active_group_group');
+    $default_group = explode('=', explode(',', $default_group_dn)[0])[1];
+    $this->assertTrue(TRUE, 'Enabled modules::'.$default_group_dn.'::'.$default_group);
+    
+    // Get module configurations.
+    $objectclass = simple_ldap_role_variable_get('simple_ldap_role_objectclass');
+    $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
+
+    // Log in as User 1.
+    $this->drupalUser1Login();
+
+    // Submit the form to add a new Drupal role.
+    $edit = array(
+      'label' => $default_group,
+      'name' => $default_group,
+    );
+    $this->drupalPost('admin/config/people/roles', $edit, t('Add role'));
+    $this->assertText(t('The @role role has been added', array('@role' => $default_group)), t('The @role role was added to Drupal', array('@role' => $default_group)));
+
+    // Create new user.
+    $user = $this->drupalCreateUser();
+
+    // Load the LDAP group.
+    $ldap_group = new SimpleLdapRole($default_group);
+
+    // Test that the LDAP entry was created.
+    $this->assertTrue($ldap_group->exists, t('@dn is present in the LDAP directory', array('@dn' => $ldap_group->dn)));
+
+    // Test that the new user was added to the default LDAP group.
+    $members = $ldap_group->$attribute_member;
+    $this->assertTrue(in_array($user->name, $members, TRUE), t('The user, @user, was added as a member of @dn'.serialize($members), array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+
+    // Block the user.
+    $edit = array(
+      'status' => 0,
+    );
+    $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
+
+    // Test that the user was removed from the default LDAP group.
+    $members = $ldap_group->$attribute_member;
+    $this->assertFalse(in_array($user->name, $members, TRUE), t('The user, @user, was removed from @dn', array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+
+    // Activate the user.
+    $edit = array(
+      'status' => 1,
+    );
+    $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
+
+    // Test that the user was added to the default LDAP group.
+    $members = $ldap_group->$attribute_member;
+    $this->assertTrue(in_array($user->name, $members, TRUE), t('The user, @user, was added as a member of @dn', array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+
+    // Cleanup.
+    $ldap_user = new SimpleLdapUser($user->name);
+    $ldap_user->delete();
+    $this->assertFalse($ldap_user->exists, t(':dn was removed from LDAP', array(':dn' => $ldap_user->dn)));
+    $ldap_group->delete();
+  }
+}
+
+class SimpleLdapActiveGroupDeleteIgnoreFilterWebTestCase extends SimpleLdapUserTestCase {
+
+  /**
+   * Test: delete the user by ignoring the filter
+   */
+  public function testDeleteIgnoreFilter() {
+    
+  }
+}

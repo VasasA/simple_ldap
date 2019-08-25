@@ -1,0 +1,11 @@
+[SimpleLdapActiveGroupDefaultGroupWebTestCase]
+name = Default LDAP group
+description = Tests that adding a user to the defined LDAP group when set to "Active" and removing the user from the group when set to "Blocked".
+group = Simple LDAP Active Group
+file = simple_ldap_active_group.test
+
+[SimpleLdapActiveGroupDeleteIgnoreFilterWebTestCase]
+name = Delete the user by ignoring the filter
+description = Tests that user will be deleted from LDAP when deleted from Drupal, even if the user's DN does not match the specified search filter.
+group = Simple LDAP Active Group
+file = simple_ldap_active_group.test
