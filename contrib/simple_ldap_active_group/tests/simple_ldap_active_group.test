@@ -24,6 +24,8 @@ class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCas
     // Get module configurations.
     $objectclass = simple_ldap_role_variable_get('simple_ldap_role_objectclass');
     $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
+    $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
+    $basedn = simple_ldap_user_variable_get('simple_ldap_user_basedn');
 
     // Log in as User 1.
     $this->drupalUser1Login();
@@ -38,6 +40,11 @@ class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCas
 
     // Create new user.
     $user = $this->drupalCreateUser();
+    $user_dn = $attribute_name . '=' . $user->name . ',' . $basedn;
+
+    // Synchronization is forced by user edit page.
+    $edit = array();
+    $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
 
     // Load the LDAP group.
     $ldap_group = new SimpleLdapRole($default_group);
@@ -47,7 +54,7 @@ class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCas
 
     // Test that the new user was added to the default LDAP group.
     $members = $ldap_group->$attribute_member;
-    $this->assertTrue(in_array($user->name, $members, TRUE), t('The user, @user, was added as a member of @dn'.serialize($members), array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+    $this->assertTrue(in_array($user_dn, $members, TRUE), t('The user, @user, was added as a member of @dn', array('@user' => $user_dn, '@dn' => $ldap_group->dn)));
 
     // Block the user.
     $edit = array(
@@ -55,9 +62,12 @@ class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCas
     );
     $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
 
-    // Test that the user was removed from the default LDAP group.
+    // Reload the LDAP group.
+    $ldap_group = new SimpleLdapRole($default_group);
     $members = $ldap_group->$attribute_member;
-    $this->assertFalse(in_array($user->name, $members, TRUE), t('The user, @user, was removed from @dn', array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+
+    // Test that the user was removed from the default LDAP group.
+    $this->assertFalse(in_array($user_dn, $members, TRUE), t('The user, @user, was removed from @dn', array('@user' => $user_dn, '@dn' => $ldap_group->dn)));
 
     // Activate the user.
     $edit = array(
@@ -65,9 +75,12 @@ class SimpleLdapActiveGroupDefaultGroupWebTestCase extends SimpleLdapUserTestCas
     );
     $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
 
-    // Test that the user was added to the default LDAP group.
+    // Reload the LDAP group.
+    $ldap_group = new SimpleLdapRole($default_group);
     $members = $ldap_group->$attribute_member;
-    $this->assertTrue(in_array($user->name, $members, TRUE), t('The user, @user, was added as a member of @dn', array('@user' => $user->name, '@dn' => $ldap_group->dn)));
+
+    // Test that the user was added to the default LDAP group.
+    $this->assertTrue(in_array($user_dn, $members, TRUE), t('The user, @user, was added as a member of @dn', array('@user' => $user_dn, '@dn' => $ldap_group->dn)));
 
     // Cleanup.
     $ldap_user = new SimpleLdapUser($user->name);
