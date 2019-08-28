@@ -57,6 +57,17 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
    * Test Simple LDAP SSO.
    */
   public function testSimpleLdapSSO() {
+
+    // Clean up the unnecessary LDAP entries that were added for testing.
+    foreach ($this->drupalUser as $bu) {
+      // Create a new SimpleLdapUser object, which performs a new search based
+      // on the name attribute. This accounts for the possibility that the LDAP
+      // entry has changed since it was created.
+      $ldap_user = new SimpleLdapUser($bu->name);
+      $ldap_user->delete();
+      $this->assertFalse($ldap_user->exists, t(':dn was removed from LDAP', array(':dn' => $ldap_user->dn)));
+    }
+
     // Assert module is configured.
     drupal_static_reset('simple_ldap_sso_configured');
     $this->assertTrue(simple_ldap_sso_configured(), t('Simple LDAP SSO is configured.'));
