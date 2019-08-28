@@ -96,6 +96,64 @@ class SimpleLdapActiveGroupDeleteIgnoreFilterWebTestCase extends SimpleLdapUserT
    * Test: delete the user by ignoring the filter
    */
   public function testDeleteIgnoreFilter() {
-    
+
+    // Enable the simple_ldap_role and the simple_ldap_active_group modules.
+    $modules = array('simple_ldap_role', 'simple_ldap_active_group');
+    $success = module_enable($modules);
+    $this->assertTrue($success, t('Enabled modules: @modules', array('@modules' => implode(', ', $modules))));
+
+    // Get module configurations.
+    $attribute_member_default = simple_ldap_role_variable_get('simple_ldap_role_attribute_member_default');
+    $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
+
+    // Log in as User 1.
+    $this->drupalUser1Login();
+
+    // Clean up the unnecessary LDAP entries that were added for testing.
+    foreach ($this->ldapUser as $lu) {
+      // Create a new SimpleLdapUser object, which performs a new search based
+      // on the name attribute. This accounts for the possibility that the LDAP
+      // entry has changed since it was created.
+      $ldap_user = new SimpleLdapUser($lu->{$attribute_name}[0]);
+      $ldap_user->delete();
+      $this->assertFalse($ldap_user->exists, t(':dn was removed from LDAP', array(':dn' => $ldap_user->dn)));
+    }
+
+    // Create new user.
+    $user = $this->drupalCreateUser();
+
+    // Synchronization is forced by user edit page.
+    $edit = array();
+    $this->drupalPost('user/' . $user->uid . '/edit', $edit, t('Save'));
+
+    // Load the LDAP user.
+    $ldap_user = new SimpleLdapUser($user->name);
+    $this->assertTrue($ldap_user->exists, t('New account, @user, was provisioned to LDAP.', array('@user' => $user->name)));
+
+    // Clear menu cache, otherwise Simple LDAP Configuration pages are not present.
+    menu_rebuild();
+
+    // Submit the form to set for deletion.
+    // The filter only matches one user.
+    $edit = array(
+      'simple_ldap_user_filter' => $attribute_member_default,
+      'simple_ldap_active_group_delete_filtered' => 1,
+    );
+    $this->drupalPost('admin/config/people/simple_ldap/user', $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'), t('Activated option: Delete LDAP entries, even if they do not match the filter'));
+
+    // Submit the delete-user form.
+    $edit = array(
+      'user_cancel_method' => 'user_cancel_delete',
+    );
+    $this->drupalPost('user/' . $user->uid . '/cancel', $edit, t('Cancel account'));
+    $this->assertText(t('@user has been deleted.', array('@user' => $user->name)), t('The @user was deleted from Backdrop.', array('@user' => $user->name)));
+
+    // Verify that the user was deleted from LDAP.
+    $ldap_user = new SimpleLdapUser($user->name);
+    $this->assertFalse($ldap_user->exists, t('The @user was deleted from LDAP.', array('@user' => $user->name)));
+
+    // Cleanup.
+    $ldap_user->delete();
   }
 }
