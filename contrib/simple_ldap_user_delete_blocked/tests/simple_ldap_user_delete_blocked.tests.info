@@ -1,0 +1,5 @@
+[SimpleLdapUserDeleteBlockedWebTestCase]
+name = Blocking and activating the user
+description = Tests that removing the user from LDAP when set to "Blocked" and adding a user to LDAP when set to "Active".
+group = Simple LDAP User Delete Blocked
+file = simple_ldap_user_delete_blocked.test
