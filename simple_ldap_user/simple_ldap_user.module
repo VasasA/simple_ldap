@@ -278,7 +278,8 @@ function simple_ldap_user_user_delete($account) {
   $ldap_user = SimpleLdapUser::singleton($account->name);
   try {
     $ldap_user->delete();
-  } catch (SimpleLdapException $e) {
+  }
+  catch (SimpleLdapException $e) {
     backdrop_set_message(t('Failed to delete @name from LDAP.', array('@name' => $account->name)) . ' ' . t('Error @code: @message.', array('@code' => $e->getCode(), '@message' => $e->getMessage())), 'error', FALSE);
   }
 }
@@ -466,7 +467,8 @@ function simple_ldap_user_sync_user_to_ldap($backdrop_user) {
   // Save any changes.
   try {
     $ldap_user->save();
-  } catch (SimpleLdapException $e) {
+  }
+  catch (SimpleLdapException $e) {
     $attribute_list = $attribute_name . ', ' . $attribute_mail . ', ' . $attribute_pass . ', objectclass)';
     backdrop_set_message(t('Failed to save the user to LDAP. ') . format_string('%error', array('%error' => $e->getMessage())) . t(' (Please check the "required" attributes in LDAP database. Backdrop CMS only provides these attributes: ') . $attribute_list, 'error');
   }
@@ -537,7 +539,7 @@ function simple_ldap_user_action_info_alter(&$actions) {
 function simple_ldap_user_export($users) {
   // Generate the batch operation array.
   $operations = array();
-  $uid = $users -> uid;
+  $uid = $users->uid;
 
   // Don't sync user1.
   if ($uid == 1) {

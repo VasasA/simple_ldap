@@ -67,7 +67,8 @@ function simple_ldap_user_admin($form, &$form_state) {
           foreach ($result as $attribute) {
             $attributes[strtolower($attribute)] = $attribute;
           }
-        } catch (SimpleLdapException $e) {
+        }
+        catch (SimpleLdapException $e) {
           // Just absorb the exception. This means that an objectclass was
           // specified that does not exist on the server. Just don't add any
           // attributes to the list in this case.
