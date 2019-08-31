@@ -33,25 +33,25 @@ class SimpleLdapUserController extends UserStorageController {
     $users = parent::load($ids, $conditions);
 
     // Validate users against LDAP directory.
-    foreach ($users as $uid => $drupal_user) {
+    foreach ($users as $uid => $backdrop_user) {
       // Do not validate user/1, anonymous users, or blocked users.
-      if ($uid == 1 || $uid == 0 || $drupal_user->status == 0) {
+      if ($uid == 1 || $uid == 0 || $backdrop_user->status == 0) {
         continue;
       }
 
       // Try to load the user from LDAP.
-      $ldap_user = SimpleLdapUser::singleton($drupal_user->name);
+      $ldap_user = SimpleLdapUser::singleton($backdrop_user->name);
 
       if (!$ldap_user->exists) {
         // Block the user if it does not exist in LDAP.
-        $this->blockUser($drupal_user);
+        $this->blockUser($backdrop_user);
       }
 
       // Active Directory uses a bitmask to specify certain flags on an account,
       // including whether it is enabled. http://support.microsoft.com/kb/305144
       if ($ldap_user->server->type == 'Active Directory') {
         if (isset($ldap_user->useraccountcontrol[0]) && (int) $ldap_user->useraccountcontrol[0] & 2) {
-          $this->blockUser($drupal_user);
+          $this->blockUser($backdrop_user);
         }
       }
     }
@@ -64,7 +64,7 @@ class SimpleLdapUserController extends UserStorageController {
    * stored in the database into a separate value, for use in user hooks.
    */
   protected function blockUser(stdClass $account) {
-    $account->simple_ldap_user_drupal_status = $account->status;
+    $account->simple_ldap_user_backdrop_status = $account->status;
     $account->simple_ldap_user_ldap_status = 0;
     $account->status = 0;
   }

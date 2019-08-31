@@ -18,30 +18,30 @@ class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
     $account->name = $this->ldapUser[0]->{$attribute_name}[0];
     $account->pass_raw = $this->userPassword[0];
 
-    // Verify that the test user does not exist in Drupal.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertIdentical($drupal_user, FALSE, t('The test user does not exist in Drupal.'));
+    // Verify that the test user does not exist in Backdrop.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertIdentical($backdrop_user, FALSE, t('The test user does not exist in Backdrop.'));
 
     // Verify that the user can log in.
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
-    // Verify that the Drupal user was created during authentication.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('The test user was created in Drupal.'));
+    // Verify that the Backdrop user was created during authentication.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('The test user was created in Backdrop.'));
 
     // Verify again that the user can log in, now that the account exists in
-    // both Drupal and LDAP.
-    $this->drupalLogin($account);
+    // both Backdrop and LDAP.
+    $this->backdropLogin($account);
 
-    // Create a new Drupal user that is not in LDAP.
-    $account = $this->drupalUser[0];
+    // Create a new Backdrop user that is not in LDAP.
+    $account = $this->backdropUser[0];
 
     // Verify that the user does not exist in LDAP by random chance.
     $ldap_user = new SimpleLdapUser($account->name);
     $this->assertFalse($ldap_user->exists, t('The user account does not exist in LDAP.'));
 
     // Verify that the user cannot log in.
-    $this->drupalNoLogin($account);
+    $this->backdropNoLogin($account);
   }
 
   /**
@@ -60,24 +60,24 @@ class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
     $ldap_user = new SimpleLdapUser($account->name);
     $this->assertTrue($ldap_user->exists, t(':name exists in LDAP.', array(':name' => $account->name)));
 
-    // Verify that the test user does not exist in Drupal.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertIdentical($drupal_user, FALSE, t('The test user does not exist in Drupal.'));
+    // Verify that the test user does not exist in Backdrop.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertIdentical($backdrop_user, FALSE, t('The test user does not exist in Backdrop.'));
 
     // Verify that the user cannot log in.
-    $this->drupalNoLogin($account);
+    $this->backdropNoLogin($account);
 
-    // Verify that the Drupal user was created during the authentication
+    // Verify that the Backdrop user was created during the authentication
     // attempt.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('The test user was created in Drupal.'));
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('The test user was created in Backdrop.'));
 
     // Verify again that the user cannot log in, now that the account exists in
-    // both Drupal and LDAP.
-    $this->drupalNoLogin($account);
+    // both Backdrop and LDAP.
+    $this->backdropNoLogin($account);
 
-    // Create a new Drupal user that is not in LDAP.
-    $account = $this->drupalUser[0];
+    // Create a new Backdrop user that is not in LDAP.
+    $account = $this->backdropUser[0];
     $account->pass_raw = $account->pass_raw . 'invalid';
 
     // Verify that the user does not exist in LDAP (by random chance).
@@ -85,7 +85,7 @@ class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
     $this->assertFalse($ldap_user->exists, t('The user account does not exist in LDAP.'));
 
     // Verify that the user cannot log in.
-    $this->drupalNoLogin($account);
+    $this->backdropNoLogin($account);
 
     // Initialize a random user object.
     $account = new stdClass();
@@ -96,20 +96,20 @@ class SimpleLdapUserAuthenticationWebTestCase extends SimpleLdapUserTestCase {
     $ldap_user = new SimpleLdapUser($account->name);
     $this->assertFalse($ldap_user->exists, t('The user account does not exist in LDAP.'));
 
-    // Verify that the user does not exist in Drupal (by random chance).
-    $drupal_user = user_load_by_name($account->name);
-    $this->assertIdentical($drupal_user, FALSE, t('The user does not exist in Drupal.'));
+    // Verify that the user does not exist in Backdrop (by random chance).
+    $backdrop_user = user_load_by_name($account->name);
+    $this->assertIdentical($backdrop_user, FALSE, t('The user does not exist in Backdrop.'));
 
     // Attempt to log in.
-    $this->drupalNoLogin($account);
+    $this->backdropNoLogin($account);
 
     // Verify that the user was not created in LDAP.
     $ldap_user = new SimpleLdapUser($account->name);
     $this->assertFalse($ldap_user->exists, t('The user account does not exist in LDAP.'));
 
-    // Verify that the user was not created in Drupal.
-    $drupal_user = user_load_by_name($account->name);
-    $this->assertIdentical($drupal_user, FALSE, t('The user does not exist in Drupal.'));
+    // Verify that the user was not created in Backdrop.
+    $backdrop_user = user_load_by_name($account->name);
+    $this->assertIdentical($backdrop_user, FALSE, t('The user does not exist in Backdrop.'));
   }
 
 }
@@ -128,7 +128,7 @@ class SimpleLdapUserUserOneLoginWebTestCase extends SimpleLdapUserTestCase {
     $this->assertFalse($ldap_user->exists, t('User 1 does not exist in LDAP.'));
 
     // Attempt to log in.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Verify that user-1 still does not exist in LDAP.
     $ldap_user = new SimpleLdapUser($admin_user->name);
@@ -151,8 +151,8 @@ class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
 
     $server = SimpleLdapServer::singleton();
 
-    // Get the drupal user.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    // Get the Backdrop user.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
 
     // Create the form variable array.
     $edit = array();
@@ -162,14 +162,14 @@ class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
     $mapObject = SimpleLdapUserMap::singleton();
     foreach ($mapObject->map as $attribute) {
 
-      // Skip drupal-to-ldap many-to-one mappings.
-      if (count($attribute['drupal']) > 1) {
+      // Skip Backdrop-to-ldap many-to-one mappings.
+      if (count($attribute['backdrop']) > 1) {
         continue;
       }
 
       // Get the field name and type.
-      $drupal_attribute = reset($attribute['drupal']);
-      $type = substr($drupal_attribute, 0, 1);
+      $backdrop_attribute = reset($attribute['backdrop']);
+      $type = substr($backdrop_attribute, 0, 1);
 
       $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
       // A syntax type of 1.3.6.1.4.1.1466.115.121.1.27 is an integer.
@@ -187,18 +187,18 @@ class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
 
       switch ($type) {
         case '#':
-          $drupal_attribute = substr($drupal_attribute, 1);
-          $edit[$drupal_attribute . '[und][0][value]'] = $value;
+          $backdrop_attribute = substr($backdrop_attribute, 1);
+          $edit[$backdrop_attribute . '[und][0][value]'] = $value;
           break;
 
         default:
-          $edit[$drupal_attribute] = $value;
+          $edit[$backdrop_attribute] = $value;
       }
 
     }
 
     // Submit user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, t('Save'));
   }
 
   /**
@@ -217,7 +217,7 @@ class SimpleLdapUserModifyProfileWebTestCase extends SimpleLdapUserTestCase {
     $account->pass_raw = $this->userPassword[0];
 
     // Log in user. This should create/sync an LDAP user (tested elsewhere).
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
     // Submit the profile edit form, and verify synchronization.
     $this->postProfileForm($suffix);
@@ -254,20 +254,20 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $mapObject = SimpleLdapUserMap::singleton();
     foreach ($mapObject->map as $attribute) {
       if (in_array($attribute['ldap'], $must)) {
-        if (count($attribute['drupal']) > 1) {
+        if (count($attribute['backdrop']) > 1) {
           continue;
         }
-        $drupal_attribute = reset($attribute['drupal']);
-        if (substr($drupal_attribute, 0, 1) == '#') {
-          $drupal_attribute = substr($drupal_attribute, 1);
+        $backdrop_attribute = reset($attribute['backdrop']);
+        if (substr($backdrop_attribute, 0, 1) == '#') {
+          $backdrop_attribute = substr($backdrop_attribute, 1);
         }
         $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
         // A syntax type of 1.3.6.1.4.1.1466.115.121.1.27 is an integer.
         if (isset($attributetype['syntax']) && $attributetype['syntax'] == '1.3.6.1.4.1.1466.115.121.1.27') {
-          $edit[$drupal_attribute . '[und][0][value]'] = rand(1000, 65535);
+          $edit[$backdrop_attribute . '[und][0][value]'] = rand(1000, 65535);
         }
         else {
-          $edit[$drupal_attribute . '[und][0][value]'] = $this->randomName();
+          $edit[$backdrop_attribute . '[und][0][value]'] = $this->randomName();
         }
       }
     }
@@ -286,27 +286,27 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.core', 'user_register', USER_REGISTER_ADMINISTRATORS_ONLY);
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
-    $this->drupalLogout();
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropLogout();
 
-    $this->drupalGet('user/register');
+    $this->backdropGet('user/register');
     $this->assertResponse(403, t('Registration page is inaccessible when only administrators can create accounts.'));
 
     // Allow registration by site visitors without administrator approvial.
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
-    $this->drupalLogout();
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
-    $this->drupalPost('user/register', $edit, t('Create new account'));
+    $this->backdropPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('A welcome message with further instructions has been sent to your e-mail address.'), t('User registered successfully.'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
@@ -321,14 +321,14 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
-    $this->drupalLogout();
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
-    $this->drupalPost('user/register', $edit, t('Create new account'));
+    $this->backdropPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
     $this->assertFalse($new_user->status, t('New account is blocked until approved by an administrator.'));
@@ -352,19 +352,19 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $edit = $this->formData($name, $mail);
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
-    $this->drupalLogout();
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropLogout();
 
     // Enter a correct password.
     $edit['pass'] = $new_pass = $this->randomName();
-    $this->drupalPost('user/register', $edit, t('Create new account'));
+    $this->backdropPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
     $this->assertText(t('Registration successful. You are now logged in.'), t('Users are logged in after registering.'));
-    $this->drupalLogout();
+    $this->backdropLogout();
     $ldap_user = new SimpleLdapUser($name);
     $this->assertTrue($ldap_user->exists, t('New account has been provisioned to LDAP.'));
 
@@ -375,14 +375,14 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.core', 'user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
     // Clear cache, otherwise the registration option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
-    $this->drupalLogout();
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
     $edit['pass'] = $new_pass;
-    $this->drupalPost('user/register', $edit, t('Create new account'));
+    $this->backdropPost('user/register', $edit, t('Create new account'));
     $this->assertText(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.'), t('Users are notified of pending approval'));
     $ldap_user = new SimpleLdapUser($name);
     $this->assertTrue($ldap_user->exists, t('New account has been provisioned to LDAP.'));
@@ -392,21 +392,21 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
       'name' => $name,
       'pass' => $new_pass,
     );
-    $this->drupalPost('user/login', $auth, t('Log in'));
+    $this->backdropPost('user/login', $auth, t('Log in'));
     $this->assertText(t('The account for @name has not been activated or is blocked.', array('@name' => $name)), t('User cannot login yet.'));
 
     // Activate the new account.
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
     $edit = array(
       'status' => 1,
     );
-    $this->drupalPost('user/' . $new_user->uid . '/edit', $edit, t('Save'));
-    $this->drupalLogout();
+    $this->backdropPost('user/' . $new_user->uid . '/edit', $edit, t('Save'));
+    $this->backdropLogout();
 
     // Login after administrator approval.
-    $this->drupalPost('user/login', $auth, t('Log in'));
+    $this->backdropPost('user/login', $auth, t('Log in'));
     $this->assertText(t('Member for'), t('The user can log in after administrator approval.'));
 
     // Cleanup.
@@ -445,25 +445,25 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     config_set('system.date', 'default_timezone', 'Europe/Brussels');
 
     // Verify that the required mapped fields show up on the registration form.
-    $this->drupalGet('user/register');
+    $this->backdropGet('user/register');
     foreach ($mapObject->map as $field) {
-      if (count($field['drupal']) > 1) {
+      if (count($field['backdrop']) > 1) {
         continue;
       }
-      $drupal_attribute = reset($field['drupal']);
-      $type = substr($drupal_attribute, 0, 1);
+      $backdrop_attribute = reset($field['backdrop']);
+      $type = substr($backdrop_attribute, 0, 1);
       if (in_array($field['ldap'], $must) && $type == '#') {
-        $drupal_attribute = substr($drupal_attribute, 1);
-        $this->assertText($drupal_attribute, t(':field appears on the user registration form', array(':field' => $drupal_attribute)));
+        $backdrop_attribute = substr($backdrop_attribute, 1);
+        $this->assertText($backdrop_attribute, t(':field appears on the user registration form', array(':field' => $backdrop_attribute)));
       }
     }
 
     // Submit registration form.
     $edit = $this->formData($name, $mail);
     $edit['pass'] = $new_pass = $this->randomName();
-    $this->drupalPost(NULL, $edit, t('Create new account'));
+    $this->backdropPost(NULL, $edit, t('Create new account'));
 
-    // Load the Drupal user.
+    // Load the Backdrop user.
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
 
@@ -476,22 +476,22 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     }
 
     // Check user fields.
-    $this->assertEqual($new_user->name, $name, t('Drupal username matches.'));
+    $this->assertEqual($new_user->name, $name, t('Backdrop username matches.'));
     $this->assertEqual($ldap_user->{$attribute_name}[0], $name, t('LDAP username matches.'));
 
-    $this->assertEqual($new_user->mail, $mail, t('Drupal e-mail address matches.'));
+    $this->assertEqual($new_user->mail, $mail, t('Backdrop e-mail address matches.'));
     $this->assertEqual($ldap_user->{$attribute_mail}[0], $mail, t('LDAP e-mail address matches.'));
 
     foreach ($mapObject->map as $field) {
-      if (count($field['drupal']) > 1) {
+      if (count($field['backdrop']) > 1) {
         continue;
       }
-      $drupal_attribute = reset($field['drupal']);
-      $type = substr($drupal_attribute, 0, 1);
+      $backdrop_attribute = reset($field['backdrop']);
+      $type = substr($backdrop_attribute, 0, 1);
       if (in_array($field['ldap'], $must) && $type == '#') {
-        $drupal_attribute = substr($drupal_attribute, 1);
-        $this->assertEqual($new_user->{$drupal_attribute}[LANGUAGE_NONE][0]['value'], $edit[$drupal_attribute . '[und][0][value]'], t('The :field Drupal field value was correctly saved.', array(':field' => $drupal_attribute)));
-        $this->assertEqual($ldap_user->{$field['ldap']}[0], $edit[$drupal_attribute . '[und][0][value]'], t('The :field LDAP attribute was correctly saved.', array(':field' => $field['ldap'])));
+        $backdrop_attribute = substr($backdrop_attribute, 1);
+        $this->assertEqual($new_user->{$backdrop_attribute}[LANGUAGE_NONE][0]['value'], $edit[$backdrop_attribute . '[und][0][value]'], t('The :field Backdrop field value was correctly saved.', array(':field' => $backdrop_attribute)));
+        $this->assertEqual($ldap_user->{$field['ldap']}[0], $edit[$backdrop_attribute . '[und][0][value]'], t('The :field LDAP attribute was correctly saved.', array(':field' => $field['ldap'])));
       }
     }
 
@@ -520,9 +520,9 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
     // Modify the mapped attributes.
     $mapObject = SimpleLdapUserMap::singleton();
     $attribute_map = $mapObject->map;
-    array_unshift($attribute_map, array('drupal' => array('mail'), 'ldap' => $attribute_mail));
+    array_unshift($attribute_map, array('backdrop' => array('mail'), 'ldap' => $attribute_mail));
     foreach ($attribute_map as $attribute) {
-      if (count($attribute['drupal']) == 1) {
+      if (count($attribute['backdrop']) == 1) {
         $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
         // A syntax type of 1.3.6.1.4.1.1466.115.121.1.27 is an integer.
         if (isset($attributetype['syntax']) && $attributetype['syntax'] == '1.3.6.1.4.1.1466.115.121.1.27') {
@@ -564,28 +564,28 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 
     // Log in with the test user, this should do the initial account sync
     // (tested elsewhere).
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
     // Generate a random value to append.
     $suffix = $this->randomName();
 
-    // Drupal is the authoritative source, Change all of the mapped fields,
+    // Backdrop is the authoritative source, Change all of the mapped fields,
     // login, and verify synchronization.
-    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'drupal');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'backdrop');
     $this->modifyLdap($suffix);
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
     $this->verifySync();
 
     // LDAP is the authoritative source. Change all of the mapped fields, login,
     // and verify synchronization.
     config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'ldap');
     $this->modifyLdap($suffix);
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
     $this->verifySync($suffix);
 
     // Clean up by removing the suffix from the LDAP entry, and resyncing.
     $this->modifyLdap();
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
     $this->verifySync();
   }
 
@@ -606,28 +606,28 @@ class SimpleLdapUserSyncTestCase extends SimpleLdapUserTestCase {
 
     // Log in with the test user, this should do the initial account sync
     // (tested elsewhere).
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
     // Generate a random value to append.
     $suffix = $this->randomName();
 
-    // Drupal is the authoritative source. Change all of the mapped fields, load
+    // Backdrop is the authoritative source. Change all of the mapped fields, load
     // the user, and verify synchronization.
-    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'drupal');
+    config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'backdrop');
     $this->modifyLdap();
-    $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
+    $backdrop_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
     $this->verifySync();
 
     // LDAP is the authoritative source. Change all of the mapped fields, load
     // the user, and verify synchronization.
     config_set('simple_ldap_user.settings', 'simple_ldap_user_source', 'ldap');
     $this->modifyLdap($suffix);
-    $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
+    $backdrop_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
     $this->verifySync($suffix);
 
     // Clean up by removing the suffix from the LDAP entry, and resyncing.
     $this->modifyLdap();
-    $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
+    $backdrop_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$attribute_name}[0]), TRUE);
     $this->verifySync();
   }
 
@@ -648,10 +648,10 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
     $account->pass_raw = $this->userPassword[0];
 
     // Log in user. This should create/sync an LDAP user (tested elsewhere).
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
-    // Get the drupal user.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    // Get the Backdrop user.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
 
     // Create the form variable array.
     $edit = array();
@@ -659,46 +659,46 @@ class SimpleLdapUserPasswordResetTestCase extends SimpleLdapUserTestCase {
     $edit['pass'] = $this->randomName();
 
     // Submit user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, 'Save');
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, 'Save');
 
     // Verify that the old password no longer works.
-    $this->drupalNoLogin($account);
+    $this->backdropNoLogin($account);
 
     // Verify that the new password works.
     $account->pass_raw = $edit['pass'];
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
     // Reset the password.
     $edit['current_pass'] = $edit['pass'];
     $edit['pass'] = $this->userPassword[0];
 
     // Submit user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, 'Save');
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, 'Save');
 
     // Verify that it was changed back.
     $account->pass_raw = $edit['pass'];
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
   }
 
   /**
-   * Tests password reset before a Drupal user is created.
+   * Tests password reset before a Backdrop user is created.
    */
-  public function testLdapNoDrupalPasswordReset() {
+  public function testLdapNoBackdropPasswordReset() {
     // Get the configuration.
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
 
-    // Verify that the test user does not exist in Drupal.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertIdentical($drupal_user, FALSE, t('The test user does not exist in Drupal.'));
+    // Verify that the test user does not exist in Backdrop.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertIdentical($backdrop_user, FALSE, t('The test user does not exist in Backdrop.'));
 
     // Submit the password reset form.
     $edit = array('name' => $this->ldapUser[0]->{$attribute_name}[0]);
-    $this->drupalPost('user/password', $edit, t('Reset password'));
+    $this->backdropPost('user/password', $edit, t('Reset password'));
     $this->assertText(t('Further instructions have been sent to your e-mail address.'), t('A new password was successfully requested.'));
 
-    // Verify that the Drupal user was created.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('The test user was created in Drupal.'));
+    // Verify that the Backdrop user was created.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('The test user was created in Backdrop.'));
   }
 }
 
@@ -734,43 +734,43 @@ class SimpleLdapUserDeleteUserTestCase extends SimpleLdapUserTestCase {
     $mapObject = SimpleLdapUserMap::singleton();
     foreach ($mapObject->map as $attribute) {
       if (in_array($attribute['ldap'], $must)) {
-        if (count($attribute['drupal']) > 1) {
+        if (count($attribute['backdrop']) > 1) {
           continue;
         }
-        $drupal_attribute = reset($attribute['drupal']);
-        if (substr($drupal_attribute, 0, 1) == '#') {
-          $drupal_attribute = substr($drupal_attribute, 1);
+        $backdrop_attribute = reset($attribute['backdrop']);
+        if (substr($backdrop_attribute, 0, 1) == '#') {
+          $backdrop_attribute = substr($backdrop_attribute, 1);
         }
         $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
         // A syntax type of 1.3.6.1.4.1.1466.115.121.1.27 is an integer.
         if (isset($attributetype['syntax']) && $attributetype['syntax'] == '1.3.6.1.4.1.1466.115.121.1.27') {
-          $edit[$drupal_attribute . '[und][0][value]'] = rand(1000, 65535);
+          $edit[$backdrop_attribute . '[und][0][value]'] = rand(1000, 65535);
         }
         else {
-          $edit[$drupal_attribute . '[und][0][value]'] = $this->randomName();
+          $edit[$backdrop_attribute . '[und][0][value]'] = $this->randomName();
         }
       }
     }
 
     // Submit the registration form to create the user.
-    $this->drupalPost('user/register', $edit, t('Create new account'));
+    $this->backdropPost('user/register', $edit, t('Create new account'));
     $accounts = user_load_multiple(array(), array('name' => $name, 'mail' => $mail));
-    $drupal_user = reset($accounts);
+    $backdrop_user = reset($accounts);
     $this->assertText(t('Registration successful. You are now logged in.'), t('Users are logged in after registering: '.$name));
-    $this->drupalLogout();
+    $this->backdropLogout();
 
     // Verify that the user exists in LDAP.
     $ldap_user = new SimpleLdapUser($name);
     $this->assertTrue($ldap_user->exists, t('The user was created in LDAP: '.$name));
 
     // Log in as user1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Submit the delete-user form.
     $edit = array();
     $edit['user_cancel_method'] = 'user_cancel_delete';
-    $this->drupalPost('user/' . $drupal_user->uid . '/cancel', $edit, t('Cancel account'));
-    $this->assertText(t('@name has been deleted.', array('@name' => $name)), t('The user was deleted from Drupal.'));
+    $this->backdropPost('user/' . $backdrop_user->uid . '/cancel', $edit, t('Cancel account'));
+    $this->assertText(t('@name has been deleted.', array('@name' => $name)), t('The user was deleted from Backdrop.'));
 
     // Verify that the user was deleted from LDAP.
     $ldap_user = new SimpleLdapUser($name);
@@ -786,30 +786,30 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
    */
   public function testExport() {
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the export option is not present.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
 
-    // Verify that the drupal users do not exist in LDAP.
-    foreach ($this->drupalUser as $drupal_user) {
-      $ldap_user = new SimpleLdapUser($drupal_user->name);
-      $this->assertFalse($ldap_user->exists, t(':name does not exist in LDAP.', array(':name' => $drupal_user->name)));
+    // Verify that the Backdrop users do not exist in LDAP.
+    foreach ($this->backdropUser as $backdrop_user) {
+      $ldap_user = new SimpleLdapUser($backdrop_user->name);
+      $this->assertFalse($ldap_user->exists, t(':name does not exist in LDAP.', array(':name' => $backdrop_user->name)));
     }
 
     // Submit the export user form.
     $edit = array('action' => 'simple_ldap_user_export');
-    foreach ($this->drupalUser as $drupal_user) {
-      $index = $drupal_user->uid - 1;
+    foreach ($this->backdropUser as $backdrop_user) {
+      $index = $backdrop_user->uid - 1;
       $edit['bulk_form[' . $index . ']'] = TRUE;
     }
-    $this->drupalPost('admin/people', $edit, t('Execute'));
+    $this->backdropPost('admin/people', $edit, t('Execute'));
 
     // Verify that the users were exported to LDAP.
-    foreach ($this->drupalUser as $drupal_user) {
-      $ldap_user = new SimpleLdapUser($drupal_user->name);
-      $this->assertTrue($ldap_user->exists, t(':name exists in LDAP at :dn.', array(':name' => $drupal_user->name, ':dn' => $ldap_user->dn)));
-      $this->verifySync('', $drupal_user->name);
+    foreach ($this->backdropUser as $backdrop_user) {
+      $ldap_user = new SimpleLdapUser($backdrop_user->name);
+      $this->assertTrue($ldap_user->exists, t(':name exists in LDAP at :dn.', array(':name' => $backdrop_user->name, ':dn' => $ldap_user->dn)));
+      $this->verifySync('', $backdrop_user->name);
       // Cleanup LDAP.
       $ldap_user->delete();
       $this->assertFalse($ldap_user->exists, t(':dn was removed from LDAP', array(':dn' => $ldap_user->dn)));
@@ -827,15 +827,15 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Clear cache, otherwise the import menu item doesn't work.
-    $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
 
-    // Verify that the LDAP users do not exist in Drupal.
+    // Verify that the LDAP users do not exist in Backdrop.
     foreach ($this->ldapUser as $ldap_user) {
-      $drupal_user = user_load_by_name($ldap_user->{$attribute_name}[0]);
-      $this->assertIdentical($drupal_user, FALSE, t('The user :name does not exist in Drupal.', array(':name' => $ldap_user->{$attribute_name}[0])));
+      $backdrop_user = user_load_by_name($ldap_user->{$attribute_name}[0]);
+      $this->assertIdentical($backdrop_user, FALSE, t('The user :name does not exist in Backdrop.', array(':name' => $ldap_user->{$attribute_name}[0])));
     }
 
     // Submit the import user form.
@@ -852,12 +852,12 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     foreach ($this->ldapUser as $ldap_user) {
       $edit['users[' . $ldap_user->{$attribute_name}[0] . ']'] = TRUE;
     }
-    $this->drupalPost('admin/people/simple_ldap_user_import', $edit, t('Import'));
+    $this->backdropPost('admin/people/simple_ldap_user_import', $edit, t('Import'));
 
-    // Verify that the users were imported into Drupal.
+    // Verify that the users were imported into Backdrop.
     foreach ($this->ldapUser as $ldap_user) {
-      $drupal_user = user_load_by_name($ldap_user->{$attribute_name}[0]);
-      $this->assertNotIdentical($drupal_user, FALSE, t('The test user :name was created in Drupal.', array(':name' => $ldap_user->{$attribute_name}[0])));
+      $backdrop_user = user_load_by_name($ldap_user->{$attribute_name}[0]);
+      $this->assertNotIdentical($backdrop_user, FALSE, t('The test user :name was created in Backdrop.', array(':name' => $ldap_user->{$attribute_name}[0])));
       $this->verifySync('', $ldap_user->{$attribute_name}[0]);
     }
   }

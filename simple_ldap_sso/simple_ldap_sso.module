@@ -68,7 +68,7 @@ function simple_ldap_sso_init() {
 function simple_ldap_sso_menu() {
   $items['admin/config/people/simple_ldap/sso'] = array(
     'title' => 'Single Sign On',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('simple_ldap_sso_admin'),
     'access arguments' => array('administer site configuration'),
     'file' => 'simple_ldap_sso.admin.inc',
@@ -90,7 +90,7 @@ function simple_ldap_sso_user_login(array &$edit, stdClass $account) {
 
   // The session hasn't been written to the sessions table yet, so we need to
   // wait until that occurs by registering our own shutdown function.
-  drupal_register_shutdown_function('simple_ldap_sso_login_shutdown');
+  backdrop_register_shutdown_function('simple_ldap_sso_login_shutdown');
   // Set our session value that shows that the SSO cookie we're about to
   // generate doesn't need validation.
   simple_ldap_sso_session_is_valid();

@@ -1,6 +1,6 @@
 [SimpleLdapUserAuthenticationWebTestCase]
 name = Authentication
-description = Tests that an LDAP user can authenticate to Drupal with the correct LDAP credentials.
+description = Tests that an LDAP user can authenticate to Backdrop with the correct LDAP credentials.
 group = Simple LDAP User
 file = simple_ldap_user.test
 
@@ -24,7 +24,7 @@ file = simple_ldap_user.test
 
 [SimpleLdapUserSyncTestCase]
 name = User data synchronization
-description = Test data synchronization between LDAP and Drupal.
+description = Test data synchronization between LDAP and Backdrop.
 group = Simple LDAP User
 file = simple_ldap_user.test
 
@@ -36,7 +36,7 @@ file = simple_ldap_user.test
 
 [SimpleLdapUserDeleteUserTestCase]
 name = Delete user
-description = Tests that deleting a user in Drupal also deletes the user from LDAP.
+description = Tests that deleting a user in Backdrop also deletes the user from LDAP.
 group = Simple LDAP User
 file = simple_ldap_user.test
 

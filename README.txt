@@ -1,4 +1,4 @@
-The Simple LDAP project is a set of modules to provide Drupal integration with
+The Simple LDAP project is a set of modules to provide Backdrop integration with
 an LDAPv3 server. It is an alternative to the Lightweight Directory Access
 Protocol (LDAP) module, with a much narrower set of features. The goal of the
 project is to provide very basic LDAP functionality which should cover most
@@ -17,20 +17,20 @@ Simple LDAP
 This is the main module, on which all of the other modules are based. It
 provides an interface to the configured LDAP directory with basic low-level
 LDAP functions and no bells or whistles. It does not provide anything to
-Drupal on its own.
+Backdrop on its own.
 
 Simple LDAP User
 ================
 
 This module allows authentication to the LDAP directory configured in the
 Simple LDAP module. It also provides synchronization services both to and from
-LDAP and Drupal. It supports mapping LDAP attributes to Drupal user object
+LDAP and Backdrop. It supports mapping LDAP attributes to Backdrop user object
 fields (both native, and using Field API).
 
 Simple LDAP Role
 ================
 
-This module allows Drupal roles to be derived from LDAP groups, and
+This module allows Backdrop roles to be derived from LDAP groups, and
 vice-versa. It is dependent on the Simple LDAP User module.
 
 Simple LDAP Test
@@ -54,15 +54,15 @@ Vagrant
 =======
 
 There is a Vagrantfile included that will build a VM with a working LDAP
-directory and a fresh Drupal installation with simple_ldap installed. If OS X
+directory and a fresh Backdrop installation with simple_ldap installed. If OS X
 is the Vagrant host, then the vagrant box is available at simpleldap.local.
 For other operating systems, the IP address will need to be obtainted manually,
 and added to the local hosts file for best results.
 
-Drupal
+Backdrop
 ------
 
-The Drupal installation is set up with the following credentials:
+The Backdrop installation is set up with the following credentials:
 
 http://simpleldap.local/
 

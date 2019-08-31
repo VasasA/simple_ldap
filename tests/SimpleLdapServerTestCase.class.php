@@ -4,10 +4,10 @@
  * SimpleLdapServerTestCase class.
  */
 
-class SimpleLdapServerTestCase extends DrupalWebTestCase {
+class SimpleLdapServerTestCase extends BackdropWebTestCase {
 
   /**
-   * Inherited from DrupalWebTestCase::setUp().
+   * Inherited from BackdropWebTestCase::setUp().
    */
   public function setUp() {
     // Get the live simple_ldap config.

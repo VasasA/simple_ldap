@@ -23,7 +23,7 @@ class SimpleLdapRole {
    * Constructor.
    *
    * @param string $name
-   *   The Drupal role name to search for, and load from LDAP.
+   *   The Backdrop role name to search for, and load from LDAP.
    *
    * @throw SimpleLdapException
    */
@@ -371,7 +371,7 @@ class SimpleLdapRole {
    * Return a SimpleLdapRole object for the given role name.
    *
    * @param string $name
-   *   The Drupal role name to search for, and load from LDAP.
+   *   The Backdrop role name to search for, and load from LDAP.
    * @param boolen $reset
    *   If TRUE, the cache for the specified role is cleared, and the role is
    *   reloaded from LDAP.

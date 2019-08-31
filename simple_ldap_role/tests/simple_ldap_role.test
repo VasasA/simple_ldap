@@ -72,10 +72,10 @@ abstract class SimpleLdapRoleTestCase extends SimpleLdapUserTestCase {
 
 }
 
-class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
+class SimpleLdapRoleCreateBackdropRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Creates a drupal role, and verifies LDAP.
+   * Creates a Backdrop role, and verifies LDAP.
    */
   public function testCreateRole() {
     // Get module configurations.
@@ -87,15 +87,15 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     $name = strtolower($this->randomName());
 
     // Log in as User 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
-    // Submit the form to add a new Drupal role.
+    // Submit the form to add a new Backdrop role.
     $edit = array(
       'label' => $name,
       'name' => $name,
     );
-    $this->drupalPost('admin/config/people/roles', $edit, t('Add role'));
-    $this->assertText(t('The @role role has been added', array('@role' => $name)), t('The @role role was added to Drupal', array('@role' => $name)));
+    $this->backdropPost('admin/config/people/roles', $edit, t('Add role'));
+    $this->assertText(t('The @role role has been added', array('@role' => $name)), t('The @role role was added to Backdrop', array('@role' => $name)));
 
     // Load the LDAP group.
     $ldap_group = new SimpleLdapRole($name);
@@ -144,38 +144,38 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 }
 
 /**
- * Updates a Drupal role, and verifies LDAP.
+ * Updates a Backdrop role, and verifies LDAP.
  * Deprecated! Because the user cannot modify the 'machine name' of a role in Backdrop.
  */
-/*class SimpleLdapRoleUpdateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
+/*class SimpleLdapRoleUpdateBackdropRoleTestCase extends SimpleLdapRoleTestCase {
 
   public function testUpdateRole() {
     // Get module configurations.
     $attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
     $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
 
-    // Load/Create a Drupal role with the same name as the test LDAP group.
-    $drupal_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
-    if (!$drupal_role) {
-      $rid = $this->drupalCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
-      $drupal_role = user_role_load($rid);
+    // Load/Create a Backdrop role with the same name as the test LDAP group.
+    $backdrop_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
+    if (!$backdrop_role) {
+      $rid = $this->backdropCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
+      $backdrop_role = user_role_load($rid);
     }
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Populate the role edit form variables.
     $edit = array(
-      'label' => $drupal_role->name . ' modified',
+      'label' => $backdrop_role->name . ' modified',
     );
 
     // Submit the role edit form.
-    $insert_array = array('@role' => $drupal_role->name, '@role_modified' => $edit['label']);
-    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, $edit, t('Save role'));
-    $this->assertText(t('The @role role has been renamed to @role_modified.', $insert_array), t('The drupal role was updated'));
+    $insert_array = array('@role' => $backdrop_role->name, '@role_modified' => $edit['label']);
+    $this->backdropPost('admin/config/people/roles/edit/' . $backdrop_role->name, $edit, t('Save role'));
+    $this->assertText(t('The @role role has been renamed to @role_modified.', $insert_array), t('The Backdrop role was updated'));
 
     // Load the group from LDAP and check that it was updated.
-    $ldap_group = new SimpleLdapRole($drupal_role->name . ' modified');
+    $ldap_group = new SimpleLdapRole($backdrop_role->name . ' modified');
     $this->assertTrue($ldap_group->exists, t('The @dn test group exists in LDAP.', array('@dn' => $ldap_group->dn)));
 
     // Repopulate the role edit form variables.
@@ -184,7 +184,7 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
     );
 
     // Submit the role edit form to restore the group to its original value.
-    $this->drupalPost('admin/config/people/roles/edit/' . $drupal_role->name, $edit, t('Save role'));
+    $this->backdropPost('admin/config/people/roles/edit/' . $backdrop_role->name, $edit, t('Save role'));
 
     // Verify that the group was restored.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
@@ -194,29 +194,29 @@ class SimpleLdapRoleCreateDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
 }*/
 
-class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
+class SimpleLdapRoleDeleteBackdropRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Deletes a Drupal role, and checks LDAP.
+   * Deletes a Backdrop role, and checks LDAP.
    */
   public function testDeleteRole() {
     // Get module configurations.
     $attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
     $attribute_member = simple_ldap_role_variable_get('simple_ldap_role_attribute_member');
 
-    // Load/Create a drupal role with the same name as the test LDAP group.
-    $drupal_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
-    if (!$drupal_role) {
-      $rid = $this->drupalCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
-      $drupal_role = user_role_load($rid);
+    // Load/Create a Backdrop role with the same name as the test LDAP group.
+    $backdrop_role = user_role_load($this->ldapGroup->{$attribute_name}[0]);
+    if (!$backdrop_role) {
+      $rid = $this->backdropCreateRole(array(), $this->ldapGroup->{$attribute_name}[0]);
+      $backdrop_role = user_role_load($rid);
     }
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Submit the role edit form.
-    $this->drupalPost('admin/config/people/roles/delete/' . $drupal_role->name, array(), t('Delete'));
-    $this->assertText(t('The @role role has been deleted.', array('@role' => $drupal_role->name)), t('The Drupal role was deleted'));
+    $this->backdropPost('admin/config/people/roles/delete/' . $backdrop_role->name, array(), t('Delete'));
+    $this->assertText(t('The @role role has been deleted.', array('@role' => $backdrop_role->name)), t('The Backdrop role was deleted'));
 
     // Try to load the group from LDAP, and verify that it was deleted.
     $ldap_group = new SimpleLdapRole($this->ldapGroup->{$attribute_name}[0]);
@@ -225,12 +225,12 @@ class SimpleLdapRoleDeleteDrupalRoleTestCase extends SimpleLdapRoleTestCase {
 
 }
 
-class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase {
+class SimpleLdapRoleChangeBackdropUserRoleTestCase extends SimpleLdapRoleTestCase {
 
   /**
-   * Changes a user's drupal roles.
+   * Changes a user's Backdrop roles.
    */
-  public function testChangeDrupalUserRole() {
+  public function testChangeBackdropUserRole() {
     // Load configuration variables.
     $user_attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
     $role_attribute_name = simple_ldap_role_variable_get('simple_ldap_role_attribute_name');
@@ -254,36 +254,36 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
     $account->pass_raw = $this->userPassword[1];
 
     // Log in with the test user. This should create/sync an LDAP user.
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
-    // Run cron to sync the LDAP groups to Drupal roles.
+    // Run cron to sync the LDAP groups to Backdrop roles.
     $this->cronRun();
 
-    // Load the Drupal user.
-    $drupal_user = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
+    // Load the Backdrop user.
+    $backdrop_user = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('@name user exists in Backdrop', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
 
     // user_role_load() needs static reset.
     backdrop_static_reset('user_roles');
 
-    // Load the Drupal role.
-    $drupal_role = user_role_load($this->ldapGroup->{$role_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_role, FALSE, t('@name role exists in Drupal', array('@name' => $this->ldapGroup->{$role_attribute_name}[0])));
+    // Load the Backdrop role.
+    $backdrop_role = user_role_load($this->ldapGroup->{$role_attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_role, FALSE, t('@name role exists in Backdrop', array('@name' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Log in as user 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
 
     // Populate the user edit form.
     $edit = array(
-      'roles[' . $drupal_role->name . ']' => TRUE,
+      'roles[' . $backdrop_role->name . ']' => TRUE,
     );
 
     // Submit the user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, t('Save'));
     $this->assertText(t('The changes have been saved.'), t('The changes have been saved.'));
 
     // Reload the LDAP group.
-    $ldap_group = new SimpleLdapRole($drupal_role->name);
+    $ldap_group = new SimpleLdapRole($backdrop_role->name);
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is now a member of the LDAP group.
@@ -291,15 +291,15 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Repopulate the user edit form.
     $edit = array(
-      'roles[' . $drupal_role->name . ']' => FALSE,
+      'roles[' . $backdrop_role->name . ']' => FALSE,
     );
 
     // Submit the user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, t('Save'));
     $this->assertText(t('The changes have been saved.'), t('The changes have been saved.'));
 
     // Reload the LDAP group.
-    $ldap_group = new SimpleLdapRole($drupal_role->name);
+    $ldap_group = new SimpleLdapRole($backdrop_role->name);
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is no longer a member of the LDAP group.
@@ -307,15 +307,15 @@ class SimpleLdapRoleChangeDrupalUserRoleTestCase extends SimpleLdapRoleTestCase 
 
     // Repopulate the user edit form again.
     $edit = array(
-      'roles[' . $drupal_role->name . ']' => TRUE,
+      'roles[' . $backdrop_role->name . ']' => TRUE,
     );
 
     // Submit the user edit form.
-    $this->drupalPost('user/' . $drupal_user->uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $backdrop_user->uid . '/edit', $edit, t('Save'));
     $this->assertText(t('The changes have been saved.'), t('The changes have been saved.'));
 
     // Reload the LDAP group.
-    $ldap_group = new SimpleLdapRole($drupal_role->name);
+    $ldap_group = new SimpleLdapRole($backdrop_role->name);
     $members = $ldap_group->$role_attribute_member;
 
     // Verify that the LDAP user is a member of the LDAP group again.
@@ -350,14 +350,14 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     // Verify that the LDAP group exists.
     $this->assertTrue($ldap_group->exists, t('@dn exists in LDAP', array('@dn' => $ldap_group->dn)));
 
-    // Verify that the LDAP group does not exist in Drupal.
-    $drupal_role = user_role_load($new_role);
-    $this->assertFalse($drupal_role, t('The @group LDAP group does not exist as a Drupal role.', array('@group' => $new_role)));
+    // Verify that the LDAP group does not exist in Backdrop.
+    $backdrop_role = user_role_load($new_role);
+    $this->assertFalse($backdrop_role, t('The @group LDAP group does not exist as a Backdrop role.', array('@group' => $new_role)));
 
     // Run cron.
     $this->cronRun();
 
-    // Collect roles of Drupal.
+    // Collect roles of Backdrop.
     $names = config_get_names_with_prefix('user.role.');
     foreach ($names as $config_name) {
       $config = config($config_name);
@@ -366,9 +366,9 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
       $user_roles[$role_name] = $role_data;
     }
 
-    // Verify that the test LDAP group exists in Drupal.
-    $drupal_role = isset($user_roles[$new_role]);
-    $this->assertTrue($drupal_role, t('The @group LDAP group exists as a Drupal role.', array('@group' => $new_role)));
+    // Verify that the test LDAP group exists in Backdrop.
+    $backdrop_role = isset($user_roles[$new_role]);
+    $this->assertTrue($backdrop_role, t('The @group LDAP group exists as a Backdrop role.', array('@group' => $new_role)));
 
     // Modify the LDAP object.
     $ldap_group->$role_attribute_name = $new_role . $new_role;
@@ -385,7 +385,7 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
     // Run cron.
     $this->cronRun();
 
-    // Collect roles of Drupal.
+    // Collect roles of Backdrop.
     $names = config_get_names_with_prefix('user.role.');
     foreach ($names as $config_name) {
       $config = config($config_name);
@@ -394,9 +394,9 @@ class SimpleLdapRoleModifyLdapGroup extends SimpleLdapRoleTestCase {
       $user_roles[$role_name] = $role_data;
     }
 
-    // Verify that the test LDAP group exists in Drupal.
-    $drupal_role = isset($user_roles[$new_role . $new_role]);
-    $this->assertTrue($drupal_role, t('The @group LDAP group exists as a Drupal role.', array('@group' => $new_role . $new_role)));
+    // Verify that the test LDAP group exists in Backdrop.
+    $backdrop_role = isset($user_roles[$new_role . $new_role]);
+    $this->assertTrue($backdrop_role, t('The @group LDAP group exists as a Backdrop role.', array('@group' => $new_role . $new_role)));
 
     // Cleanup.
     $ldap_group->delete();
@@ -424,14 +424,14 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
     $account->pass_raw = $this->userPassword[0];
 
     // Log in with the test user. This should create/sync an LDAP user.
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
-    // Load the Drupal user.
-    $drupal_user = user_load_by_name($this->ldapUser[0]->{$user_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[0]->{$user_attribute_name}[0])));
+    // Load the Backdrop user.
+    $backdrop_user = user_load_by_name($this->ldapUser[0]->{$user_attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('@name user exists in Backdrop', array('@name' => $this->ldapUser[0]->{$user_attribute_name}[0])));
 
     // Verify that the user is assigned to the test role.
-    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $backdrop_user->roles), t('@user is assigned to the @role Backdrop role.', array('@user' => $backdrop_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // We need a second user, if the 'member' attribute is 'required'
     // in the LDAP database and we want to remove a user from the LDAP group.
@@ -445,36 +445,36 @@ class SimpleLdapRoleChangeLdapGroupMembership extends SimpleLdapRoleTestCase {
     $account->pass_raw = $this->userPassword[1];
 
     // Log in with the second test user. This should create/sync an LDAP user.
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
 
-    // Load the second Drupal user.
-    $drupal_user2 = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
-    $this->assertNotIdentical($drupal_user, FALSE, t('@name user exists in Drupal', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
+    // Load the second Backdrop user.
+    $backdrop_user2 = user_load_by_name($this->ldapUser[1]->{$user_attribute_name}[0]);
+    $this->assertNotIdentical($backdrop_user, FALSE, t('@name user exists in Backdrop', array('@name' => $this->ldapUser[1]->{$user_attribute_name}[0])));
 
     // Verify that the second user is assigned to the test role.
-    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user2->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user2->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $backdrop_user2->roles), t('@user is assigned to the @role Backdrop role.', array('@user' => $backdrop_user2->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Remove the user from the LDAP group.
     $this->ldapGroup->deleteUser($this->ldapUser[0]);
     $this->ldapGroup->save();
 
-    // Reload the drupal user.
-    $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$user_attribute_name}[0]), TRUE);
-    $drupal_user = reset($drupal_user);
+    // Reload the Backdrop user.
+    $backdrop_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$user_attribute_name}[0]), TRUE);
+    $backdrop_user = reset($backdrop_user);
 
     // Verify that the user is not assigned to the test role.
-    $this->assertFalse(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is no longer assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertFalse(in_array($this->ldapGroup->{$role_attribute_name}[0], $backdrop_user->roles), t('@user is no longer assigned to the @role Backdrop role.', array('@user' => $backdrop_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
     // Re-add the user to the LDAP group.
     $this->ldapGroup->addUser($this->ldapUser[0]);
     $this->ldapGroup->save();
 
-    // Reload the drupal user.
-    $drupal_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$user_attribute_name}[0]), TRUE);
-    $drupal_user = reset($drupal_user);
+    // Reload the Backdrop user.
+    $backdrop_user = user_load_multiple(array(), array('name' => $this->ldapUser[0]->{$user_attribute_name}[0]), TRUE);
+    $backdrop_user = reset($backdrop_user);
 
     // Verify that the user is assigned to the test role.
-    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $drupal_user->roles), t('@user is assigned to the @role Drupal role.', array('@user' => $drupal_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
+    $this->assertTrue(in_array($this->ldapGroup->{$role_attribute_name}[0], $backdrop_user->roles), t('@user is assigned to the @role Backdrop role.', array('@user' => $backdrop_user->name, '@role' => $this->ldapGroup->{$role_attribute_name}[0])));
 
   }
 

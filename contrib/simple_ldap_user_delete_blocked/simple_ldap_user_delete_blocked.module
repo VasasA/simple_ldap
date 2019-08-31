@@ -15,8 +15,8 @@ function simple_ldap_user_delete_blocked_user_update($account) {
     return;
   }
 
-  // Don't do anything if the hook was called via hook_sync_user_to_drupal().
-  if (empty($account->hook_sync_user_to_drupal)) {
+  // Don't do anything if the hook was called via hook_sync_user_to_backdrop().
+  if (empty($account->hook_sync_user_to_backdrop)) {
     if (!$account->status) {
       // Delete the user from LDAP if changed to "blocked".
       $ldap_user = SimpleLdapUser::singleton($account->name);

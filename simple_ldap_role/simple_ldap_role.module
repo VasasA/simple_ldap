@@ -12,7 +12,7 @@ function simple_ldap_role_menu() {
 
   $items['admin/config/people/simple_ldap/role'] = array(
     'title' => 'Roles',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('simple_ldap_role_admin'),
     'access arguments' => array('administer site configuration'),
     'file' => 'simple_ldap_role.admin.inc',
@@ -35,10 +35,10 @@ function simple_ldap_role_user_load($users) {
       }
       switch (simple_ldap_role_variable_get('simple_ldap_role_source')) {
         case 'ldap':
-          simple_ldap_role_sync_user_to_drupal($user);
+          simple_ldap_role_sync_user_to_backdrop($user);
           break;
 
-        case 'drupal':
+        case 'backdrop':
           simple_ldap_role_sync_user_to_ldap($user);
           break;
       }
@@ -57,10 +57,10 @@ function simple_ldap_role_user_login(&$edit, $account) {
   if ($sync == 'hook_user_login') {
     switch (simple_ldap_role_variable_get('simple_ldap_role_source')) {
       case 'ldap':
-        simple_ldap_role_sync_user_to_drupal($account);
+        simple_ldap_role_sync_user_to_backdrop($account);
         break;
 
-      case 'drupal':
+      case 'backdrop':
         simple_ldap_role_sync_user_to_ldap($account);
         break;
     }
@@ -133,13 +133,13 @@ function simple_ldap_role_cron() {
   // Get a list of LDAP groups.
   $ldap_groups = $server->search($basedn, SimpleLdapRole::filter(), $scope, array($attribute_name));
 
-  // Get a list of Drupal roles.
-  $drupal_roles = user_roles(TRUE);
+  // Get a list of Backdrop roles.
+  $backdrop_roles = user_roles(TRUE);
 
-  // Make sure each of the LDAP groups is also a Drupal role.
+  // Make sure each of the LDAP groups is also a Backdrop role.
   for ($i = 0; $i < $ldap_groups['count']; $i++) {
     $name = $ldap_groups[$i][$attribute_name][0];
-    if (!in_array($name, $drupal_roles)) {
+    if (!in_array($name, $backdrop_roles)) {
       $role = new stdClass();
       $role->name = $name;
       $role->label = $name;
@@ -151,9 +151,9 @@ function simple_ldap_role_cron() {
 /**
  * Implements hook_sync_user_to_ldap().
  *
- * Synchronize Drupal roles to LDAP groups.
+ * Synchronize Backdrop roles to LDAP groups.
  */
-function simple_ldap_role_sync_user_to_ldap($drupal_user) {
+function simple_ldap_role_sync_user_to_ldap($backdrop_user) {
   // Get module configuration.
   $basedn = simple_ldap_role_variable_get('simple_ldap_role_basedn');
   $scope = simple_ldap_role_variable_get('simple_ldap_role_scope');
@@ -168,11 +168,11 @@ function simple_ldap_role_sync_user_to_ldap($drupal_user) {
 
   // Determine the search string to use depending on the module configuration.
   if ($attribute_member_format == 'dn') {
-    $ldap_user = SimpleLdapUser::singleton($drupal_user->name);
+    $ldap_user = SimpleLdapUser::singleton($backdrop_user->name);
     $search = $ldap_user->dn;
   }
   else {
-    $search = $drupal_user->name;
+    $search = $backdrop_user->name;
   }
 
   // Generate the LDAP search filter.
@@ -182,18 +182,18 @@ function simple_ldap_role_sync_user_to_ldap($drupal_user) {
   // Get a list of LDAP groups of which this user is a member.
   $ldap_groups = $server->search($basedn, $filter, $scope, array($attribute_name, $attribute_member));
 
-  // Get a list of Drupal roles for this user.
-  $drupal_roles = array();
-  foreach ($drupal_user->roles as $name) {
+  // Get a list of Backdrop roles for this user.
+  $backdrop_roles = array();
+  foreach ($backdrop_user->roles as $name) {
     // Skip "special" roles.
     if ($name == BACKDROP_AUTHENTICATED_ROLE || $name == BACKDROP_ANONYMOUS_ROLE) {
       continue;
     }
 
-    $drupal_roles[] = $name;
+    $backdrop_roles[] = $name;
   }
 
-  foreach ($drupal_roles as $name) {
+  foreach ($backdrop_roles as $name) {
     // Check if the user is a member of the ldap group.
     $found = FALSE;
     for ($i = 0; $i < $ldap_groups['count']; $i++) {
@@ -205,7 +205,7 @@ function simple_ldap_role_sync_user_to_ldap($drupal_user) {
     // Add or modify the LDAP group to make sure the user is a member.
     if (!$found) {
       $ldap_group = SimpleLdapRole::singleton($name);
-      $ldap_group->addUser($drupal_user->name);
+      $ldap_group->addUser($backdrop_user->name);
       $ldap_group->save();
     }
   }
@@ -221,18 +221,18 @@ function simple_ldap_role_sync_user_to_ldap($drupal_user) {
   for ($i = 0; $i < $ldap_groups['count']; $i++) {
     $name = $ldap_groups[$i][$attribute_name][0];
     $dn = $ldap_groups[$i]['dn'];
-    if (!in_array($name, $drupal_roles)) {
+    if (!in_array($name, $backdrop_roles)) {
       $ldap_group = SimpleLdapRole::singleton($name);
-      $ldap_group->deleteUser($drupal_user->name);
+      $ldap_group->deleteUser($backdrop_user->name);
       $ldap_group->save();
     }
   }
 }
 
 /**
- * Synchronize LDAP groups to Drupal roles.
+ * Synchronize LDAP groups to Backdrop roles.
  */
-function simple_ldap_role_sync_user_to_drupal($drupal_user) {
+function simple_ldap_role_sync_user_to_backdrop($backdrop_user) {
   // Get module configuration.
   $basedn = simple_ldap_role_variable_get('simple_ldap_role_basedn');
   $scope = simple_ldap_role_variable_get('simple_ldap_role_scope');
@@ -245,11 +245,11 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
 
   // Determine the search string to use.
   if ($attribute_member_format == 'dn') {
-    $ldap_user = SimpleLdapUser::singleton($drupal_user->name);
+    $ldap_user = SimpleLdapUser::singleton($backdrop_user->name);
     $search = $ldap_user->dn;
   }
   else {
-    $search = $drupal_user->name;
+    $search = $backdrop_user->name;
   }
 
   // Generate the LDAP search filter.
@@ -261,33 +261,33 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
   // Initialize the $edit array.
   $edit['roles'] = array();
 
-  // Check that the groups match between Drupal and LDAP.
+  // Check that the groups match between Backdrop and LDAP.
   $dirty = FALSE;
   for ($i = 0; $i < $ldap_groups['count']; $i++) {
     $name = $ldap_groups[$i][$attribute_name][0];
 
     // Try to load the role.
-    $drupal_role = user_role_load($name);
+    $backdrop_role = user_role_load($name);
 
     // The role does not exist, create it.
-    if ($drupal_role === FALSE) {
+    if ($backdrop_role === FALSE) {
       $role = new stdClass();
       $role->name = $name;
       $role->label = $name;
       user_role_save($role);
-      $drupal_role = user_role_load($name);
+      $backdrop_role = user_role_load($name);
     }
 
     // The role is not currently present in the user. Flag a user_save().
-    if (!in_array($name, $drupal_user->roles)) {
+    if (!in_array($name, $backdrop_user->roles)) {
       $dirty = TRUE;
     }
 
-    $edit['roles'][] = $drupal_role->name;
+    $edit['roles'][] = $backdrop_role->name;
   }
 
-  // Remove Drupal roles that are not set in LDAP.
-  $diff = array_diff($drupal_user->roles, $edit['roles']);
+  // Remove Backdrop roles that are not set in LDAP.
+  $diff = array_diff($backdrop_user->roles, $edit['roles']);
   foreach ($diff as $name) {
     // Account for special groups.
     if ($name == BACKDROP_AUTHENTICATED_ROLE || $name == BACKDROP_ANONYMOUS_ROLE) {
@@ -299,25 +299,25 @@ function simple_ldap_role_sync_user_to_drupal($drupal_user) {
 
   // Save any changes.
   if ($dirty) {
-    if (!isset($drupal_user->original)) {
+    if (!isset($backdrop_user->original)) {
       // This avoids an infinite load/save loop.
-      $drupal_user->original = clone $drupal_user;
+      $backdrop_user->original = clone $backdrop_user;
     }
     foreach ($edit as $property => $value) {
-      $drupal_user->{$property} = $value;
+      $backdrop_user->{$property} = $value;
     }
-    $drupal_user->save();
-    $uid = $drupal_user->id();
+    $backdrop_user->save();
+    $uid = $backdrop_user->id();
     if ($uid) {
-      $drupal_user = user_load($uid);
+      $backdrop_user = user_load($uid);
     }
     else {
-      $drupal_user = FALSE;
+      $backdrop_user = FALSE;
     }
   }
 
   // Synchronized user.
-  return $drupal_user;
+  return $backdrop_user;
 }
 
 /**
@@ -340,7 +340,7 @@ function simple_ldap_role_variable_get($name, $default = NULL, $force_default = 
   // Handle special variables.
   switch ($name) {
     case 'simple_ldap_role_source':
-      // If the LDAP server is set to read-only, force LDAP->Drupal sync.
+      // If the LDAP server is set to read-only, force LDAP->Backdrop sync.
       if ($server->readonly) {
         return 'ldap';
       }

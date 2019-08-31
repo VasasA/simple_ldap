@@ -75,7 +75,7 @@ class SimpleLdapServer {
    * Constructor.
    *
    * This constructor builds the object by pulling the configuration parameters
-   * from the Drupal variable system.
+   * from the Backdrop variable system.
    *
    * @param array $parameters
    *   Optional custom parameters for the server, to programmatically override

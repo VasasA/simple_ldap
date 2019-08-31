@@ -6,7 +6,7 @@
 
 abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
 
-  protected $drupalUser;
+  protected $backdropUser;
   protected $ldapUser;
   protected $userPassword;
 
@@ -45,10 +45,10 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     // Initialize an LDAP server object.
     $server = SimpleLdapServer::singleton();
 
-    // Create a set of drupal-only users before enabling Simple LDAP User so
-    // that they are only present in Drupal.
+    // Create a set of Backdrop-only users before enabling Simple LDAP User so
+    // that they are only present in Backdrop.
     for ($i = 0; $i < 5; $i++) {
-      $this->drupalUser[$i] = $this->drupalCreateUser();
+      $this->backdropUser[$i] = $this->backdropCreateUser();
     }
 
     // Get a list of required attributes for the configured objectclass(es).
@@ -65,25 +65,25 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     foreach ($attribute_map as $attribute) {
       // Clean up the attribute. We can't use simple_ldap_user_variable_get()
       // yet because simple_ldap_user is not enabled yet. The module can't be
-      // enabled until after the Drupal users are initialized, or they would
+      // enabled until after the Backdrop users are initialized, or they would
       // sync to LDAP, and invalidate the tests. Chicken and egg problem here.
       $attribute['ldap'] = strtolower($attribute['ldap']);
-      if (!is_array($attribute['drupal'])) {
-        $attribute['drupal'] = array($attribute['drupal']);
+      if (!is_array($attribute['backdrop'])) {
+        $attribute['backdrop'] = array($attribute['backdrop']);
       }
 
       // Skip one-to-many mappings.
-      if (count($attribute['drupal']) > 1) {
+      if (count($attribute['backdrop']) > 1) {
         continue;
       }
 
-      // Get the drupal name and type.
-      $drupal_attribute = reset($attribute['drupal']);
-      $type = substr($drupal_attribute, 0, 1);
+      // Get the Backdrop name and type.
+      $backdrop_attribute = reset($attribute['backdrop']);
+      $type = substr($backdrop_attribute, 0, 1);
 
       // Create user fields.
       if ($type == '#') {
-        $drupal_attribute = substr($drupal_attribute, 1);
+        $backdrop_attribute = substr($backdrop_attribute, 1);
         $required = in_array($attribute['ldap'], $must);
 
         $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
@@ -96,14 +96,14 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
         }
 
         field_create_field(array(
-          'field_name' => $drupal_attribute,
+          'field_name' => $backdrop_attribute,
           'type' => $type,
           'cardinality' => 1,
         ));
         field_create_instance(array(
-          'field_name' => $drupal_attribute,
+          'field_name' => $backdrop_attribute,
           'entity_type' => 'user',
-          'label' => $drupal_attribute,
+          'label' => $backdrop_attribute,
           'bundle' => 'user',
           'required' => $required,
           'settings' => array(
@@ -111,17 +111,17 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
           ),
         ));
 
-        // Populate the field value of each of the test Drupal users.
-        foreach ($this->drupalUser as $drupal_user) {
+        // Populate the field value of each of the test Backdrop users.
+        foreach ($this->backdropUser as $backdrop_user) {
           if ($type == 'number_integer') {
-            $edit[$drupal_attribute]['und'][0]['value'] = $drupal_user->uid + 1000;
-            $drupal_user->{$drupal_attribute} = $edit[$drupal_attribute];
+            $edit[$backdrop_attribute]['und'][0]['value'] = $backdrop_user->uid + 1000;
+            $backdrop_user->{$backdrop_attribute} = $edit[$backdrop_attribute];
           }
           else {
-            $edit[$drupal_attribute]['und'][0]['value'] = $this->randomName();
-            $drupal_user->{$drupal_attribute} = $edit[$drupal_attribute];
+            $edit[$backdrop_attribute]['und'][0]['value'] = $this->randomName();
+            $backdrop_user->{$backdrop_attribute} = $edit[$backdrop_attribute];
           }
-          $drupal_user = user_save($drupal_user);
+          $backdrop_user = user_save($backdrop_user);
         }
       }
     }
@@ -221,16 +221,16 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
   /**
    * Verify that a user is unable to log in.
    */
-  public function drupalNoLogin(stdClass $user) {
+  public function backdropNoLogin(stdClass $user) {
     if ($this->loggedInUser) {
-      $this->drupalLogout();
+      $this->backdropLogout();
     }
 
     $edit = array(
       'name' => $user->name,
       'pass' => $user->pass_raw,
     );
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
 
     // Verify that the user was unable to log in.
     $pass = $this->assertNoLink(t('Log out'), 0, t('User %name unable to log in.', array('%name' => $user->name)), t('User login'));
@@ -243,14 +243,14 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
   /**
    * Log in with User 1.
    */
-  public function drupalUser1Login() {
+  public function backdropUser1Login() {
     if ($this->loggedInUser) {
-      $this->drupalLogout();
+      $this->backdropLogout();
     }
 
     // Load password hashing API.
     if (!function_exists('user_hash_password')) {
-      require_once DRUPAL_ROOT . '/' . settings_get('password_inc', 'core/includes/password.inc');
+      require_once BACKDROP_ROOT . '/' . settings_get('password_inc', 'core/includes/password.inc');
     }
 
     // Set user1's password to something random in the database.
@@ -260,11 +260,11 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     // Log in as user1.
     $admin_user = user_load(1);
     $admin_user->pass_raw = $pass;
-    $this->drupalLogin($admin_user);
+    $this->backdropLogin($admin_user);
   }
 
   /**
-   * Verifies that Drupal, LDAP, and the test user values match.
+   * Verifies that Backdrop, LDAP, and the test user values match.
    */
   public function verifySync($suffix = '', $name = NULL, $multi = FALSE) {
     // Load configuration variables.
@@ -283,49 +283,49 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
       $control = $ldap_user;
     }
 
-    // Load the Drupal user.
-    $drupal_user = user_load_multiple(array(), array('name' => $ldap_user->{$attribute_name}[0]), TRUE);
-    $drupal_user = reset($drupal_user);
+    // Load the Backdrop user.
+    $backdrop_user = user_load_multiple(array(), array('name' => $ldap_user->{$attribute_name}[0]), TRUE);
+    $backdrop_user = reset($backdrop_user);
 
     // Check the mapped fields.
     $mapObject = SimpleLdapUserMap::singleton();
     $attribute_map = $mapObject->map;
-    array_unshift($attribute_map, array('drupal' => array('mail'), 'ldap' => $attribute_mail));
+    array_unshift($attribute_map, array('backdrop' => array('mail'), 'ldap' => $attribute_mail));
     foreach ($attribute_map as $attribute) {
 
-      // Skip drupal-to-ldap, one-to-many maps, unless explicitely requested.
-      if (count($attribute['drupal']) == 1 || $multi) {
+      // Skip Backdrop-to-ldap, one-to-many maps, unless explicitely requested.
+      if (count($attribute['backdrop']) == 1 || $multi) {
 
-        // Parse the drupal attribute name.
-        $drupal = '';
-        foreach ($attribute['drupal'] as $drupal_attribute) {
-          $type = substr($drupal_attribute, 0, 1);
+        // Parse the Backdrop attribute name.
+        $backdrop = '';
+        foreach ($attribute['backdrop'] as $backdrop_attribute) {
+          $type = substr($backdrop_attribute, 0, 1);
           switch ($type) {
             case '#':
-              $drupal_attribute = substr($drupal_attribute, 1);
-              $items = field_get_items('user', $drupal_user, $drupal_attribute);
-              $drupal .= ' ' . $items[0]['value'];
+              $backdrop_attribute = substr($backdrop_attribute, 1);
+              $items = field_get_items('user', $backdrop_user, $backdrop_attribute);
+              $backdrop .= ' ' . $items[0]['value'];
               break;
 
             default:
-              $drupal .= ' ' . $drupal_user->$drupal_attribute;
+              $backdrop .= ' ' . $backdrop_user->$backdrop_attribute;
           }
         }
 
-        $drupal = trim($drupal);
+        $backdrop = trim($backdrop);
 
-        // Make sure drupal and ldap match.
-        $this->assertEqual($ldap_user->{$attribute['ldap']}[0], $drupal, t('The @ldap LDAP attribute :ldap and the @drupal Drupal field :drupal are synchronized.',
+        // Make sure Backdrop and ldap match.
+        $this->assertEqual($ldap_user->{$attribute['ldap']}[0], $backdrop, t('The @ldap LDAP attribute :ldap and the @backdrop Backdrop field :backdrop are synchronized.',
           array(
             '@ldap' => $attribute['ldap'],
-            '@drupal' => $drupal_attribute,
+            '@backdrop' => $backdrop_attribute,
             ':ldap' => $ldap_user->{$attribute['ldap']}[0],
-            ':drupal' => $drupal,
+            ':backdrop' => $backdrop,
           )
         ));
 
         // Only single-valued fields will have a control to check.
-        if (count($attribute['drupal']) == 1) {
+        if (count($attribute['backdrop']) == 1) {
           // Make sure simple entries match the control.
           $attributetype = $server->schema->get('attributetypes', $attribute['ldap']);
           // A syntax type of 1.3.6.1.4.1.1466.115.121.1.27 is an integer.
@@ -340,9 +340,9 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
           else {
             $value = $control->{$attribute['ldap']}[0] . $suffix;
           }
-          $this->assertEqual($value, $drupal, t(':value matches the control value :control',
+          $this->assertEqual($value, $backdrop, t(':value matches the control value :control',
             array(
-              ':value' => $drupal,
+              ':value' => $backdrop,
               ':control' => $value,
             )
           ));

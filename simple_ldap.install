@@ -37,7 +37,7 @@ function simple_ldap_requirements($phase) {
     'severity' => extension_loaded('ldap') ? REQUIREMENT_OK : REQUIREMENT_ERROR,
   );
 
-  // Make sure an LDAP server is configured, and Drupal can connect to it.
+  // Make sure an LDAP server is configured, and Backdrop can connect to it.
   if ($phase == 'runtime') {
     if (simple_ldap_configured()) {
       $server = SimpleLdapServer::singleton();

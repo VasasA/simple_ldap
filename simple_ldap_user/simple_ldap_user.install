@@ -8,7 +8,7 @@
  * Implements hook_disable().
  */
 function simple_ldap_user_disable() {
-  $password_inc = drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
+  $password_inc = backdrop_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
   if (settings_get('password_inc', 'core/includes/password.inc') == $password_inc) {
     $GLOBALS['settings']['password_inc'] = 'core/includes/password.inc';
   }
@@ -42,13 +42,13 @@ function simple_ldap_user_requirements($phase) {
   $t = get_t();
 
   if ($phase == 'runtime') {
-    $expected = drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
+    $expected = backdrop_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.password.inc';
     $password_inc = settings_get('password_inc', 'core/includes/password.inc');
     $requirements['password_inc'] = array(
       'title' => 'password_inc',
       'value' => $password_inc,
       'severity' => $password_inc == $expected ? REQUIREMENT_OK : REQUIREMENT_ERROR,
-      'description' => $t('Simple LDAP User requires overrides to some of the Drupal password hashing functions.') . ' ' . $t('If the password_inc variable is not set to the file provided by Simple LDAP User, LDAP authentication will not work.'),
+      'description' => $t('Simple LDAP User requires overrides to some of the Backdrop password hashing functions.') . ' ' . $t('If the password_inc variable is not set to the file provided by Simple LDAP User, LDAP authentication will not work.'),
     );
   }
 

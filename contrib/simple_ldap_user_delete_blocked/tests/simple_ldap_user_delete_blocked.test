@@ -14,12 +14,12 @@ class SimpleLdapUserDeleteBlockedWebTestCase extends SimpleLdapUserTestCase {
     $this->assertTrue($success, t('Enabled module: @modules', array('@modules' => implode(', ', $modules))));
 
     // Create new user.
-    $user = $this->drupalCreateUser();
+    $user = $this->backdropCreateUser();
     $user_name = $user->name;
     $user_uid = $user->uid;
 
     // Log in as User 1.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
     
     // Verify that the test user exists in LDAP.
     $ldap_user = new SimpleLdapUser($user_name);
@@ -29,7 +29,7 @@ class SimpleLdapUserDeleteBlockedWebTestCase extends SimpleLdapUserTestCase {
     $edit = array(
       'status' => 0,
     );
-    $this->drupalPost('user/' . $user_uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $user_uid . '/edit', $edit, t('Save'));
     $this->assertText(t('The changes have been saved.'), t('The @user is blocked in Backdrop.', array('@user' => $user_name)));
 
     // Verify that the test user does not exist in LDAP.
@@ -40,7 +40,7 @@ class SimpleLdapUserDeleteBlockedWebTestCase extends SimpleLdapUserTestCase {
     $edit = array(
       'status' => 1,
     );
-    $this->drupalPost('user/' . $user_uid . '/edit', $edit, t('Save'));
+    $this->backdropPost('user/' . $user_uid . '/edit', $edit, t('Save'));
     $this->assertText(t('The changes have been saved.'), t('The @user is activated in Backdrop.', array('@user' => $user_name)));
 
     // Verify that the test user exists in LDAP.

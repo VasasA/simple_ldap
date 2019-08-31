@@ -82,7 +82,7 @@ class SimpleLdapSSO {
    * Constructor.
    *
    * @param string $name
-   *   The Drupal username.
+   *   The Backdrop username.
    */
   public function __construct($name) {
     $parameters = array(

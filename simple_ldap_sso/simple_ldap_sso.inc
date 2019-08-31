@@ -13,7 +13,7 @@ define('SIMPLE_LDAP_SSO_FLOOD', 'simple_ldap_sso_failed_login');
  * Check to make sure this module is configured properly.
  */
 function simple_ldap_sso_configured() {
-  $configured = &drupal_static(__FUNCTION__);
+  $configured = &backdrop_static(__FUNCTION__);
   if (!isset($configured)) {
     // If there are no error messages, the module is configured.
     $errors = simple_ldap_configuration_errors();
@@ -31,8 +31,8 @@ function simple_ldap_configuration_errors() {
   $errors = array();
   $config = config('simple_ldap_sso.settings');
   // We need the module files here in order to call these functions.
-  drupal_load('module', 'simple_ldap');
-  drupal_load('module', 'simple_ldap_user');
+  backdrop_load('module', 'simple_ldap');
+  backdrop_load('module', 'simple_ldap_user');
   /*
   if (!simple_ldap_configured() || !simple_ldap_user_configured()) {
     $errors = t('Simple LDAP and Simple LDAP User modules must be configured.');
@@ -58,13 +58,13 @@ function simple_ldap_configuration_errors() {
   }
 
   // Ensure the session_inc variable is set properly. We can't use
-  // drupal_get_path here, because it's not loaded yet when this gets called
+  // backdrop_get_path here, because it's not loaded yet when this gets called
   // from the session include. Granted, it wouldn't be called from the session
   // include unless this particular bit was configured properly, but we leave
   // this in so that it works for hook_requirements().
   $session_inc_path = str_replace('\\', '/', __DIR__ . '/simple_ldap_sso.session.inc');
-  $session_inc_relative_path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
-  if (str_replace('\\', '/', DRUPAL_ROOT . '/' . settings_get('session_inc', 'core/includes/session.inc')) != $session_inc_path) {
+  $session_inc_relative_path = backdrop_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
+  if (str_replace('\\', '/', BACKDROP_ROOT . '/' . settings_get('session_inc', 'core/includes/session.inc')) != $session_inc_path) {
     $message = t('You must set the session_inc variable to Simple LDAP SSO’s session include file.');
     $message .= t(' Insert the following line into the @backdrop_root/settings.php file!', array('@backdrop_root' => BACKDROP_ROOT));
     $message .= '<br>$settings["session_inc"] = "' . $session_inc_relative_path . '";';
@@ -170,7 +170,7 @@ function simple_ldap_sso_populate_session() {
  *   An array of data, or FALSE if it was unable to be read.
  */
 function simple_ldap_sso_get_cookie_data($cookie_value = NULL) {
-  $result = &drupal_static(__FUNCTION__);
+  $result = &backdrop_static(__FUNCTION__);
 
   // If this has already been called, return what we have.
   if (isset($result)) {
@@ -211,16 +211,16 @@ function simple_ldap_sso_validate_user(array $data) {
     // We can't call user_save() in here, because it's too early in the
     // bootstrap. Instead, we'll just write the record to the user table
     // directly.
-    require_once DRUPAL_ROOT . '/core/includes/common.inc';
+    require_once BACKDROP_ROOT . '/core/includes/common.inc';
     $account = new stdClass();
     $account->uid = db_next_id(db_query('SELECT MAX(uid) FROM {users}')->fetchField());
     $account->created = REQUEST_TIME;
     $account->name = $data['name'];
     $account->status = 1;
-    drupal_write_record('users', $account);
+    backdrop_write_record('users', $account);
     $uid = isset($account->uid) ? $account->uid : FALSE;
 
-    // Always queue a sync from LDAP to Drupal if the user was just created.
+    // Always queue a sync from LDAP to Backdrop if the user was just created.
     simple_ldap_sso_queue_user_sync();
   }
 
@@ -390,7 +390,7 @@ function simple_ldap_sso_abort() {
   simple_ldap_sso_user_logout($user);
   // Log out the user and reset the $user object.
   session_destroy();
-  drupal_set_message(t('A problem was encountered when attempting to sign you in on this site.'), 'error');
+  backdrop_set_message(t('A problem was encountered when attempting to sign you in on this site.'), 'error');
 }
 
 /**
@@ -422,12 +422,12 @@ function simple_ldap_sso_session_needs_validation() {
  */
 function simple_ldap_sso_queue_user_sync() {
   // Set the static variable to TRUE for simple_ldap_sso_user_needs_sync().
-  drupal_static('simple_ldap_sso_user_needs_sync', TRUE);
+  backdrop_static('simple_ldap_sso_user_needs_sync', TRUE);
 }
 
 /**
  * Check if this user needs to be synced.
  */
 function simple_ldap_sso_user_needs_sync() {
-  return drupal_static(__FUNCTION__, FALSE);
+  return backdrop_static(__FUNCTION__, FALSE);
 }

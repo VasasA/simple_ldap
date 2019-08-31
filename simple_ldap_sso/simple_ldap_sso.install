@@ -31,7 +31,7 @@ function simple_ldap_sso_disable() {
  * Implements hook_enable().
  */
 function simple_ldap_sso_enable() {
-  $path = drupal_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
+  $path = backdrop_get_path('module', 'simple_ldap_sso') . '/simple_ldap_sso.session.inc';
   $GLOBALS['settings']['session_inc'] = $path;
 }
 

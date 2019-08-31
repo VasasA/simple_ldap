@@ -15,7 +15,7 @@ function simple_ldap_user_admin($form, &$form_state) {
 
   // Verify LDAP server connectivity.
   if (!$server->bind()) {
-    drupal_set_message(t('Unable to bind to the LDAP server.') . ' ' . l(t('Check the server configuration.'), 'admin/config/people/simple_ldap'), 'warning');
+    backdrop_set_message(t('Unable to bind to the LDAP server.') . ' ' . l(t('Check the server configuration.'), 'admin/config/people/simple_ldap'), 'warning');
     return $form;
   }
 
@@ -123,7 +123,7 @@ function simple_ldap_user_admin($form, &$form_state) {
     '#prefix' => '<div id="simple-ldap-user-attributes">',
     '#options' => $attributes,
     '#required' => TRUE,
-    '#description' => t('Which LDAP attribute should be mapped to a Drupal username.') . ' ' . t('This is commonly "cn" or "uid".'),
+    '#description' => t('Which LDAP attribute should be mapped to a Backdrop username.') . ' ' . t('This is commonly "cn" or "uid".'),
     '#disabled' => $readonly,
   );
 
@@ -138,7 +138,7 @@ function simple_ldap_user_admin($form, &$form_state) {
     '#title' => t('Email attribute'),
     '#options' => $attributes,
     '#required' => TRUE,
-    '#description' => t("Which LDAP attribute should be mapped to a Drupal user's email address.") . ' ' . t('This is commonly "mail".'),
+    '#description' => t("Which LDAP attribute should be mapped to a Backdrop user's email address.") . ' ' . t('This is commonly "mail".'),
     '#disabled' => $readonly,
   );
 
@@ -153,7 +153,7 @@ function simple_ldap_user_admin($form, &$form_state) {
     '#title' => t('Password attribute') . $disabled_note,
     '#suffix' => '</div>',
     '#options' => $attributes,
-    '#description' => t("Which LDAP attribute should be mapped to a Drupal user's password.") . ' ' . t('This is only used for password resets, not for authentication, and is commonly "userPassword".'),
+    '#description' => t("Which LDAP attribute should be mapped to a Backdrop user's password.") . ' ' . t('This is only used for password resets, not for authentication, and is commonly "userPassword".'),
     '#disabled' => $readonly || $server->readonly,
     '#empty_value' => FALSE,
   );
@@ -194,11 +194,11 @@ function simple_ldap_user_admin($form, &$form_state) {
     '#title' => t('Authoritative data source') . $disabled_note,
     '#options' => array(
       'ldap' => t('LDAP'),
-      'drupal' => t('Drupal'),
+      'backdrop' => t('Backdrop'),
     ),
     '#default_value' => simple_ldap_user_variable_get('simple_ldap_user_source'),
     '#disabled' => $server->readonly,
-    '#description' => t('This determines the behavior of the data sync in the event of a conflict between LDAP and Drupal.'),
+    '#description' => t('This determines the behavior of the data sync in the event of a conflict between LDAP and Backdrop.'),
   );
 
   $form['advanced']['simple_ldap_user_sync'] = array(
@@ -224,13 +224,13 @@ function simple_ldap_user_admin($form, &$form_state) {
   $map_object = SimpleLdapUserMap::singleton();
   if ($attribute_map = $map_object->map) {
     $table = '<table>';
-    $table .= '<thead><tr><th>' . t('LDAP attribute') . '</th><th>' . t('Drupal attribute') . '</th></tr></thead>';
+    $table .= '<thead><tr><th>' . t('LDAP attribute') . '</th><th>' . t('Backdrop attribute') . '</th></tr></thead>';
     $table .= '<tbody>';
     $class = 'odd';
     foreach ($attribute_map as $item) {
       $table .= '<tr class="' . $class . '">';
       $table .= '<td>' . $item['ldap'] . '</td>';
-      $table .= '<td>' . implode(' ', $item['drupal']) . '</td>';
+      $table .= '<td>' . implode(' ', $item['backdrop']) . '</td>';
       $table .= '</tr>';
       $class = $class == 'odd' ? 'even' : 'odd';
     }
@@ -327,7 +327,7 @@ function simple_ldap_user_import_submit($form, &$form_state) {
   $batch = array(
     'operations' => $operations,
     'finished' => 'simple_ldap_user_import_finished',
-    'file' => drupal_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.admin.inc',
+    'file' => backdrop_get_path('module', 'simple_ldap_user') . '/simple_ldap_user.admin.inc',
   );
 
   batch_set($batch);
@@ -337,9 +337,9 @@ function simple_ldap_user_import_submit($form, &$form_state) {
  * Batch process function for mass user import.
  */
 function simple_ldap_user_import_user($name, &$context) {
-  $drupal_user = simple_ldap_user_load_or_create_by_name($name);
+  $backdrop_user = simple_ldap_user_load_or_create_by_name($name);
   $context['message'] = 'Importing ' . $name;
-  $context['results'][$name] = !empty($drupal_user);
+  $context['results'][$name] = !empty($backdrop_user);
 }
 
 /**
@@ -347,9 +347,9 @@ function simple_ldap_user_import_user($name, &$context) {
  */
 function simple_ldap_user_import_finished($success, $results, $operations) {
   if ($success) {
-    drupal_set_message(t('Imported @count users from LDAP.', array('@count' => count($results))));
+    backdrop_set_message(t('Imported @count users from LDAP.', array('@count' => count($results))));
   }
   else {
-    drupal_set_message(t('A problem occurred while importing the users from LDAP.'));
+    backdrop_set_message(t('A problem occurred while importing the users from LDAP.'));
   }
 }

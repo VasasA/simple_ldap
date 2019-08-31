@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Class defining the LDAP <-> Drupal user field mappings.
+ * Class defining the LDAP <-> Backdrop user field mappings.
  */
 
 class SimpleLdapUserMap {
@@ -15,9 +15,9 @@ class SimpleLdapUserMap {
     return self::$instance;
   }
 
-  // The attribute map, as processed from the Drupal settings below.
+  // The attribute map, as processed from the Backdrop settings below.
   protected $map = array();
-  // The unprocessed Drupal settings.
+  // The unprocessed Backdrop settings.
   protected $settings = array();
   // The attribute schema.
   protected $schema = array();
@@ -55,8 +55,8 @@ class SimpleLdapUserMap {
       }
       // Convert to all lowercase.
       $this->map[$key]['ldap'] = strtolower($schema['name']);
-      // Make sure the Drupal attribute is an array.
-      $this->map[$key]['drupal'] = (array) $value['drupal'];
+      // Make sure the Backdrop attribute is an array.
+      $this->map[$key]['backdrop'] = (array) $value['backdrop'];
     }
   }
 
@@ -87,7 +87,7 @@ class SimpleLdapUserMap {
   }
 
   /**
-   * Disable mapped Drupal fields in a form. Used in user profile forms when the
+   * Disable mapped Backdrop fields in a form. Used in user profile forms when the
    * server is readonly.
    */
   public function disableMappedFormFields(&$form) {
@@ -98,9 +98,9 @@ class SimpleLdapUserMap {
 
     // Disable mapped fields if LDAP Server is read-only.
     foreach ($this->map as $attribute) {
-      // Handle drupal many-to-one mappings.
-      foreach ($attribute['drupal'] as $drupal_attribute) {
-        if (!($parsed = $this->parseDrupalAttribute($drupal_attribute))) {
+      // Handle Backdrop many-to-one mappings.
+      foreach ($attribute['backdrop'] as $backdrop_attribute) {
+        if (!($parsed = $this->parseBackdropAttribute($backdrop_attribute))) {
           // If we couldn't parse the field name, just continue.
           continue;
         }
@@ -113,38 +113,38 @@ class SimpleLdapUserMap {
           array_unshift($parents, 'account');
         }
         // Now set #disabled to TRUE.
-        drupal_array_set_nested_value($form, $parents, TRUE);
+        backdrop_array_set_nested_value($form, $parents, TRUE);
       }
     }
   }
 
   /**
-   * Map from LDAP to Drupal.
+   * Map from LDAP to Backdrop.
    *
    * @param SimpleLdapUser $ldap_user
    *   The LDAP user.
    * @param Array $edit
    *   The edit array, as passed to user_save().
-   * @param stdClass $drupal_user
-   *   The Drupal user account object.
+   * @param stdClass $backdrop_user
+   *   The Backdrop user account object.
    */
-  public function mapFromLdapToDrupal(SimpleLdapUser $ldap_user, array &$edit, stdClass $drupal_user) {
+  public function mapFromLdapToBackdrop(SimpleLdapUser $ldap_user, array &$edit, stdClass $backdrop_user) {
     // Mail is a special attribute.
     $attribute_mail = simple_ldap_user_variable_get('simple_ldap_user_attribute_mail');
-    if (isset($ldap_user->{$attribute_mail}[0]) && (!empty($drupal_user->is_new) || $drupal_user->mail != $ldap_user->{$attribute_mail}[0])) {
+    if (isset($ldap_user->{$attribute_mail}[0]) && (!empty($backdrop_user->is_new) || $backdrop_user->mail != $ldap_user->{$attribute_mail}[0])) {
       $edit['mail'] = $ldap_user->{$attribute_mail}[0];
     }
 
     // Synchronize the fields in the attribute map.
     foreach ($this->map as $attribute) {
 
-      // Skip drupal-to-ldap many-to-one mappings.
-      if (count($attribute['drupal']) > 1) {
+      // Skip Backdrop-to-ldap many-to-one mappings.
+      if (count($attribute['backdrop']) > 1) {
         continue;
       }
 
-      // Get the drupal field name and type.
-      $drupal_attribute = reset($attribute['drupal']);
+      // Get the Backdrop field name and type.
+      $backdrop_attribute = reset($attribute['backdrop']);
       $ldap_attribute = $ldap_user->{$attribute['ldap']};
 
       // If no records were found in LDAP, continue.
@@ -153,25 +153,25 @@ class SimpleLdapUserMap {
       }
 
       // Skip this field if it couldn't be parsed.
-      if (!($parsed = $this->parseDrupalAttribute($drupal_attribute))) {
+      if (!($parsed = $this->parseBackdropAttribute($backdrop_attribute))) {
         continue;
       }
       list($is_field, $field_name) = $parsed;
 
       // To avoid notices, set the value to NULL. This would most often be the
       // case on inserts.
-      if (!isset($drupal_user->$field_name)) {
-        $drupal_user->$field_name = NULL;
+      if (!isset($backdrop_user->$field_name)) {
+        $backdrop_user->$field_name = NULL;
       }
 
       // If this is a Field API field, store in appropriate array structure.
       if ($is_field) {
         $field_info = field_info_field($field_name);
         $check_cardinality = $field_info['cardinality'] != FIELD_CARDINALITY_UNLIMITED;
-        $language = field_language('user', $drupal_user, $field_name);
+        $language = field_language('user', $backdrop_user, $field_name);
 
         // Determine the columns for this field.
-        $columns = $this->drupalAttributeColumns($drupal_attribute);
+        $columns = $this->backdropAttributeColumns($backdrop_attribute);
         // Iterate over each LDAP value.
         for ($i = 0; $i < $ldap_attribute['count']; $i++) {
           // If cardinality has been reached, break.
@@ -181,7 +181,7 @@ class SimpleLdapUserMap {
           // Don't mess with $columns, so it stays consistent for each value.
           $parents = $columns;
           array_unshift($parents, $field_name, $language, $i);
-          drupal_array_set_nested_value($edit, $parents, $ldap_attribute[$i]);
+          backdrop_array_set_nested_value($edit, $parents, $ldap_attribute[$i]);
         }
       }
       // Otherwise, this is just a property on the user, and we just grab the
@@ -193,23 +193,23 @@ class SimpleLdapUserMap {
   }
 
   /**
-   * Map from Drupal to LDAP.
+   * Map from Backdrop to LDAP.
    *
-   * @param stdClass $drupal_user
-   *   The Drupal user account object.
+   * @param stdClass $backdrop_user
+   *   The Backdrop user account object.
    * @param SimpleLdapUser $ldap_user
    *   The LDAP user object.
    */
-  public function mapFromDrupalToLdap(stdClass $drupal_user, SimpleLdapUser $ldap_user) {
+  public function mapFromBackdropToLdap(stdClass $backdrop_user, SimpleLdapUser $ldap_user) {
     // Synchronize the fields in the attribute map.
     foreach ($this->map as $attribute) {
-      // Initialize the Drupal value array.
-      $drupal_values = array();
+      // Initialize the Backdrop value array.
+      $backdrop_values = array();
 
-      // Parse the drupal attribute name.
-      foreach ($attribute['drupal'] as $drupal_attribute) {
+      // Parse the Backdrop attribute name.
+      foreach ($attribute['backdrop'] as $backdrop_attribute) {
         // Skip this field if it couldn't be parsed.
-        if (!($parsed = $this->parseDrupalAttribute($drupal_attribute))) {
+        if (!($parsed = $this->parseBackdropAttribute($backdrop_attribute))) {
           continue;
         }
         list($is_field, $field_name) = $parsed;
@@ -217,33 +217,33 @@ class SimpleLdapUserMap {
         // If this is a Field API field, use Field API to get the values.
         if ($is_field) {
           // If we have no items, just skip this field.
-          if (!($items = field_get_items('user', $drupal_user, $field_name))) {
+          if (!($items = field_get_items('user', $backdrop_user, $field_name))) {
             continue;
           }
           // Otherwise, set up an array of values.
           $values = array();
           // Parse the columns from the attribute name.
-          $columns = $this->drupalAttributeColumns($drupal_attribute);
+          $columns = $this->backdropAttributeColumns($backdrop_attribute);
           foreach ($items as $key => $item) {
             // If we have a value, add it to the array.
-            if ($value = drupal_array_get_nested_value($item, $columns)) {
+            if ($value = backdrop_array_get_nested_value($item, $columns)) {
               $values[] = $value;
             }
           }
-          $drupal_values[] = $values;
+          $backdrop_values[] = $values;
         }
         else {
           // Get the value directly from the user object.
-          $drupal_values[] = array($drupal_user->$field_name);
+          $backdrop_values[] = array($backdrop_user->$field_name);
         }
       }
 
-      // Merge the $drupal_values array into uniform values for the LDAP server.
-      // This is needed to account for drupal attributes of mixed types.
+      // Merge the $backdrop_values array into uniform values for the LDAP server.
+      // This is needed to account for Backdrop attributes of mixed types.
       // First, find the largest value array.
       $size = 0;
-      foreach ($drupal_values as $drupal_value) {
-        $count = count($drupal_value);
+      foreach ($backdrop_values as $backdrop_value) {
+        $count = count($backdrop_value);
         if ($count > $size) {
           $size = $count;
         }
@@ -253,7 +253,7 @@ class SimpleLdapUserMap {
       $ldap_values = array();
       for ($i = 0; $i < $size; $i++) {
         $ldap_values[$i] = '';
-        foreach ($drupal_values as $values) {
+        foreach ($backdrop_values as $values) {
           if (isset($values[$i])) {
             $ldap_values[$i] .= ' ' . $values[$i];
           }
@@ -267,19 +267,19 @@ class SimpleLdapUserMap {
   }
 
   /**
-   * Helper function to parse a drupal field name, as mapped to in the variable
+   * Helper function to parse a Backdrop field name, as mapped to in the variable
    * called simple_ldap_user_attribute_map.
    *
-   * @param string $drupal_attribute
+   * @param string $backdrop_attribute
    *   The string name of the field.
    * @return array
    *   An array containing a boolean value to signify whether the field is a Field
    *   API field, and the actual field name that was matched.
    */
-  function parseDrupalAttribute($drupal_attribute) {
+  function parseBackdropAttribute($backdrop_attribute) {
     // Use a regex to capture the name only, not the leading hash or any
     // trailing field columns inside of brackets.
-    preg_match('/^(#?)([a-zA-Z0-9_]+)/', $drupal_attribute, $matches);
+    preg_match('/^(#?)([a-zA-Z0-9_]+)/', $backdrop_attribute, $matches);
     // Parse the matches we want to some variables.
     list( , $is_field, $field_name) = $matches;
     // If field name is empty, the match failed.
@@ -290,18 +290,18 @@ class SimpleLdapUserMap {
   }
 
   /**
-   * Helper function to retrieve column names from a drupal attribute mapping for
+   * Helper function to retrieve column names from a Backdrop attribute mapping for
    * a Field API field.
    *
-   * @param string $drupal_attribute
+   * @param string $backdrop_attribute
    *   The name of the field as declared in the attribute mapping.
    * @return array
    *   An array of columns for the field. Defaults to a single element of 'value'.
    */
-  function drupalAttributeColumns($drupal_attribute) {
+  function backdropAttributeColumns($backdrop_attribute) {
     // Look for nested columns in the attribute name, specified by
     // brackets, ie field_foo[bar][baz].
-    preg_match_all('/\[([a-zA-Z0-9_]+)\]/', $drupal_attribute, $matches);
+    preg_match_all('/\[([a-zA-Z0-9_]+)\]/', $backdrop_attribute, $matches);
 
     // If there are nested columns, use them, otherwise default to value.
     return empty($matches[1]) ? array('value') : $matches[1];

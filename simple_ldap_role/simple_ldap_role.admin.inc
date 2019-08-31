@@ -15,7 +15,7 @@ function simple_ldap_role_admin($form, &$form_state) {
 
   // Verify LDAP server connectivity.
   if (!$server->bind()) {
-    drupal_set_message(t('Unable to bind to the LDAP server.') . ' ' . l(t('Check the server configuration.'), 'admin/config/people/simple_ldap'), 'warning');
+    backdrop_set_message(t('Unable to bind to the LDAP server.') . ' ' . l(t('Check the server configuration.'), 'admin/config/people/simple_ldap'), 'warning');
     return $form;
   }
 
@@ -117,7 +117,7 @@ function simple_ldap_role_admin($form, &$form_state) {
     '#prefix' => '<div id="simple-ldap-role-attributes">',
     '#options' => $attributes,
     '#required' => TRUE,
-    '#description' => t('Which LDAP attribute should be mapped to a Drupal role name.') . ' ' . t('This is commonly "cn".'),
+    '#description' => t('Which LDAP attribute should be mapped to a Backdrop role name.') . ' ' . t('This is commonly "cn".'),
     '#disabled' => $readonly,
   );
 
@@ -166,11 +166,11 @@ function simple_ldap_role_admin($form, &$form_state) {
     '#title' => t('Authoritative data source') . $readonly_note,
     '#options' => array(
       'ldap' => t('LDAP'),
-      'drupal' => t('Drupal'),
+      'backdrop' => t('Backdrop'),
     ),
     '#default_value' => simple_ldap_role_variable_get('simple_ldap_role_source'),
     '#disabled' => $server->readonly,
-    '#description' => t('This determines the behavior of the data sync in the event of a conflict between LDAP and Drupal.'),
+    '#description' => t('This determines the behavior of the data sync in the event of a conflict between LDAP and Backdrop.'),
   );
 
   $form['advanced']['simple_ldap_role_sync'] = array(

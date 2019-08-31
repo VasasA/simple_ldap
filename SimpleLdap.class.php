@@ -201,7 +201,7 @@ class SimpleLdap {
 
       case 'unicode':
         $string = '"' . $string . '"';
-        $length = drupal_strlen($string);
+        $length = backdrop_strlen($string);
         $hash = NULL;
         for ($i = 0; $i < $length; $i++) {
           $hash .= "{$string{$i}}\000";

@@ -6,6 +6,6 @@ file = simple_ldap_active_group.test
 
 [SimpleLdapActiveGroupDeleteIgnoreFilterWebTestCase]
 name = Delete the user by ignoring the filter
-description = Tests that user will be deleted from LDAP when deleted from Drupal, even if the user's DN does not match the specified search filter.
+description = Tests that user will be deleted from LDAP when deleted from Backdrop, even if the user's DN does not match the specified search filter.
 group = Simple LDAP Active Group
 file = simple_ldap_active_group.test

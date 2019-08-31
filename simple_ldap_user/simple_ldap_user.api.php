@@ -39,21 +39,21 @@
  *
  * simple_ldap_user_load_or_create_by_name($name)
  * simple_ldap_user_login_name_validate($form, &$form_state)
- * simple_ldap_user_sync_user_to_ldap($drupal_user)
- * simple_ldap_user_sync_user_to_drupal($drupal_user)
+ * simple_ldap_user_sync_user_to_ldap($backdrop_user)
+ * simple_ldap_user_sync_user_to_backdrop($backdrop_user)
  * simple_ldap_user_variable_get($variable)
  */
 
 /**
- * Synchronizes a Drupal user to LDAP.
+ * Synchronizes a Backdrop user to LDAP.
  *
- * This hook is called when simple_ldap_user needs to synchronize Drupal user
+ * This hook is called when simple_ldap_user needs to synchronize Backdrop user
  * data to LDAP.
  *
  * This example sets the LDAP employeeType attribute to "full-time"
  *
  * @param StdClass $user
- *   The full Drupal user object that is being synchronized.
+ *   The full Backdrop user object that is being synchronized.
  */
 function hook_sync_user_to_ldap($user) {
   $ldap_user = SimpleLdapUser::singleton($user->name);
@@ -62,31 +62,31 @@ function hook_sync_user_to_ldap($user) {
 }
 
 /**
- * Alter user data before saving to Drupal.
+ * Alter user data before saving to Backdrop.
  *
  * This hook is called when simple_ldap_user is doing an account synchronization
- * from LDAP to Drupal, immediately before user_save() is called.
+ * from LDAP to Backdrop, immediately before user_save() is called.
  *
  * @param array $edit
- *   Array of changes to apply to the Drupal user by user_save().
- * @param StdClass $drupal_user
- *   The Drupal user object to be saved.
+ *   Array of changes to apply to the Backdrop user by user_save().
+ * @param StdClass $backdrop_user
+ *   The Backdrop user object to be saved.
  * @param SimpleLdapUser $ldap_user
- *   The SimpleLdapUser object that matches the Drupal user object.
+ *   The SimpleLdapUser object that matches the Backdrop user object.
  */
-function hook_simple_ldap_user_to_drupal_alter($edit, $drupal_user, $ldap_user) {
+function hook_simple_ldap_user_to_backdrop_alter($edit, $backdrop_user, $ldap_user) {
 }
 
 /**
  * Alter user data before saving to LDAP.
  *
  * This hook is called when simple_ldap_user is doing an account synchronization
- * from Drupal to LDAP, immediately before SimpleLdapUser::save() is called.
+ * from Backdrop to LDAP, immediately before SimpleLdapUser::save() is called.
  *
  * @param SimpleLdapUser $ldap_user
  *   The SimpleLdapUser object to be saved.
- * @param StdClass $drupal_user
- *   The Drupal user object that matches the SimpleLdapUser object.
+ * @param StdClass $backdrop_user
+ *   The Backdrop user object that matches the SimpleLdapUser object.
  */
-function hook_simple_ldap_user_to_ldap_alter($ldap_user, $drupal_user) {
+function hook_simple_ldap_user_to_ldap_alter($ldap_user, $backdrop_user) {
 }

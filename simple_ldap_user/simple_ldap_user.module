@@ -12,7 +12,7 @@ function simple_ldap_user_menu() {
 
   $items['admin/config/people/simple_ldap/user'] = array(
     'title' => 'Users',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('simple_ldap_user_admin'),
     'access arguments' => array('administer site configuration'),
     'file' => 'simple_ldap_user.admin.inc',
@@ -22,7 +22,7 @@ function simple_ldap_user_menu() {
 
   $items['admin/people/simple_ldap_user_import'] = array(
     'title' => 'Import from LDAP',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('simple_ldap_user_import'),
     'access arguments' => array('administer users'),
     'file' => 'simple_ldap_user.admin.inc',
@@ -51,8 +51,8 @@ function simple_ldap_user_form_user_admin_account_alter(&$form, &$form_state, $f
     // are set to active, so they are left alone here.
     if ($user['status'] == 'active') {
       // Load the user objects.
-      $drupal_user = user_load($uid);
-      $ldap_user = SimpleLdapUser::singleton($drupal_user->name);
+      $backdrop_user = user_load($uid);
+      $ldap_user = SimpleLdapUser::singleton($backdrop_user->name);
 
       // Check whether the user exists in LDAP.
       if (!$ldap_user->exists) {
@@ -170,28 +170,28 @@ function simple_ldap_user_user_login(&$edit, $account) {
 function simple_ldap_user_user_presave($account) {
   $edit = array();
   // Do not overwrite the user status in the database.
-  if (isset($account->simple_ldap_user_drupal_status)) {
+  if (isset($account->simple_ldap_user_backdrop_status)) {
     // Now set the $account->status back to the value in the database, just to
     // be safe. This ensures that if $edit['status'] is empty, we don't mess up
     // what's in the database with what is on the user object.
-    $account->status = $account->simple_ldap_user_drupal_status;
+    $account->status = $account->simple_ldap_user_backdrop_status;
   }
   // To make sure we've covered all our bases, we also set $account->original's
   // status back to what is in the database as well.
-  if (isset($account->original) && isset($account->original->simple_ldap_user_drupal_status)) {
-    $account->original->status = $account->simple_ldap_user_drupal_status;
+  if (isset($account->original) && isset($account->original->simple_ldap_user_backdrop_status)) {
+    $account->original->status = $account->simple_ldap_user_backdrop_status;
   }
 
   if (isset($account->is_new) && $account->is_new && isset($account->name)) {
     $ldap_user = SimpleLdapUser::singleton($account->name);
 
     if ($ldap_user->exists) {
-      // Force an initial sync from LDAP to drupal.
-      $ldap_user->mapObject->mapFromLdapToDrupal($ldap_user, $edit, $account);
+      // Force an initial sync from LDAP to Backdrop.
+      $ldap_user->mapObject->mapFromLdapToBackdrop($ldap_user, $edit, $account);
     }
   }
 
-  // If account updated and username changed, RDN default to drupal name and ldap
+  // If account updated and username changed, RDN default to Backdrop name and ldap
   // entry already exists from elsewhere, reset new changed username to its previous value.
   if (isset($account->original)) {
 
@@ -208,7 +208,7 @@ function simple_ldap_user_user_presave($account) {
       if (empty($attribute_rdn) && $ldap_user->exists) {
 
         $account->name = $account->original->name;
-        drupal_set_message(t('The new username %name could not be changed because an LDAP entry already exists. Previous name have been keep and no LDAP modification have been done.', array('%name' => $new_username)), 'error');
+        backdrop_set_message(t('The new username %name could not be changed because an LDAP entry already exists. Previous name have been keep and no LDAP modification have been done.', array('%name' => $new_username)), 'error');
       }
     }
   }
@@ -243,8 +243,8 @@ function simple_ldap_user_user_update($account) {
     return;
   }
 
-  // Don't do anything if the hook was called via hook_sync_user_to_drupal().
-  if (empty($account->hook_sync_user_to_drupal)) {
+  // Don't do anything if the hook was called via hook_sync_user_to_backdrop().
+  if (empty($account->hook_sync_user_to_backdrop)) {
     $ldap_user = SimpleLdapUser::singleton($account->name);
     $enabled = isset($account->status) ? $account->status : NULL;
     // In hook_user_presave, we may have messed with the $account->status and
@@ -258,7 +258,7 @@ function simple_ldap_user_user_update($account) {
     }
   }
   else {
-    unset($account->hook_sync_user_to_drupal);
+    unset($account->hook_sync_user_to_backdrop);
   }
 }
 
@@ -279,7 +279,7 @@ function simple_ldap_user_user_delete($account) {
   try {
     $ldap_user->delete();
   } catch (SimpleLdapException $e) {
-    drupal_set_message(t('Failed to delete @name from LDAP.', array('@name' => $account->name)) . ' ' . t('Error @code: @message.', array('@code' => $e->getCode(), '@message' => $e->getMessage())), 'error', FALSE);
+    backdrop_set_message(t('Failed to delete @name from LDAP.', array('@name' => $account->name)) . ' ' . t('Error @code: @message.', array('@code' => $e->getCode(), '@message' => $e->getMessage())), 'error', FALSE);
   }
 }
 
@@ -343,7 +343,7 @@ function simple_ldap_user_login_name_validate($form, &$form_state) {
  *   The username or email address to load.
  *
  * @return mixed
- *   The Drupal user object, or FALSE if the process failed.
+ *   The Backdrop user object, or FALSE if the process failed.
  */
 function simple_ldap_user_load_or_create_by_name($name) {
   // Load the LDAP user with the given username.
@@ -354,14 +354,14 @@ function simple_ldap_user_load_or_create_by_name($name) {
     return FALSE;
   }
 
-  // Attempt to load the drupal user.
-  $drupal_user = user_load_by_name($name);
-  if (!$drupal_user) {
-    $drupal_user = user_load_by_mail($name);
+  // Attempt to load the Backdrop user.
+  $backdrop_user = user_load_by_name($name);
+  if (!$backdrop_user) {
+    $backdrop_user = user_load_by_mail($name);
   }
 
-  // If the user doesn't already exist in Drupal, create them.
-  if (!$drupal_user) {
+  // If the user doesn't already exist in Backdrop, create them.
+  if (!$backdrop_user) {
     $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
     $attribute_mail = simple_ldap_user_variable_get('simple_ldap_user_attribute_mail');
     $account = entity_create('user', array());
@@ -373,35 +373,35 @@ function simple_ldap_user_load_or_create_by_name($name) {
     $account->save();
     $uid = $account->id();
     if ($uid) {
-      $drupal_user = user_load($uid);
+      $backdrop_user = user_load($uid);
     }
     else {
-      $drupal_user = FALSE;
+      $backdrop_user = FALSE;
     }
   }
 
-  return $drupal_user;
+  return $backdrop_user;
 }
 
 /**
  * Synchronize a user from or to LDAP, depending on the settings.
  */
-function simple_ldap_user_sync_user($drupal_user) {
+function simple_ldap_user_sync_user($backdrop_user) {
   switch (simple_ldap_user_variable_get('simple_ldap_user_source')) {
     case 'ldap':
-      simple_ldap_user_sync_user_to_drupal($drupal_user);
+      simple_ldap_user_sync_user_to_backdrop($backdrop_user);
       break;
 
-    case 'drupal':
-      simple_ldap_user_sync_user_to_ldap($drupal_user);
+    case 'backdrop':
+      simple_ldap_user_sync_user_to_ldap($backdrop_user);
       break;
   }
 }
 
 /**
- * Synchronizes Drupal user properties to LDAP.
+ * Synchronizes Backdrop user properties to LDAP.
  */
-function simple_ldap_user_sync_user_to_ldap($drupal_user) {
+function simple_ldap_user_sync_user_to_ldap($backdrop_user) {
   // Don't try to sync if the server is read-only.
   $server = SimpleLdapServer::singleton();
   if ($server->readonly) {
@@ -409,7 +409,7 @@ function simple_ldap_user_sync_user_to_ldap($drupal_user) {
   }
 
   // Don't try to sync anonymous or user 1.
-  if ($drupal_user->uid == 0 || $drupal_user->uid == 1) {
+  if ($backdrop_user->uid == 0 || $backdrop_user->uid == 1) {
     return;
   }
 
@@ -419,16 +419,16 @@ function simple_ldap_user_sync_user_to_ldap($drupal_user) {
   $attribute_pass = simple_ldap_user_variable_get('simple_ldap_user_attribute_pass');
 
   // Load the LDAP user.
-  $ldap_user = SimpleLdapUser::singleton($drupal_user->name);
+  $ldap_user = SimpleLdapUser::singleton($backdrop_user->name);
 
   // Mail is a special attribute.
-  $ldap_user->$attribute_mail = $drupal_user->mail;
+  $ldap_user->$attribute_mail = $backdrop_user->mail;
 
   // Password is a special attribute.
-  $ldap_user->$attribute_pass = $drupal_user->pass;
+  $ldap_user->$attribute_pass = $backdrop_user->pass;
 
   // Perform additional property and field mappings based on the user map.
-  $ldap_user->mapObject->mapFromDrupalToLdap($drupal_user, $ldap_user);
+  $ldap_user->mapObject->mapFromBackdropToLdap($backdrop_user, $ldap_user);
 
   // Set the DN.
   $attribute_rdn = simple_ldap_user_variable_get('simple_ldap_user_attribute_rdn');
@@ -437,11 +437,11 @@ function simple_ldap_user_sync_user_to_ldap($drupal_user) {
   }
   if ($ldap_user->{$attribute_rdn}['count'] > 0) {
 
-    //If drupal username have changed and is used for RDN, retrieve old ldap
+    //If Backdrop username have changed and is used for RDN, retrieve old ldap
     //user already loaded by controller and set previous DN temporary to move it.
-    if (isset($drupal_user->original) && $drupal_user->original->name !== $drupal_user->name
+    if (isset($backdrop_user->original) && $backdrop_user->original->name !== $backdrop_user->name
         && $attribute_rdn === $attribute_name) {
-      $original_ldap_user = SimpleLdapUser::singleton($drupal_user->original->name);
+      $original_ldap_user = SimpleLdapUser::singleton($backdrop_user->original->name);
       $ldap_user->dn = $original_ldap_user->dn;
     }
 
@@ -461,59 +461,59 @@ function simple_ldap_user_sync_user_to_ldap($drupal_user) {
   }
 
   // Allow altering the LDAP user object before saving.
-  drupal_alter('simple_ldap_user_to_ldap', $ldap_user, $drupal_user);
+  backdrop_alter('simple_ldap_user_to_ldap', $ldap_user, $backdrop_user);
 
   // Save any changes.
   try {
     $ldap_user->save();
   } catch (SimpleLdapException $e) {
     $attribute_list = $attribute_name . ', ' . $attribute_mail . ', ' . $attribute_pass . ', objectclass)';
-    drupal_set_message(t('Failed to save the user to LDAP. ') . format_string('%error', array('%error' => $e->getMessage())) . t(' (Please check the "required" attributes in LDAP database. Backdrop CMS only provides these attributes: ') . $attribute_list, 'error');
+    backdrop_set_message(t('Failed to save the user to LDAP. ') . format_string('%error', array('%error' => $e->getMessage())) . t(' (Please check the "required" attributes in LDAP database. Backdrop CMS only provides these attributes: ') . $attribute_list, 'error');
   }
 }
 
 /**
- * Synchronizes LDAP attributes to Drupal user properties.
+ * Synchronizes LDAP attributes to Backdrop user properties.
  */
-function simple_ldap_user_sync_user_to_drupal($drupal_user) {
+function simple_ldap_user_sync_user_to_backdrop($backdrop_user) {
   // Load the LDAP user, force a cache reset.
-  $ldap_user = SimpleLdapUser::singleton($drupal_user->name, TRUE);
+  $ldap_user = SimpleLdapUser::singleton($backdrop_user->name, TRUE);
 
   // Nothing to sync.
-  if (!$ldap_user->exists || (isset($drupal_user->uid) && $drupal_user->uid == 1)) {
+  if (!$ldap_user->exists || (isset($backdrop_user->uid) && $backdrop_user->uid == 1)) {
     return;
   }
 
   // Initialize array of attribute changes.
   $edit = array();
 
-  $ldap_user->mapObject->mapFromLdapToDrupal($ldap_user, $edit, $drupal_user);
+  $ldap_user->mapObject->mapFromLdapToBackdrop($ldap_user, $edit, $backdrop_user);
 
-  // Allow altering the Drupal user object before saving.
-  drupal_alter('simple_ldap_user_to_drupal', $edit, $drupal_user, $ldap_user);
+  // Allow altering the Backdrop user object before saving.
+  backdrop_alter('simple_ldap_user_to_backdrop', $edit, $backdrop_user, $ldap_user);
 
   // Save any changes.
   if (!empty($edit)) {
-    if (!isset($drupal_user->original)) {
+    if (!isset($backdrop_user->original)) {
       // This avoids an infinite load/save loop.
-      $drupal_user->original = clone $drupal_user;
+      $backdrop_user->original = clone $backdrop_user;
     }
-    $drupal_user->hook_sync_user_to_drupal = TRUE;
+    $backdrop_user->hook_sync_user_to_backdrop = TRUE;
     foreach ($edit as $property => $value) {
-      $drupal_user->{$property} = $value;
+      $backdrop_user->{$property} = $value;
     }
-    $drupal_user->save();
-    $uid = $drupal_user->id();
+    $backdrop_user->save();
+    $uid = $backdrop_user->id();
     if ($uid) {
-      $drupal_user = user_load($uid);
+      $backdrop_user = user_load($uid);
     }
     else {
-      $drupal_user = FALSE;
+      $backdrop_user = FALSE;
     }
   }
 
   // Synchronized user.
-  return $drupal_user;
+  return $backdrop_user;
 }
 
 /**
@@ -584,7 +584,7 @@ function simple_ldap_user_variable_get($name, $default = NULL, $force_default = 
   // Handle special variables.
   switch ($name) {
     case 'simple_ldap_user_source':
-      // If the LDAP server is set to read-only, force LDAP->Drupal sync.
+      // If the LDAP server is set to read-only, force LDAP->Backdrop sync.
       if ($server->readonly) {
         return 'ldap';
       }

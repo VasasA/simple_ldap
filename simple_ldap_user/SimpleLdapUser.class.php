@@ -21,7 +21,7 @@ class SimpleLdapUser {
    * Constructor.
    *
    * @param string $name
-   *   The drupal user name or email address to search for, and load from LDAP.
+   *   The Backdrop user name or email address to search for, and load from LDAP.
    *
    * @throw SimpleLdapException
    */
@@ -312,7 +312,7 @@ class SimpleLdapUser {
    * Return a SimpleLdapUser object for the given username.
    *
    * @param string $name
-   *   The drupal user name or email address to search for, and load from LDAP.
+   *   The Backdrop user name or email address to search for, and load from LDAP.
    * @param boolean $reset
    *   If TRUE, the cache for the specified user is cleared, and the user is
    *   reloaded from LDAP.

@@ -59,7 +59,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
   public function testSimpleLdapSSO() {
 
     // Clean up the unnecessary LDAP entries that were added for testing.
-    foreach ($this->drupalUser as $bu) {
+    foreach ($this->backdropUser as $bu) {
       // Create a new SimpleLdapUser object, which performs a new search based
       // on the name attribute. This accounts for the possibility that the LDAP
       // entry has changed since it was created.
@@ -69,21 +69,21 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     }
 
     // Assert module is configured.
-    drupal_static_reset('simple_ldap_sso_configured');
+    backdrop_static_reset('simple_ldap_sso_configured');
     $this->assertTrue(simple_ldap_sso_configured(), t('Simple LDAP SSO is configured.'));
 
     // Verify that for user 1, no SSO cookie is set.
-    $this->drupalUser1Login();
+    $this->backdropUser1Login();
     $this->assertFalse(isset($this->cookies[SIMPLE_LDAP_SSO_COOKIE]['value']), 'No SSO Cookie set for User 1.');
 
-    $this->drupalLogin($this->testUser);
+    $this->backdropLogin($this->testUser);
     // Verify for other user, SSO cookie is set.
     $data = $this->getSSOCookieData();
     $this->assertEqual($data['name'], $this->testUser->name, t('SSO Cookie has valid data.'));
 
     $this->deleteSessions($data['uid']);
 
-    $this->drupalGet('user');
+    $this->backdropGet('user');
     $sessions = (bool) $this->getSessions($data['uid']);
     $this->assertTrue($sessions, t('The session was recreated from the SSO cookie.'));
     $this->assertText($data['name'], t('The user was logged in from the SSO cookie.'));
@@ -93,7 +93,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $sso = new SimpleLdapSSO($data['name']);
     $sid = $this->cookies[$this->session_name]['value'];
     $this->assertTrue($sso->validateSid($sid), t('Session id was stored in LDAP.'));
-    $this->drupalLogout();
+    $this->backdropLogout();
     // Assert SSO cookie is deleted.
     $this->assertEqual(
       'deleted',
@@ -103,10 +103,10 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $sso = new SimpleLdapSSO($data['name']);
     $this->assertFalse($sso->validateSid($sid), t('Session id was deleted from LDAP.'));
 
-    // Assert the user is created in Drupal if there is a valid SSO cookie.
+    // Assert the user is created in Backdrop if there is a valid SSO cookie.
     // First, delete the user. We can't user user_delete() as that will delete
     // the account from LDAP as well.
-    $this->drupalLogin($this->testUser);
+    $this->backdropLogin($this->testUser);
     db_delete('users')
       ->condition('uid', $data['uid'])
       ->execute();
@@ -117,7 +117,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $account = user_load_multiple(array(), array('name' => $data['name']), TRUE);
     $this->assertFalse((bool) $account, t('The user account was deleted.'));
     // Then access the user page again.
-    $this->drupalGet('user');
+    $this->backdropGet('user');
     // Check for the existence of the user.
     $account = user_load_multiple(array(), array('name' => $data['name']), TRUE);
     $this->assertTrue((bool) $account, t('The user has been recreated from a valid SSO cookie.'));
@@ -136,7 +136,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $this->assertTrue($sso->validateSid('test'),
       t('Session ID saved to LDAP successfully.'));
     // Now access the site.
-    $this->drupalGet('user');
+    $this->backdropGet('user');
     $this->assertText(t('A problem was encountered when attempting to sign you in on this site.'),
       t('The user cannot log in with a mismatching session id.'));
 
@@ -158,7 +158,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $this->prepareSSO();
     // Assert that if the encryption key changes, SSO will fail.
     config_set('simple_ldap_sso.settings', 'simple_ldap_sso_encryption_key', 'testkey1');
-    $this->drupalGet('user');
+    $this->backdropGet('user');
     $this->assertEqual(
       'deleted',
       $this->cookies[SIMPLE_LDAP_SSO_COOKIE]['value'],
@@ -173,7 +173,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
    * the session table, essentially mimicking SSO.
    *
    * @param array $account
-   *   Optional, the account to pass to drupalLogin().
+   *   Optional, the account to pass to backdropLogin().
    *
    * @return array
    *   The session data from the SSO cookie.
@@ -182,7 +182,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     if (!isset($account)) {
       $account = $this->testUser;
     }
-    $this->drupalLogin($account);
+    $this->backdropLogin($account);
     $data = $this->getSSOCookieData();
     $this->deleteSessions($data['uid']);
     return $data;
@@ -230,7 +230,7 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     // Verify that cookie is readable.
     $cookie_val = urldecode($this->cookies[SIMPLE_LDAP_SSO_COOKIE]['value']);
     $this->verbose($cookie_val);
-    drupal_static_reset('simple_ldap_sso_get_cookie_data');
+    backdrop_static_reset('simple_ldap_sso_get_cookie_data');
     $data = simple_ldap_sso_get_cookie_data($cookie_val);
     $this->assertTrue(isset($data['name']), t('SSO Cookie can be decrypted.'));
     return $data;

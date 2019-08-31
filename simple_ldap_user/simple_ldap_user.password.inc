@@ -15,7 +15,7 @@
 
 /**
  * The standard log2 number of iterations for password stretching. This should
- * increase by 1 every Drupal version in order to counteract increases in the
+ * increase by 1 every Backdrop version in order to counteract increases in the
  * speed and power of computers available to crack the hashes.
  */
 include_once backdrop_get_path('module', 'simple_ldap_user') . '/SimpleLdapUser.class.php';
@@ -106,7 +106,7 @@ function _password_generate_salt($count_log2) {
   $itoa64 = _password_itoa64();
   $output .= $itoa64[$count_log2];
   // 6 bytes is the standard salt for a portable phpass hash.
-  $output .= _password_base64_encode(drupal_random_bytes(6), 6);
+  $output .= _password_base64_encode(backdrop_random_bytes(6), 6);
   return $output;
 }
 
@@ -247,7 +247,7 @@ function user_check_password($password, $account) {
     $type = substr($stored_hash, 0, 3);
     switch ($type) {
       case '$S$':
-        // A normal Drupal 7 password using sha512.
+        // A normal Backdrop password using sha512.
         $hash = _password_crypt('sha512', $password, $stored_hash);
         break;
 
@@ -255,7 +255,7 @@ function user_check_password($password, $account) {
         // phpBB3 uses "$H$" for the same thing as "$P$".
       case '$P$':
         // A phpass password generated using md5.  This is an
-        // imported password or from an earlier Drupal version.
+        // imported password or from an earlier Backdrop version.
         $hash = _password_crypt('md5', $password, $stored_hash);
         break;
 
