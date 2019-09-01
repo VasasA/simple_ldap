@@ -21,7 +21,7 @@ Installation
 - You should enable the sub-modules, to get the complete feature set. See below.
 - Configuration page: Administration > Configuration > User accounts > Simple LDAP Configuration
 
-The project consists of one main module, and five submodules:
+**The project consists of one main module, and five submodules:**
 
 
 Simple LDAP
@@ -47,8 +47,8 @@ database at the edit page of a user. These can be different.
 
 **Configuration**
 In addition to the configuration available in the administration UI, an
-attribute map can be specified in settings.php, using the variable
-$conf['simple_ldap_user_attribute_map'].
+attribute map can be specified in `BACKDROP_ROOT/settings.php`, using the variable
+`$conf['simple_ldap_user_attribute_map']`.
 
 This variable is an array of arrays, where each of the arrays have the
 following items:
@@ -158,10 +158,9 @@ to authenticate each session.
 
 **How does it work?**
 When a user logs in to any site using this module, two things occur. First,
-the unique session ID that Backdrop assigns to the user is
-[hashed](https://en.wikipedia.org/wiki/Hash_function) and stored in an
-attribute you deem on LDAP. Then, the session information—including the user's
-name and session id—is encrypted and stored in a cookie.
+the unique session ID that Backdrop assigns to the user is [hashed](https://en.wikipedia.org/wiki/Hash_function) and
+stored in an attribute you deem on LDAP. Then, the session information
+— including the user's name and session id — is encrypted and stored in a cookie.
 
 When a user then navigates to another website configured with this SSO module,
 and before the session handling occurs that determines whether a user is logged
@@ -206,6 +205,7 @@ option a user will be deleted from LDAP when deleted from Backdrop,
 even if the user's DN does not match the specified search filter.
 Administration > Configuration > User accounts > Simple LDAP Configuration > Users tab > Advanced > Delete LDAP entries, even ...
 
+
 Simple LDAP Delete Blocked User
 -------------------------------
 A small helper module. Deletes a user from LDAP when set to Blocked in
@@ -217,7 +217,7 @@ For developers
 --------------
 
 Enable debugging using devel module by adding the following setting to
-BACKDROP_ROOT/settings.php
+`BACKDROP_ROOT/settings.php`
 
 ```php
 $conf['simple_ldap_devel'] = TRUE;
@@ -243,22 +243,39 @@ Building a test environment
 ---------------------------
 
 You can build a test environment with this description. You can download and
-install a prepared configuration. There is a Vagrantfile included that will
-build a VM with a working LDAP directory.
+install a prepared configuration. There is a `Vagrantfile` included that will
+build a virtual machine with a working LDAP directory.
 
 1. Install VirtualBox. https://www.virtualbox.org/
-2. Install Vagrant. https://www.vagrantup.com/downloads.html
+2. Install Vagrant. https://www.vagrantup.com/
 3. Download this project: https://github.com/VasasA/simple_ldapVM/archive/7.x-1.x.zip
 (It is a fork of https://github.com/ulsdevteam/simple_ldap)
 4. Unzip it into a directory.
-5. Open Terminal, and cd to this directory (containing the Vagrantfile).
+5. Open Terminal, and `cd` to this directory (containing the `Vagrantfile`).
 6. Run this command: `vagrant up`
-It will download and build a VM with a working LDAP directory. 
+It will download and build a virtual machine with a working LDAP directory.
+(It may take a long time.)
 7. When complete, there is the IP address in the last line. If OS X is the
 Vagrant host, then the vagrant box is available at `simpleldap.local`
 For other operating systems, the IP address will need to be obtainted manually,
 and added to the local hosts file for best results.
-
+8. You have to configure Simple LDAP module according to the LDAP server:
+Unzip the `test_configs_simple_ldap.zip`, and move the json files into the 
+corrensponding module's config directory. (Make a copy of the original files.)
+9. The `sn` attribute is required in this LDAP directory. So you have to insert
+a new line `$this->attributes['sn'] = 'UserSurname';` 
+into the `SimpleLdapUser.class.php` line 243.
+The result:
+```php
+$this->attributes['sn'] = 'UserSurname';
+$this->server->add($this->dn, $this->attributes);
+```
+10. Create a new Backdrop role: `default_group`
+Administration > Configuration > User accounts > Add role button
+11. You can run the self test:
+Administration > Configuration > Development > Testing > Simple LDAP
+12. Install the modules of Simple LDAP, if you want to take a manual test.
+13. You can shut down the virtual machine with this command: `vagrant halt`
 
 **LDAP**
 The LDAP is pre-populated with some dummy data.
@@ -274,14 +291,14 @@ phpLDAPadmin is available at http://simpleldap.local/pma
 Login DN: cn=admin,dc=local
 password: admin
 
-**Console or ssh**
+**Virtual machine's console or ssh**
 Console or ssh credentials:
 username: vagrant
 password: vagrant
 
 **Drupal 7**
-The VM also contains a Drupal 7 installation with simple_ldap module.
-The Drupal installation is set up with the following credentials:
+The virtual machine also contains a Drupal 7 installation with Simple LDAP
+module. The Drupal installation is set up with the following credentials:
 http://simpleldap.local/
 username: admin
 password: admin
