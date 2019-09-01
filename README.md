@@ -54,18 +54,16 @@ This variable is an array of arrays, where each of the arrays have the
 following items:
 
 * backdrop - The field name on the Backdrop user. This must be the machine name of
-	   the field. To specify Field module fields, prefix the field name with a
-	   hash, e.g. '#field_foo'. If no hash prefix is found, it is assumed that the
-	   field is a property of the user itself, such as name, pass, mail, etc.
-
-	   This can also be an array of Backdrop properties or fields. If the array
-	   contains more than one entry, synchronization for that map only works in
-	   the backdrop->ldap direction, and the fields are concatenated with a space
-	   separator.
-
-	   Note: If you are mapping a Field module field that does not store its data
-	   in a 'value' column, you need to specify the name of the column in the
-	   mapping itself using square brackets. See the Country example below.
+the field. To specify Field module fields, prefix the field name with a
+hash, e.g. '#field_foo'. If no hash prefix is found, it is assumed that the
+field is a property of the user itself, such as name, pass, mail, etc.
+This can also be an array of Backdrop properties or fields. If the array
+contains more than one entry, synchronization for that map only works in
+the backdrop->ldap direction, and the fields are concatenated with a space
+separator.
+Note: If you are mapping a Field module field that does not store its data
+in a 'value' column, you need to specify the name of the column in the
+mapping itself using square brackets. See the Country example below.
 
 * ldap - The LDAP attribute on the LDAP user.
 
@@ -197,12 +195,14 @@ A small helper module. Adds a user to the defined LDAP group when set to
 This module is best used when a search filter is set in Simple Ldap User
 to enforce group membership.
 For example: "memberOf=cn=active,ou=groups,o=example"
+
 Administration > Configuration > User accounts > Simple LDAP Configuration > Roles tab > Default LDAP group DN
 
 Another function:
 With the "Delete LDAP entries, even if they do not match the filter"
 option a user will be deleted from LDAP when deleted from Backdrop,
 even if the user's DN does not match the specified search filter.
+
 Administration > Configuration > User accounts > Simple LDAP Configuration > Users tab > Advanced > Delete LDAP entries, even ...
 
 
@@ -271,37 +271,36 @@ $this->attributes['sn'] = 'UserSurname';
 $this->server->add($this->dn, $this->attributes);
 ```
 10. Create a new Backdrop role: `default_group`
-Administration > Configuration > User accounts > Add role button
+(Administration > Configuration > User accounts > Add role button)
 11. You can run the self test:
 Administration > Configuration > Development > Testing > Simple LDAP
 12. Install the modules of Simple LDAP, if you want to take a manual test.
 13. You can shut down the virtual machine with this command: `vagrant halt`
 
 **LDAP**
-The LDAP is pre-populated with some dummy data.
+- The LDAP is pre-populated with some dummy data. Available at:
 ldap://simpleldap.local
-DN: cn=admin,dc=local
-password: admin
+- DN: cn=admin,dc=local
+- password: admin
 
-DN: cn=ldapuser,ou=people,dc=local
-password: ldapuser
+Or:
+- DN: cn=ldapuser,ou=people,dc=local
+- password: ldapuser
 
 **phpLDAPadmin**
-phpLDAPadmin is available at http://simpleldap.local/pma
-Login DN: cn=admin,dc=local
-password: admin
+- phpLDAPadmin is available at http://simpleldap.local/pma
+- Login DN: cn=admin,dc=local
+- password: admin
 
-**Virtual machine's console or ssh**
-Console or ssh credentials:
-username: vagrant
-password: vagrant
+**Virtual machine's console or ssh credentials**
+- username: vagrant
+- password: vagrant
 
 **Drupal 7**
-The virtual machine also contains a Drupal 7 installation with Simple LDAP
-module. The Drupal installation is set up with the following credentials:
-http://simpleldap.local/
-username: admin
-password: admin
+- The virtual machine also contains a Drupal 7 installation with Simple LDAP module.
+- Available at: http://simpleldap.local/
+- username: admin
+- password: admin
 
 
 Issues
