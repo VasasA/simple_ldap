@@ -272,10 +272,11 @@ $this->server->add($this->dn, $this->attributes);
 ```
 10. Create a new Backdrop role: `default_group`
 (Administration > Configuration > User accounts > Add role button)
-11. You can run the self test:
+11. Install the modules of Simple LDAP. (See above.)
+12. You need to install the "Testing" core module, if you want to run the self test.
 Administration > Configuration > Development > Testing > Simple LDAP
-12. Install the modules of Simple LDAP, if you want to take a manual test.
-13. You can shut down the virtual machine with this command: `vagrant halt`
+13. You can take a manual test.
+14. You can shut down the virtual machine with this command: `vagrant halt`
 
 **LDAP**
 - The LDAP is pre-populated with some dummy data. Available at:
