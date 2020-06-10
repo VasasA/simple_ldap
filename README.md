@@ -246,7 +246,11 @@ You can build a test environment with this description. You can download and
 install a prepared configuration. There is a `Vagrantfile` included that will
 build a virtual machine with a working LDAP directory.
 
-1. Install VirtualBox. https://www.virtualbox.org/
+1. Install VirtualBox:
+   - https://www.virtualbox.org/
+   - Enable the virtualization in the BIOS.
+   - The language of Virtualbox must be "English", because Vagrant reads
+     VirtualBox's responses.
 2. Install Vagrant. https://www.vagrantup.com/
 3. Download this project: https://github.com/VasasA/simple_ldapVM/archive/7.x-1.x.zip
 (It is a fork of https://github.com/ulsdevteam/simple_ldap)
@@ -258,7 +262,7 @@ It will download and build a virtual machine with a working LDAP directory.
 7. When complete, there is the IP address in the last line. If OS X is the
 Vagrant host, then the vagrant box is available at `simpleldap.local`
 For other operating systems, the IP address will need to be obtainted manually,
-and added to the local hosts file for best results.
+and added to the local hosts file for best results. (%WinDir%\System32\drivers\etc)
 8. You have to configure Simple LDAP module according to the LDAP server:
 Unzip the `test_configs_simple_ldap.zip`, and move the json files into the 
 corrensponding module's config directory. (Make a copy of the original files.)
@@ -276,7 +280,40 @@ $this->server->add($this->dn, $this->attributes);
 12. You need to install the "Testing" core module, if you want to run the self test.
 Administration > Configuration > Development > Testing > Simple LDAP
 13. You can take a manual test.
-14. You can shut down the virtual machine with this command: `vagrant halt`
+14. You can create some new LDAP users:
+    - Open phpLDAPadmin. Available at http://simpleldap.local/pma
+      Login DN: cn=admin,dc=local
+      password: admin
+    - Select the `ou=people` in the tree.
+    - Use the "Create a child entry" link.
+    - Select "Default".
+    - ObjectClass: inetOrgPerson
+    - Press the "Proceed" button.
+    - Create Object:
+      - RDN: cn
+      - cn: "username"
+      - sn: "surname"
+      - Email: "user email address"
+      - Password: "user password"
+      - Press the "Create Object" button.
+    - Press the "Commit" button.
+15. You can create some new LDAP groups:
+    - Open phpLDAPadmin. Available at http://simpleldap.local/pma
+      Login DN: cn=admin,dc=local
+      password: admin
+    - Select the `ou=groups` in the tree.
+    - Use the "Create a child entry" link.
+    - Select "Default".
+    - ObjectClass: groupOfNames
+    - Press the "Proceed" button.
+    - Create Object:
+      - RDN: cn
+      - cn: "name of the group"
+      - member: You must set up at least one user. Example: cn=ldapuser,ou=people,dc=local
+      - Press the "Create Object" button.
+    - Press the "Commit" button.
+16. After testing, you can shut down the virtual machine with this command:
+    `vagrant halt`
 
 **LDAP**
 - The LDAP is pre-populated with some dummy data. Available at:
