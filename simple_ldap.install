@@ -65,3 +65,10 @@ function simple_ldap_requirements($phase) {
 
   return $requirements;
 }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function simple_ldap_update_last_removed() {
+  return 7100;
+}

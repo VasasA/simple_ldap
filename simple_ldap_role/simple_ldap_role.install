@@ -21,3 +21,10 @@ function simple_ldap_role_uninstall() {
   $config->clear('simple_ldap_role_sync');
   $config->save();
 }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function simple_ldap_role_update_last_removed() {
+  return 7100;
+}
