@@ -289,7 +289,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
     $this->backdropLogout();
 
     $this->backdropGet('user/register');
@@ -302,7 +302,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
     $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
@@ -324,7 +324,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
     $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
@@ -355,7 +355,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the registration option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
     $this->backdropLogout();
 
     // Enter a correct password.
@@ -377,7 +377,7 @@ class SimpleLdapUserRegistrationTestCase extends SimpleLdapUserTestCase {
     // Log in as user 1.
     $this->backdropUser1Login();
     // Clear cache, otherwise the registration option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
     $this->backdropLogout();
 
     $edit = $this->formData($name, $mail);
@@ -789,7 +789,7 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the export option is not present.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
 
     // Verify that the Backdrop users do not exist in LDAP.
     foreach ($this->backdropUser as $backdrop_user) {
@@ -833,7 +833,7 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     $this->backdropUser1Login();
 
     // Clear cache, otherwise the import menu item doesn't work.
-    $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
+    cache_clear_all();
 
     // Verify that the LDAP users do not exist in Backdrop.
     foreach ($this->ldapUser as $ldap_user) {
