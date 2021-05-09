@@ -277,31 +277,24 @@ function simple_ldap_sso_decrypt($string) {
 function _simple_ldap_encrypt_decrypt($text, $encrypt = TRUE) {
   // Hash the key to get a more secure key.
   $key = hash('sha256', config_get('simple_ldap_sso.settings', 'simple_ldap_sso_encryption_key'), TRUE);
-  $cipher = 'rijndael-256';
-  $mode = MCRYPT_MODE_CBC;
-  $iv_size = mcrypt_get_iv_size($cipher, $mode);
+  $cipher = 'aes-256-ecb';
+  $option = OPENSSL_RAW_DATA;
 
   if ($encrypt) {
-    // Create the IV.
-    $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
     // Generate an HMAC.
     $hmac = hash('sha256', trim($text));
     // Prepend the text with the HMAC.
     $text = $hmac . $text;
     // Now encrypt the text.
-    $encrypted_text = mcrypt_encrypt($cipher, $key, $text, $mode, $iv);
+    $encrypted_text = openssl_encrypt($text, $cipher, $key, $option);
     // Prepend the encrypted text with the IV before it is base64 encoded.
-    $output = base64_encode($iv . $encrypted_text);
+    $output = base64_encode($encrypted_text);
   }
   else {
     // Decode the string.
-    $decoded = base64_decode($text);
-    // Get the IV from the beginning of the string.
-    $iv = substr($decoded, 0, $iv_size);
-    // Get the encrypted data from the string.
-    $data = substr($decoded, $iv_size);
+    $data = base64_decode($text);
     // Now, decrypt the string.
-    $output = mcrypt_decrypt($cipher, $key, $data, $mode, $iv);
+    $output = openssl_decrypt($data, $cipher, $key, $option);
     // Get the HMAC from the front of this string.
     $hmac = substr($output, 0, 64);
     // Remove the HMAC from the output.
