@@ -256,6 +256,7 @@ abstract class SimpleLdapUserTestCase extends SimpleLdapServerTestCase {
     // Set user1's password to something random in the database.
     $pass = hash('sha256', microtime());
     db_query("UPDATE {users} SET pass = :hash WHERE uid = 1", array(':hash' => user_hash_password($pass)));
+    backdrop_flush_all_caches();
 
     // Log in as user1.
     $admin_user = user_load(1);

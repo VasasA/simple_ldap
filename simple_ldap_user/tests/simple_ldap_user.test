@@ -801,9 +801,12 @@ class SimpleLdapUserMassImportExportTestCase extends SimpleLdapUserTestCase {
     $edit = array('action' => 'simple_ldap_user_export');
     foreach ($this->backdropUser as $backdrop_user) {
       $index = $backdrop_user->uid - 1;
+      // Select users' checkboxes except admin.
       $edit['bulk_form[' . $index . ']'] = TRUE;
     }
-    $this->backdropPost('admin/people', $edit, t('Execute'));
+    // Rearrange the list of users by creation time. Admin will be the first.
+    $query = array('status' => 'All', 'role' => 'All', 'username' => '', 'order' => 'created', 'sort' => 'asc');
+    $this->backdropPost('admin/people', $edit, t('Execute'), array('query' => $query));
 
     // Verify that the users were exported to LDAP.
     foreach ($this->backdropUser as $backdrop_user) {
