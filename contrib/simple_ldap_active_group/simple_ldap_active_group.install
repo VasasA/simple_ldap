@@ -24,10 +24,7 @@ function simple_ldap_active_group_enable() {
  * Impements hook_uninstall().
  */
 function simple_ldap_active_group_uninstall() {
-  $config = config('simple_ldap_active_group.settings');
-  $config->clear('simple_ldap_active_group_group');
-  $config->clear('simple_ldap_active_group_delete_filtered');
-  $config->save();
+
 }
 
 /**

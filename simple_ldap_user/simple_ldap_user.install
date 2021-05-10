@@ -18,19 +18,7 @@ function simple_ldap_user_disable() {
  * Implements hook_uninstall().
  */
 function simple_ldap_user_uninstall() {
-  $config = config('simple_ldap_user.settings');
-  $config->clear('simple_ldap_user_basedn');
-  $config->clear('simple_ldap_user_scope');
-  $config->clear('simple_ldap_user_objectclass');
-  $config->clear('simple_ldap_user_attribute_name');
-  $config->clear('simple_ldap_user_attribute_mail');
-  $config->clear('simple_ldap_user_attribute_pass');
-  $config->clear('simple_ldap_user_attribute_rdn');
-  $config->clear('simple_ldap_user_password_hash');
-  $config->clear('simple_ldap_user_filter');
-  $config->clear('simple_ldap_user_source');
-  $config->clear('simple_ldap_user_sync');
-  $config->save();
+
 }
 
 /**

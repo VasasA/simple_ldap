@@ -9,15 +9,7 @@
  * Implements hook_uninstall().
  */
 function simple_ldap_sso_uninstall() {
-  $config = config('simple_ldap_sso.settings');
-  $config->clear('simple_ldap_sso_binddn');
-  $config->clear('simple_ldap_sso_bindpw');
-  $config->clear('simple_ldap_sso_encryption_key');
-  $config->clear('simple_ldap_sso_attribute_sid');
-  $config->clear('simple_ldap_sso_hashing_algorithm');
-  $config->clear('simple_ldap_sso_flood_limit');
-  $config->clear('simple_ldap_sso_flood_window');
-  $config->save();
+
 }
 
 /**
