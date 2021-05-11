@@ -113,6 +113,18 @@ function simple_ldap_sso_admin() {
     '#default_value' => $config_sso->get('simple_ldap_sso_flood_window', 3600),
   );
 
+  $form['advanced']['simple_ldap_sso_test_user_cn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CN of testing user'),
+    '#default_value' => $config_sso->get('simple_ldap_sso_test_user_cn'),
+    '#description' => t('This and the following password are used by the <a href="!url">self test system</a>.', array('!url' => url('admin/config/development/testing'))),
+  );
+
+  $form['advanced']['simple_ldap_sso_test_user_pass'] = array(
+    '#type' => 'password',
+    '#title' => t('Password of testing user'),
+  );
+
   return system_settings_form($form);
 }
 

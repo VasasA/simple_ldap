@@ -43,13 +43,10 @@ class SimpleLdapSSOTestCase extends SimpleLdapUserTestCase {
     $config->set('simple_ldap_sso_flood_window', $flood_window);
     $config->save();
 
-    $test_user = config_get('simple_ldap.settings', 'simple_ldap_test_user');
-    $attribute_name = simple_ldap_user_variable_get('simple_ldap_user_attribute_name');
-
     // Initialize a user account object.
     $account = new stdClass();
-    $account->name = $test_user[$attribute_name];
-    $account->pass_raw = $test_user['pass'];
+    $account->name = $config->get('simple_ldap_sso_test_user_cn');
+    $account->pass_raw = $config->get('simple_ldap_sso_test_user_pass');
     $this->testUser = $account;
   }
 
