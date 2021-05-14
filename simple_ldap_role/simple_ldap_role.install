@@ -17,3 +17,39 @@ function simple_ldap_role_uninstall() {
 function simple_ldap_role_update_last_removed() {
   return 7100;
 }
+
+/**
+ * Move simple_ldap_role module settings from variables to config.
+ */
+function simple_ldap_role_update_1000() {
+  // Migrate variables to config.
+  $config = config('simple_ldap_role.settings');
+  $config->set('simple_ldap_role_scope', update_variable_get('simple_ldap_role_scope', 'sub'));
+  $config->set('simple_ldap_role_objectclass', update_variable_get('simple_ldap_role_objectclass', array()));
+  $config->set('simple_ldap_role_attribute_name', update_variable_get('simple_ldap_role_attribute_name', 'cn'));
+  $config->set('simple_ldap_role_attribute_member', update_variable_get('simple_ldap_role_attribute_member', 'member'));
+  $config->set('simple_ldap_role_attribute_member_format', update_variable_get('simple_ldap_role_attribute_member_format', 'dn'));
+  $config->set('simple_ldap_role_attribute_member_default', update_variable_get('simple_ldap_role_attribute_member_default', ''));
+  $config->set('simple_ldap_role_filter', update_variable_get('simple_ldap_role_filter', NULL));
+  $config->set('simple_ldap_role_source', update_variable_get('simple_ldap_role_source', 'ldap'));
+  $config->set('simple_ldap_role_sync', update_variable_get('simple_ldap_role_sync', 'hook_user_load'));
+  $config->set('simple_ldap_active_group_group', update_variable_get('simple_ldap_active_group_group', ''));
+  $role_basedn = update_variable_get('simple_ldap_role_basedn', '');
+  $basedn = update_variable_get('simple_ldap_basedn', '');
+  $role_basedn = empty($role_basedn) ? $basedn: $role_basedn;
+  $config->set('simple_ldap_role_basedn', $role_basedn);
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('simple_ldap_role_scope');
+  update_variable_del('simple_ldap_role_objectclass');
+  update_variable_del('simple_ldap_role_attribute_name');
+  update_variable_del('simple_ldap_role_attribute_member');
+  update_variable_del('simple_ldap_role_attribute_member_format');
+  update_variable_del('simple_ldap_role_attribute_member_default');
+  update_variable_del('simple_ldap_role_filter');
+  update_variable_del('simple_ldap_role_source');
+  update_variable_del('simple_ldap_role_sync');
+  update_variable_del('simple_ldap_active_group_group');
+  update_variable_del('simple_ldap_role_basedn');
+}

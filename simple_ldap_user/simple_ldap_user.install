@@ -49,3 +49,45 @@ function simple_ldap_user_requirements($phase) {
 function simple_ldap_user_update_last_removed() {
   return 7101;
 }
+
+/**
+ * Move simple_ldap_user module settings from variables to config.
+ */
+function simple_ldap_user_update_1000() {
+  // Migrate variables to config.
+  $config = config('simple_ldap_user.settings');
+  $config->set('simple_ldap_user_source', update_variable_get('simple_ldap_user_source', 'ldap'));
+  $config->set('simple_ldap_user_objectclass', update_variable_get('simple_ldap_user_objectclass', array()));
+  $config->set('simple_ldap_user_attribute_name', update_variable_get('simple_ldap_user_attribute_name', 'cn'));
+  $config->set('simple_ldap_user_attribute_mail', update_variable_get('simple_ldap_user_attribute_mail', 'mail'));
+  $config->set('simple_ldap_user_attribute_pass', update_variable_get('simple_ldap_user_attribute_pass', ''));
+  $config->set('simple_ldap_user_attribute_rdn', update_variable_get('simple_ldap_user_attribute_rdn', ''));
+  $config->set('simple_ldap_user_attribute_map', update_variable_get('simple_ldap_user_attribute_map', array()));
+  $config->set('simple_ldap_user_password_hash', update_variable_get('simple_ldap_user_password_hash', ''));
+  $config->set('simple_ldap_user_scope', update_variable_get('simple_ldap_user_scope', 'sub'));
+  $config->set('simple_ldap_user_sync', update_variable_get('simple_ldap_user_sync', 'hook_user_load'));
+  $config->set('simple_ldap_user_delete_from_ldap', update_variable_get('simple_ldap_user_delete_from_ldap', '1'));
+  $config->set('simple_ldap_user_filter', update_variable_get('simple_ldap_user_filter', ''));
+  $config->set('simple_ldap_active_group_delete_filtered', update_variable_get('simple_ldap_active_group_delete_filtered', 0));
+  $user_basedn = update_variable_get('simple_ldap_user_basedn', '');
+  $basedn = update_variable_get('simple_ldap_basedn', '');
+  $user_basedn = empty($user_basedn) ? $basedn: $user_basedn;
+  $config->set('simple_ldap_user_basedn', $user_basedn);
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('simple_ldap_user_source');
+  update_variable_del('simple_ldap_user_objectclass');
+  update_variable_del('simple_ldap_user_attribute_name');
+  update_variable_del('simple_ldap_user_attribute_mail');
+  update_variable_del('simple_ldap_user_attribute_pass');
+  update_variable_del('simple_ldap_user_attribute_rdn');
+  update_variable_del('simple_ldap_user_attribute_map');
+  update_variable_del('simple_ldap_user_password_hash');
+  update_variable_del('simple_ldap_user_scope');
+  update_variable_del('simple_ldap_user_sync');
+  update_variable_del('simple_ldap_user_delete_from_ldap');
+  update_variable_del('simple_ldap_user_filter');
+  update_variable_del('simple_ldap_active_group_delete_filtered');
+  update_variable_del('simple_ldap_user_basedn');
+}

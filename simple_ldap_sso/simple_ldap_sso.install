@@ -56,3 +56,28 @@ function simple_ldap_sso_requirements($phase) {
 
   return $items;
 }
+
+/**
+ * Move simple_ldap_sso module settings from variables to config.
+ */
+function simple_ldap_sso_update_1000() {
+  // Migrate variables to config.
+  $config = config('simple_ldap_sso.settings');
+  $config->set('simple_ldap_sso_flood_limit', update_variable_get('simple_ldap_sso_flood_limit', 3));
+  $config->set('simple_ldap_sso_flood_window', update_variable_get('simple_ldap_sso_flood_window', 3600));
+  $config->set('simple_ldap_sso_attribute_sid', update_variable_get('simple_ldap_sso_attribute_sid', FALSE));
+  $config->set('simple_ldap_sso_hashing_algorithm', update_variable_get('simple_ldap_sso_hashing_algorithm', 'sha'));
+  $config->set('simple_ldap_sso_encryption_key', update_variable_get('simple_ldap_sso_encryption_key', FALSE));
+  $config->set('simple_ldap_sso_binddn', update_variable_get('simple_ldap_sso_binddn', FALSE));
+  $config->set('simple_ldap_sso_bindpw', update_variable_get('simple_ldap_sso_bindpw', FALSE));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('simple_ldap_sso_flood_limit');
+  update_variable_del('simple_ldap_sso_flood_window');
+  update_variable_del('simple_ldap_sso_attribute_sid');
+  update_variable_del('simple_ldap_sso_hashing_algorithm');
+  update_variable_del('simple_ldap_sso_encryption_key');
+  update_variable_del('simple_ldap_sso_binddn');
+  update_variable_del('simple_ldap_sso_bindpw');
+}

@@ -61,3 +61,38 @@ function simple_ldap_requirements($phase) {
 function simple_ldap_update_last_removed() {
   return 7100;
 }
+
+/**
+ * Move simple_ldap module settings from variables to config.
+ */
+function simple_ldap_update_1000() {
+  // Migrate variables to config.
+  $config = config('simple_ldap.settings');
+  $config->set('simple_ldap_host', update_variable_get('simple_ldap_host', ''));
+  $config->set('simple_ldap_port', update_variable_get('simple_ldap_port', '389'));
+  $config->set('simple_ldap_starttls', update_variable_get('simple_ldap_starttls', FALSE));
+  $config->set('simple_ldap_readonly', update_variable_get('simple_ldap_readonly', FALSE));
+  $config->set('simple_ldap_binddn', update_variable_get('simple_ldap_binddn', ''));
+  $config->set('simple_ldap_bindpw', update_variable_get('simple_ldap_bindpw', ''));
+  $config->set('simple_ldap_basedn', update_variable_get('simple_ldap_basedn', ''));
+  $config->set('simple_ldap_pagesize', update_variable_get('simple_ldap_pagesize', ''));
+  $config->set('simple_ldap_opt_referrals', update_variable_get('simple_ldap_opt_referrals', TRUE));
+  $config->set('simple_ldap_debug', update_variable_get('simple_ldap_debug', FALSE));
+  $config->set('simple_ldap_devel', update_variable_get('simple_ldap_devel', FALSE));
+  $config->set('simple_ldap_server_class', update_variable_get('simple_ldap_server_class', 'SimpleLdapServer'));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('simple_ldap_host');
+  update_variable_del('simple_ldap_port');
+  update_variable_del('simple_ldap_starttls');
+  update_variable_del('simple_ldap_readonly');
+  update_variable_del('simple_ldap_binddn');
+  update_variable_del('simple_ldap_bindpw');
+  update_variable_del('simple_ldap_basedn');
+  update_variable_del('simple_ldap_pagesize');
+  update_variable_del('simple_ldap_opt_referrals');
+  update_variable_del('simple_ldap_debug');
+  update_variable_del('simple_ldap_devel');
+  update_variable_del('simple_ldap_server_class');
+}
