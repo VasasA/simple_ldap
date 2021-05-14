@@ -12,8 +12,27 @@ The current implementation was developed against OpenLDAP, with some testing
 against Active Directory. Most functionality should work with any LDAPv3
 compliant server, but this is largely untested.
 
+Content
+-------
 
-Installation
+- [Installation](#installation)
+- [Simple LDAP module](#main)
+- [Simple LDAP User module](#user)
+- [Simple LDAP Role module](#role)
+- [Simple LDAP SSO module](#sso)
+- [Simple LDAP Active Group module](#group)
+- [Simple LDAP Delete Blocked User](#blocked)
+- [For developers](#developers)
+- [Testing](#testing)
+  - [Building a test environment](#building)
+  - [The test LDAP server](#testserver)
+- [Issues](#issues)
+- [Current Maintainer](#maintainer)
+- [Credits](#credits)
+- [License](#license)
+- [Screenshot](#screenshot)
+
+Installation <a name="installation"></a>
 ------------
 
 - Install this module using the official Backdrop CMS instructions at
@@ -24,7 +43,7 @@ Installation
 **The project consists of one main module, and five submodules:**
 
 
-Simple LDAP
+Simple LDAP <a name="main"></a>
 -----------
 
 This is the main module, on which all of the other modules are based. It
@@ -33,7 +52,7 @@ LDAP functions and no bells or whistles. It does not provide anything to
 Backdrop on its own.
 
 
-Simple LDAP User
+Simple LDAP User <a name="user"></a>
 ----------------
 
 This module allows authentication to the LDAP directory configured in the
@@ -142,14 +161,14 @@ $conf['simple_ldap_user_attribute_map'] = array(
 ```
 
 
-Simple LDAP Role
+Simple LDAP Role <a name="role"></a>
 ----------------
 
 This module allows Backdrop roles to be derived from LDAP groups, and
 vice-versa. It is dependent on the Simple LDAP User module.
 
 
-Simple LDAP SSO
+Simple LDAP SSO <a name="sso"></a>
 ---------------
 Simple LDAP SSO is a Single-Sign-On implementation that uses your LDAP server
 to authenticate each session.
@@ -175,7 +194,7 @@ logged.
 - Read/write credentials to LDAP.
 
 **Installation**
-1. Install the module at admin/modules, or using drush.
+1. Install the module at admin/modules.
 2. You must set the session_inc variable to Simple LDAP SSO’s session include
 file. Insert the following line into the `BACKDROP_ROOT/settings.php` file!
 ```php
@@ -188,7 +207,7 @@ $settings["session_inc"] = "modules/simple_ldap/simple_ldap_sso/simple_ldap_sso.
 LDAP attribute, and session ID hashing algorithm.
 
 
-Simple LDAP Active Group
+Simple LDAP Active Group <a name="group"></a>
 ------------------------
 A small helper module. Adds a user to the defined LDAP group when set to
 "Active" and removes the user from the group when set to "Blocked".
@@ -206,14 +225,14 @@ even if the user's DN does not match the specified search filter.
 Administration > Configuration > User accounts > Simple LDAP Configuration > Users tab > Advanced > Delete LDAP entries, even ...
 
 
-Simple LDAP Delete Blocked User
+Simple LDAP Delete Blocked User <a name="blocked"></a>
 -------------------------------
 A small helper module. Deletes a user from LDAP when set to Blocked in
 Backdrop. This keeps the directory clean, and when restoring the account
 to Active, the user will be resynced to LDAP by the Simple LDAP User module.
 
 
-For developers
+For developers <a name="developers"></a>
 --------------
 
 Enable debugging using devel module by adding the following setting to
@@ -224,14 +243,18 @@ $conf['simple_ldap_devel'] = TRUE;
 ```
 
 
-Testing
+Testing <a name="testing"></a>
 -------
 
 The simpletests provided with this module automatically configure themeselves
-to use the active configuration in order to perform a real-world test against
-your real LDAP server.
+to use the default configuration in these files:
+- `MODULE_ROOT/config/simple_ldap.settings.json`
+- `MODULE_ROOT/simple_ldap_user/config/simple_ldap_user.settings.json`
+- `MODULE_ROOT/simple_ldap_role/config/simple_ldap_role.settings.json`
+- `MODULE_ROOT/simple_ldap_sso/config/simple_ldap_sso.settings.json`
 
-THIS MEANS THAT DATA WILL BE ADDED/DELETED ON YOUR REAL LDAP SERVER!
+Edit these files for the test. (Make a copy of the original files outside
+the `config` directory if you want to restore them after the test.)
 
 The simpletests only operate against entries it creates, but in the event of a
 failure, the test cannot clean up after itself. If you are testing a specific
@@ -239,8 +262,7 @@ configuration, it is recommended to run the test against a development or
 staging directory first.
 
 
-Building a test environment
----------------------------
+#### Building a test environment <a name="building"></a>
 
 You can build a test environment with this description. You can download and
 install a prepared configuration. There is a `Vagrantfile` included that will
@@ -264,11 +286,17 @@ Vagrant host, then the vagrant box is available at `simpleldap.local`
 For other operating systems, the IP address will need to be obtainted manually,
 and added to the local hosts file for best results. (%WinDir%\System32\drivers\etc)
 8. You have to configure Simple LDAP module according to the LDAP server:
-Unzip the `test_configs_simple_ldap.zip`, and move the json files into the 
-corrensponding module's config directory. (Make a copy of the original files.)
+Unzip the `MODULE_ROOT/test_configs_simple_ldap.zip`, and move the json files
+into the corrensponding module's config directory:
+    - `MODULE_ROOT/config/simple_ldap.settings.json`
+    - `MODULE_ROOT/simple_ldap_user/config/simple_ldap_user.settings.json`
+    - `MODULE_ROOT/simple_ldap_role/config/simple_ldap_role.settings.json`
+    - `MODULE_ROOT/simple_ldap_sso/config/simple_ldap_sso.settings.json`
+Make a copy of the original files outside the `config` directory if you want
+to restore them after the test.
 9. The `sn` attribute is required in this LDAP directory. So you have to insert
 a new line `$this->attributes['sn'] = 'UserSurname';` 
-into the `SimpleLdapUser.class.php` line 243.
+into the `MODULE_ROOT/simple_ldap_user/SimpleLdapUser.class.php` line 243.
 The result:
 ```php
 $this->attributes['sn'] = 'UserSurname';
@@ -315,6 +343,8 @@ Administration > Configuration > Development > Testing > Simple LDAP
 16. After testing, you can shut down the virtual machine with this command:
     `vagrant halt`
 
+#### The test LDAP server <a name="testserver"></a>
+
 **LDAP**
 - The LDAP is pre-populated with some dummy data. Available at:
 ldap://simpleldap.local
@@ -341,35 +371,35 @@ Or:
 - password: admin
 
 
-Issues
+Issues <a name="issues"></a>
 ------
 
 Bugs and Feature requests should be reported in the Issue Queue:
 https://github.com/backdrop-contrib/simple_ldap/issues
 
 
-Current Maintainer
+Current Maintainer <a name="maintainer"></a>
 ------------------
 
 - Attila Vasas (https://github.com/vasasa).
 - Seeking additional maintainers.
 
 
-Credits
+Credits <a name="credits"></a>
 -------
 
 - Ported to Backdrop CMS by Attila Vasas (https://github.com/vasasa).
 - Originally written for Drupal: https://www.drupal.org/node/1845170/committers
 
 
-License
+License <a name="license"></a>
 -------
 
 This project is GPL v2 software. See the LICENSE.txt file in this directory for
 complete text.
 
 
-Screenshot
+Screenshot <a name="screenshot"></a>
 ----------
 
 ![Simple LDAP screenshot](https://github.com/backdrop-contrib/simple_ldap/blob/1.x-1.x/images/screenshot.png)
