@@ -24,8 +24,11 @@ Content
 - [Simple LDAP Delete Blocked User](#blocked)
 - [For developers](#developers)
 - [Testing](#testing)
+  - [Automated testing](#automated)
   - [Building a test environment](#building)
-  - [The test LDAP server](#testserver)
+    - [Installation](#testinstallation)
+    - [Managing the LDAP server](#testserver)
+    - [Automated testing with the test environment](#automatedtestserver)
 - [Issues](#issues)
 - [Current Maintainer](#maintainer)
 - [Credits](#credits)
@@ -246,7 +249,9 @@ $conf['simple_ldap_devel'] = TRUE;
 Testing <a name="testing"></a>
 -------
 
-The simpletests provided with this module automatically configure themeselves
+#### Automated testing <a name="automated"></a>
+
+The simpletests provided with this module automatically configure themselves
 to use the default configuration in these files:
 - `MODULE_ROOT/config/simple_ldap.settings.json`
 - `MODULE_ROOT/simple_ldap_user/config/simple_ldap_user.settings.json`
@@ -255,6 +260,12 @@ to use the default configuration in these files:
 
 Edit these files for the test. (Make a copy of the original files outside
 the `config` directory if you want to restore them after the test.)
+
+Navigate to Administration > Functionality and install the "Testing" core
+module and the modules of Simple LDAP. (See above.)
+
+You can run the self test:
+Administration > Configuration > Development > Testing > Simple LDAP
 
 The simpletests only operate against entries it creates, but in the event of a
 failure, the test cannot clean up after itself. If you are testing a specific
@@ -267,6 +278,8 @@ staging directory first.
 You can build a test environment with this description. You can download and
 install a prepared configuration. There is a `Vagrantfile` included that will
 build a virtual machine with a working LDAP directory.
+
+##### Installation <a name="testinstallation"></a>
 
 1. Install VirtualBox:
    - https://www.virtualbox.org/
@@ -283,32 +296,40 @@ It will download and build a virtual machine with a working LDAP directory.
 (It may take a long time.)
 7. When complete, there is the IP address in the last line. If OS X is the
 Vagrant host, then the vagrant box is available at `simpleldap.local`
-For other operating systems, the IP address will need to be obtainted manually,
+For other operating systems, the IP address will need to be obtained manually,
 and added to the local hosts file for best results. (%WinDir%\System32\drivers\etc)
-8. You have to configure Simple LDAP module according to the LDAP server:
-Unzip the `MODULE_ROOT/test_configs_simple_ldap.zip`, and move the json files
-into the corrensponding module's config directory:
-    - `MODULE_ROOT/config/simple_ldap.settings.json`
-    - `MODULE_ROOT/simple_ldap_user/config/simple_ldap_user.settings.json`
-    - `MODULE_ROOT/simple_ldap_role/config/simple_ldap_role.settings.json`
-    - `MODULE_ROOT/simple_ldap_sso/config/simple_ldap_sso.settings.json`
-Make a copy of the original files outside the `config` directory if you want
-to restore them after the test.
-9. The `sn` attribute is required in this LDAP directory. So you have to insert
-a new line `$this->attributes['sn'] = 'UserSurname';` 
-into the `MODULE_ROOT/simple_ldap_user/SimpleLdapUser.class.php` line 243.
-The result:
-```php
-$this->attributes['sn'] = 'UserSurname';
-$this->server->add($this->dn, $this->attributes);
-```
-10. Create a new Backdrop role: `default_group`
-(Administration > Configuration > User accounts > Add role button)
-11. Install the modules of Simple LDAP. (See above.)
-12. You need to install the "Testing" core module, if you want to run the self test.
-Administration > Configuration > Development > Testing > Simple LDAP
-13. You can take a manual test.
-14. You can create some new LDAP users:
+8. After testing, you can shut down the virtual machine with this command:
+`vagrant halt`
+
+
+##### Managing the LDAP server <a name="testserver"></a>
+
+LDAP
+- The LDAP is pre-populated with some dummy data. Available at:
+ldap://simpleldap.local
+- DN: cn=admin,dc=local
+- password: admin
+
+  Or:
+- DN: cn=ldapuser,ou=people,dc=local
+- password: ldapuser
+
+phpLDAPadmin
+- phpLDAPadmin is available at http://simpleldap.local/pma
+- Login DN: cn=admin,dc=local
+- password: admin
+
+Virtual machine's console or ssh credentials
+- username: vagrant
+- password: vagrant
+
+Drupal 7
+- The virtual machine also contains a Drupal 7 installation with Simple LDAP module.
+- Available at: http://simpleldap.local/
+- username: admin
+- password: admin
+
+You can create new LDAP users:
     - Open phpLDAPadmin. Available at http://simpleldap.local/pma
       Login DN: cn=admin,dc=local
       password: admin
@@ -325,7 +346,8 @@ Administration > Configuration > Development > Testing > Simple LDAP
       - Password: "user password"
       - Press the "Create Object" button.
     - Press the "Commit" button.
-15. You can create some new LDAP groups:
+
+You can create new LDAP groups:
     - Open phpLDAPadmin. Available at http://simpleldap.local/pma
       Login DN: cn=admin,dc=local
       password: admin
@@ -340,35 +362,33 @@ Administration > Configuration > Development > Testing > Simple LDAP
       - member: You must set up at least one user. Example: cn=ldapuser,ou=people,dc=local
       - Press the "Create Object" button.
     - Press the "Commit" button.
-16. After testing, you can shut down the virtual machine with this command:
-    `vagrant halt`
 
-#### The test LDAP server <a name="testserver"></a>
 
-**LDAP**
-- The LDAP is pre-populated with some dummy data. Available at:
-ldap://simpleldap.local
-- DN: cn=admin,dc=local
-- password: admin
+##### Automated testing with the test environment <a name="automatedtestserver"></a>
 
-Or:
-- DN: cn=ldapuser,ou=people,dc=local
-- password: ldapuser
-
-**phpLDAPadmin**
-- phpLDAPadmin is available at http://simpleldap.local/pma
-- Login DN: cn=admin,dc=local
-- password: admin
-
-**Virtual machine's console or ssh credentials**
-- username: vagrant
-- password: vagrant
-
-**Drupal 7**
-- The virtual machine also contains a Drupal 7 installation with Simple LDAP module.
-- Available at: http://simpleldap.local/
-- username: admin
-- password: admin
+1. You have to configure Simple LDAP module according to the LDAP server:
+Unzip the `MODULE_ROOT/test_configs_simple_ldap.zip`, and move the json files
+into the corresponding module's config directory:
+    - `MODULE_ROOT/config/simple_ldap.settings.json`
+    - `MODULE_ROOT/simple_ldap_user/config/simple_ldap_user.settings.json`
+    - `MODULE_ROOT/simple_ldap_role/config/simple_ldap_role.settings.json`
+    - `MODULE_ROOT/simple_ldap_sso/config/simple_ldap_sso.settings.json`
+Make a copy of the original files outside the `config` directory if you want
+to restore them after the test.
+2. The `sn` attribute is required in this LDAP directory. So you have to insert
+a new line `$this->attributes['sn'] = 'UserSurname';`
+into the `MODULE_ROOT/simple_ldap_user/SimpleLdapUser.class.php` line 243.
+The result:
+```php
+$this->attributes['sn'] = 'UserSurname';
+$this->server->add($this->dn, $this->attributes);
+```
+3. Create a new Backdrop role: `default_group`
+(Administration > Configuration > User accounts > Add role button)
+4. Navigate to Administration > Functionality and install the "Testing" core
+module and the modules of Simple LDAP. (See above.)
+5. You can run the self test:
+Administration > Configuration > Development > Testing > Simple LDAP
 
 
 Issues <a name="issues"></a>
